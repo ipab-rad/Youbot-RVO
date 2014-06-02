@@ -1,3 +1,10 @@
+# QT-Creator project files
+PTrackingBridge.config
+PTrackingBridge.creator
+PTrackingBridge.creator.user
+PTrackingBridge.files
+PTrackingBridge.includes
+
 # Compiled Object files
 *.slo
 *.lo
