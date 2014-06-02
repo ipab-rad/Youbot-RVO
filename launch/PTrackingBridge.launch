@@ -1,0 +1,9 @@
+<launch>
+	<group ns="agent_1">
+		<param name="tf_prefix" value="agent_1" />
+		
+		<node name="PTrackingBridge" pkg="PTrackingBridge" type="PTrackingBridge">
+			<param name="agentPort" value="11001"/>
+		</node>
+	</group>
+</launch>
