@@ -5,6 +5,12 @@ PTrackingBridge.creator.user
 PTrackingBridge.files
 PTrackingBridge.includes
 
+# ROS compilation directories
+bin
+build
+lib
+msg_gen
+
 # Compiled Object files
 *.slo
 *.lo
