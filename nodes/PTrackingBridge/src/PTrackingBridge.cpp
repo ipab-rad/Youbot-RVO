@@ -71,8 +71,6 @@ namespace PTracking
 				continue;
 			}
 			
-			WARN("Recv: " << dataReceived << endl);
-			
 			heights.clear();
 			identities.clear();
 			positions.clear();
