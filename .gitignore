@@ -10,6 +10,7 @@ bin
 build
 lib
 msg_gen
+PTrackingBridge
 
 # Compiled Object files
 *.slo
