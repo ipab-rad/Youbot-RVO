@@ -14,6 +14,7 @@
 	<review status="unreviewed" notes=""/>
 	<url>http://ros.org/wiki/PTrackingBridge</url>
 	
+	<depend package="geometry_msgs"/>
 	<depend package="std_msgs"/>
 	<depend package="roscpp"/>
 </package>
