@@ -21,7 +21,7 @@ namespace PTracking
 		
 		publisherTargetEstimations = nodeHandle.advertise<TargetEstimations>("targetEstimations",1);
 		
-		/// Catching Ctrl^C to get a clean exit.
+		/// Catching Ctrl+C to get a clean exit.
 		signal(SIGINT,PTrackingBridge::interruptCallback);
 	}
 	
