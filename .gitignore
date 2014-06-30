@@ -8,8 +8,10 @@ PTrackingBridge.includes
 # ROS compilation directories
 bin
 build
+devel
 lib
 msg_gen
+workspace/src/CMakeLists.txt
 
 # Compiled Object files
 *.slo
