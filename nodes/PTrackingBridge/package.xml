@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package>
+	<name>PTrackingBridge</name>
+	<version>1.0.0</version>
+	<description>The PTrackingBridge package</description>
+	
+	<maintainer email="previtali@dis.uniroma1.it">Fabio</maintainer>
+
+	<license>GPL</license>
+	
+	<author email="previtali@dis.uniroma1.it">Fabio Previtali</author>
+	
+	<buildtool_depend>catkin</buildtool_depend>
+	
+	<build_depend>geometry_msgs</build_depend>
+	<build_depend>roscpp</build_depend>
+	<build_depend>std_msgs</build_depend>
+	<build_depend>message_generation</build_depend>
+	
+	<run_depend>geometry_msgs</run_depend>
+	<run_depend>roscpp</run_depend>
+	<run_depend>std_msgs</run_depend>
+	<run_depend>message_runtime</run_depend>
+	
+	<export>
+		<!-- You can specify that this package is a metapackage here: -->
+		<!-- <metapackage/> -->
+		
+		<!-- Other tools can request additional information be placed here -->
+	</export>
+</package>
