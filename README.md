@@ -18,3 +18,9 @@ The main sections of this repository include:
  - PTracking Wrapper (Alex) subscribes to the output messages of the PTracking bridge and pre-computes/organises/publishes the data in a proper format for the HRVO and V-REP modules.
  
  - YouBot Wrapper (Alex) subscribes to the output message of the HRVO bridge and transforms/publishes it into the appropriate control topics for the V-REP virtual YouBot and the actual YouBot robot.
+
+Requirements
+------------
+
+* `ros groovy`
+
