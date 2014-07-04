@@ -78,29 +78,35 @@ int main()
 {
 	Simulator simulator;
     std::cout<<"HRVO Simulator Begins..."<<std::endl;
-	simulator.setTimeStep(0.25f);
-	simulator.setAgentDefaults(15.0f, 10, 1.5f, 1.5f, 1.0f, 2.0f);
-    int nAgents = 10;
+    float fSimTimeStep = 0.25f;
+    float fAgentRadius = 15.0f;
+    simulator.setTimeStep(fSimTimeStep);
+    simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
+    int nAgents = 2;
 
     std::ofstream log;
-    log.open ("log1.txt");
+    log.open ("log1.csv");
 
-    for (std::size_t i = 0; i < nAgents; ++i) {
-		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
-		simulator.addAgent(position, simulator.addGoal(-position));
-	}
+    log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
+    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
+
+//    for (std::size_t i = 0; i < nAgents; ++i) {
+//		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
+//		simulator.addAgent(position, simulator.addGoal(-position));
+//	}
+    const Vector2 pos1 = Vector2(200.0f, 0.0f);
+    const Vector2 pos2 = Vector2(-200.0f, 0.0f);
+
+    simulator.addAgent(pos1, simulator.addGoal(-pos1));
+    simulator.addAgent(pos2, simulator.addGoal(-pos2));
 
 	do {
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
-        std::cout << "T:" << simulator.getGlobalTime() << std::endl;
-        log << "T:" << simulator.getGlobalTime() << std::endl;
+        log << simulator.getGlobalTime();
 
 		for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
-            std::cout << i << ":" << simulator.getAgentPosition(i) << std::endl;
-            log << i << ":" << simulator.getAgentPosition(i) << std::endl;
+            log <<","<< simulator.getAgentPosition(i).getX() <<","<< simulator.getAgentPosition(i).getY();
 		}
-
-		std::cout << std::endl;
         log << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
