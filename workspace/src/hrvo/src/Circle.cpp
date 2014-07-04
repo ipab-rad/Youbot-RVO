@@ -60,6 +60,7 @@
  */
 
 #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
+#define ROS_PUBLISHER 1
 
 #include <cmath>
 
@@ -68,7 +69,11 @@
 #include <fstream>
 #endif
 
-#include <HRVO.h>
+#if ROS_PUBLISHER
+#include "ros/ros.h"
+#endif
+
+#include "HRVO.h"
 
 using namespace hrvo;
 
@@ -85,7 +90,7 @@ int main()
     int nAgents = 2;
 
     std::ofstream log;
-    log.open ("log1.csv");
+    log.open ("Git/Youbot-RVO/Matlab/log3.csv");
 
     log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
     std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
