@@ -4,7 +4,6 @@ PTrackingBridge.creator
 PTrackingBridge.creator.user
 PTrackingBridge.files
 PTrackingBridge.includes
-*.txt.user
 
 # ROS compilation directories
 bin
