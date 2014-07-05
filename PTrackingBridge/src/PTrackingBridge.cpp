@@ -37,36 +37,38 @@ namespace PTracking
 		string dataReceived, token;
 		int iterations, ret; 
 		bool binding;
-		
+                double timeout;
+                
 		if (agentPort != -1)
 		{
 			binding = receiverSocket.bind(agentPort);
 			
 			if (!binding)
 			{
-				ERR("Error during the binding operation. Exiting..." << endl);
+				ROS_ERROR("error during the binding operation, exiting...");
 				
 				exit(-1);
 			}
 		}
 		else
 		{
-			ERR("Agent id not set. Please check the launch file..." << endl);
+			ROS_ERROR("agent id not set, please check the launch file");
 			
 			exit(-1);
 		}
 		
-		INFO("PTracking bridge bound on port: " << agentPort << endl);
+		ROS_INFO_STREAM("ptracking bridge bound on port: " << agentPort);
 		
 		iterations = 0;
+                timeout = 0.05;
 		
 		while (true)
 		{
-			ret = receiverSocket.recv(dataReceived,sender);
+                        ret = receiverSocket.recv(dataReceived,sender,timeout);
 			
 			if (ret == -1)
 			{
-				ERR("Error in receiving message from: '" << sender.toString() << "'." << endl);
+                                ROS_ERROR("error in receiving message from: '%s'", sender.toString().c_str());
 				
 				continue;
 			}
@@ -115,15 +117,14 @@ namespace PTracking
 			targetEstimations.velocities = velocities;
 			
 			publisherTargetEstimations.publish(targetEstimations);
+
+                        timeout = identities.size() > 0 ? 0.05 : 0.0;
 		}
 	}
 	
 	void PTrackingBridge::interruptCallback(int)
 	{
-		ERR(endl << "*********************************************************************" << endl);
-		ERR("Caught Ctrl^C. Exiting..." << endl);
-		ERR("*********************************************************************" << endl);
-		
+                ROS_INFO("caught Ctrl^C, exiting...");
 		exit(0);
 	}
 }
