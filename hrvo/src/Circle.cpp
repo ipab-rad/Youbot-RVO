@@ -70,7 +70,7 @@
 #endif
 
 #if ROS_PUBLISHER
-#include "ros/ros.h"
+#include <ros/ros.h>
 #endif
 
 #include "HRVO.h"
@@ -79,47 +79,52 @@ using namespace hrvo;
 
 const float HRVO_TWO_PI = 6.283185307179586f;
 
-int main()
+int main(int argc, char *argv[])
 {
-	Simulator simulator;
-    std::cout<<"HRVO Simulator Begins..."<<std::endl;
-    float fSimTimeStep = 0.25f;
-    float fAgentRadius = 15.0f;
-    simulator.setTimeStep(fSimTimeStep);
-    simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
-    int nAgents = 2;
+  ros::init(argc, argv, "hrvo_planner");
+  ros::NodeHandle nh;
+  Simulator simulator;
+  std::cout<<"HRVO Simulator Begins..."<<std::endl;
+  float fSimTimeStep = 0.25f;
+  float fAgentRadius = 15.0f;
+  simulator.setTimeStep(fSimTimeStep);
+  simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
+  int nAgents = 2;
+  
+  std::ofstream log;
+  log.open ("Git/Youbot-RVO/Matlab/log3.csv");
 
-    std::ofstream log;
-    log.open ("Git/Youbot-RVO/Matlab/log3.csv");
+  // log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
+  std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
 
-    log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
-    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
+  //    for (std::size_t i = 0; i < nAgents; ++i) {
+  //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
+  //		simulator.addAgent(position, simulator.addGoal(-position));
+  //	}
+  const Vector2 pos1 = Vector2(200.0f, 0.0f);
+  const Vector2 pos2 = Vector2(-200.0f, 0.0f);
 
-//    for (std::size_t i = 0; i < nAgents; ++i) {
-//		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
-//		simulator.addAgent(position, simulator.addGoal(-position));
-//	}
-    const Vector2 pos1 = Vector2(200.0f, 0.0f);
-    const Vector2 pos2 = Vector2(-200.0f, 0.0f);
+  simulator.addAgent(nh, std::string("robot_1"), pos1, simulator.addGoal(-pos1));
+  simulator.addAgent(nh, std::string("robot_2"), pos2, simulator.addGoal(-pos2));
 
-    simulator.addAgent(pos1, simulator.addGoal(-pos1));
-    simulator.addAgent(pos2, simulator.addGoal(-pos2));
-
-	do {
+  ros::Rate update_freq(4);
+  do {
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
-        log << simulator.getGlobalTime();
+    log << simulator.getGlobalTime();
 
-		for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
-            log <<","<< simulator.getAgentPosition(i).getX() <<","<< simulator.getAgentPosition(i).getY();
-		}
-        log << std::endl;
+    for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
+      log <<","<< simulator.getAgentPosition(i).getX() <<","<< simulator.getAgentPosition(i).getY();
+    }
+    log << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-        simulator.doStep();
-	}
-	while (!simulator.haveReachedGoals());
+    simulator.doStep();
+    ros::spinOnce();
+    update_freq.sleep();
+  }
+  while ( !simulator.haveReachedGoals() && ros::ok() );
 
-    log.close();
+  // log.close();
 
-	return 0;
+  return 0;
 }

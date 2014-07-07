@@ -65,6 +65,9 @@
 #include <limits>
 #include <vector>
 
+#include <ros/ros.h>
+#include <geometry_msgs/Twist.h>
+
 #ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
 #endif
@@ -101,7 +104,7 @@ namespace hrvo {
 		 * \param[in]  goalNo    The goal number of this agent.
 		 * \return     The number of the agent.
 		 */
-		std::size_t addAgent(const Vector2 &position, std::size_t goalNo);
+		std::size_t addAgent(ros::NodeHandle& nh, std::string id, const Vector2 &position, std::size_t goalNo);
 
 		/**
 		 * \brief      Adds a new agent to the simulation.
@@ -119,11 +122,11 @@ namespace hrvo {
 		 * \param[in]  orientation        The initial orientation (in radians) of this agent.
 		 * \return     The number of the agent.
 		 */
-		std::size_t addAgent(const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+		std::size_t addAgent(ros::NodeHandle& nh, std::string id, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
 			float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-			float uncertaintyOffset = 0.0f, float maxAccel = std::numeric_limits<float>::infinity(), const Vector2 &velocity = Vector2(0.0f, 0.0f), float orientation = 0.0f);
+                                     float uncertaintyOffset = 0.0f, float maxAccel = std::numeric_limits<float>::infinity(), const Vector2 &velocity = Vector2(0.0f, 0.0f), float orientation = 0.0f);
 
 		/**
 		 * \brief      Adds a new goal to the simulation.
