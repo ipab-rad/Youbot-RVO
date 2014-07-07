@@ -324,8 +324,8 @@ namespace hrvo {
 				}
 			}
 
-			if (valid) {
-				newVelocity_ = candidate.position_;
+            if (valid) {
+                newVelocity_ = candidate.position_;
 				break;
 			}
 		}

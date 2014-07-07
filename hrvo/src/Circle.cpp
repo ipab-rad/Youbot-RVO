@@ -75,6 +75,8 @@
 
 #include "HRVO.h"
 
+
+
 using namespace hrvo;
 
 const float HRVO_TWO_PI = 6.283185307179586f;
@@ -90,9 +92,9 @@ int main()
     int nAgents = 2;
 
     std::ofstream log;
-    log.open ("Git/Youbot-RVO/Matlab/log3.csv");
+    log.open ("log1.csv");
 
-    log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
+    log << fSimTimeStep <<"\t"<< nAgents <<"\t"<< fAgentRadius << std::endl;
     std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
 
 //    for (std::size_t i = 0; i < nAgents; ++i) {
@@ -101,6 +103,8 @@ int main()
 //	}
     const Vector2 pos1 = Vector2(200.0f, 0.0f);
     const Vector2 pos2 = Vector2(-200.0f, 0.0f);
+    const Vector2 pos3 = Vector2(-100.0f, 100.0f);
+    const Vector2 vel = Vector2(5.0f, 5.0f);
 
     simulator.addAgent(pos1, simulator.addGoal(-pos1));
     simulator.addAgent(pos2, simulator.addGoal(-pos2));
@@ -110,14 +114,16 @@ int main()
         log << simulator.getGlobalTime();
 
 		for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
-            log <<","<< simulator.getAgentPosition(i).getX() <<","<< simulator.getAgentPosition(i).getY();
+            log <<"\t"<< simulator.getAgentPosition(i).getX() <<"\t"<< simulator.getAgentPosition(i).getY() <<"\t"<< simulator.getAgentVelocity(i);
 		}
         log << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-        simulator.doStep();
+
+    simulator.doStep();
+//    simulator.setAgentVelocity(1, vel);
 	}
-	while (!simulator.haveReachedGoals());
+    while (!simulator.haveReachedGoals() && (simulator.getGlobalTime() < 10));
 
     log.close();
 
