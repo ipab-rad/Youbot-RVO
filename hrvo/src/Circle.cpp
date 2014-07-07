@@ -104,8 +104,8 @@ int main(int argc, char *argv[])
   const Vector2 pos1 = Vector2(200.0f, 0.0f);
   const Vector2 pos2 = Vector2(-200.0f, 0.0f);
 
-  simulator.addAgent(nh, std::string("robot_1"), pos1, simulator.addGoal(-pos1));
-  simulator.addAgent(nh, std::string("robot_2"), pos2, simulator.addGoal(-pos2));
+  simulator.addAgent(std::string("robot_1"), true, pos1, simulator.addGoal(-pos1));
+  simulator.addAgent(std::string("robot_2"), true, pos2, simulator.addGoal(-pos2));
 
   ros::Rate update_freq(4);
   do {

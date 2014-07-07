@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <package>
-  <name>hrvo</name>
-  <version>0.0.0</version>
-  <description>The hrvo package</description>
+  <name>agents_dispatcher</name>
+  <version>0.1.0</version>
+  <description>The agents_dispatcher package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="alex@todo.todo">alex</maintainer>
+  <author>Federico Boniardi</author>
+  <maintainer email="federico.boniardi@gmail.com">Federico Boniardi</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>MIT</license>
 
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/hrvo</url> -->
+  <!-- <url type="website">http://wiki.ros.org/agents_dispatcher</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -40,16 +40,20 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
   <build_depend>PTrackingBridge</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <run_depend>message_runtime</run_depend>  
+  <build_depend>hrvo</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <run_depend>PTrackingBridge</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>hrvo</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>PTrackingBridge</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>nav_msgs</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

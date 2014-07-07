@@ -70,6 +70,10 @@
 #include <string>
 
 #include <ros/ros.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf/tf.h> 
+
+#include "Defines.h"
 
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
@@ -77,6 +81,7 @@
 #ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
 #endif
+
 
 namespace hrvo {
   /**
@@ -143,7 +148,7 @@ namespace hrvo {
      * \brief      Constructor.
      * \param[in]  simulator  The simulation.
      */
-    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id);
+    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, bool is_robot);
 
     /**
      * \brief      Constructor.
@@ -151,7 +156,7 @@ namespace hrvo {
      * \param[in]  position   The starting position of this agent.
      * \param[in]  goalNo     The goal number of this agent.
      */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id);
+    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, bool is_robot);
 
     /**
      * \brief      Constructor.
@@ -173,7 +178,7 @@ namespace hrvo {
 #if HRVO_DIFFERENTIAL_DRIVE
           float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-          float uncertaintyOffset, ros::NodeHandle& nh, std::string id);
+          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, bool is_robot);
 
     /**
      * \brief  Computes the neighbors of this agent.
@@ -208,10 +213,11 @@ namespace hrvo {
      * \brief  Updates the orientation, position, and velocity of this agent.
      */
     void update();
-
+    
     Simulator *const simulator_;
     Vector2 newVelocity_;
     Vector2 position_;
+    Vector2 agent_sensed_position_;
     Vector2 prefVelocity_;
     Vector2 velocity_;
     std::size_t goalNo_;
@@ -221,6 +227,7 @@ namespace hrvo {
     float maxSpeed_;
     float neighborDist_;
     float orientation_;
+    float agent_sensed_orientation_;
     float prefSpeed_;
     float radius_;
     float uncertaintyOffset_;
@@ -237,9 +244,28 @@ namespace hrvo {
 
     friend class KdTree;
     friend class Simulator;
-
-    std::string id_;
+#if YOUBOT
+    std::string id_, pose_topic_;
     ros::Publisher pub_;
+    ros::Subscriber sub_;
+ public:
+    /**
+     * \brief  Updates the position from topic.
+     */
+    void updatePose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &pose_msg);
+    /**
+     * \brief  get the pose topic.
+     */
+    std::string getPoseTopic();
+    /**
+     * \brief  set the pose topic.
+     */
+    void setPoseTopic(std::string pose_topic);
+    /**
+     * brief  set the pose subscriber.
+     */
+    void attachPoseSubscriber(ros::NodeHandle &nh, std::string pose_topic);
+#endif    
   };
 }
 
