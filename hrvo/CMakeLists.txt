@@ -113,8 +113,7 @@ add_library(Vector2 src/Vector2.cpp)
 #	src/Agent.h
 #	src/Definitions.h
 #	src/Goal.cpp
-#	src/Goal.h
-#	src/KdTree.cpp
+#	src/Goal.h#	src/KdTree.cpp
 #	src/KdTree.h
 #	src/Simulator.cpp
 #	src/Vector2.cpp)
@@ -122,7 +121,16 @@ add_library(Vector2 src/Vector2.cpp)
 #add_library(HRVO ${HRVO_HEADERS} ${HRVO_SOURCES})
 
 ## Declare a cpp executable
-add_executable(Circle 
+add_executable(Square
+	src/Square.cpp
+	src/Agent.cpp
+	src/Goal.cpp
+	src/KdTree.cpp
+	src/Simulator.cpp
+	src/Vector2.cpp
+)
+
+add_executable(Circle
 	src/Circle.cpp
 	src/Agent.cpp
 	src/Goal.cpp
@@ -136,14 +144,23 @@ add_executable(Circle
 # add_dependencies(hrvo_node hrvo_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(Circle
+target_link_libraries(Square
  	${catkin_LIBRARIES}
 	Agent
-    Goal
+	Goal
 	KdTree
 	Simulator
 	Vector2
- )
+)
+
+target_link_libraries(Circle
+	${catkin_LIBRARIES}
+	Agent
+	Goal
+	KdTree
+	Simulator
+	Vector2
+)
 
 #############
 ## Install ##
