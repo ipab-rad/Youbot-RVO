@@ -18,7 +18,7 @@ To launch the node
 
 ## Parameters
 	
-* `/ptracking_bridge/ptracking_topic` (`string`, default: /agent_1/PtrackingBridge/targetEstimations).
+* `/ptracking_wrapper/ptracking_topic` (`string`, default: /agent_1/PtrackingBridge/targetEstimations).
   The topic published by ptracking with the information about the detected agents
 	  
 * `/ptracking_wrapper/frame_id` (`string`, default: /map). The paths of pedestrians stored in
