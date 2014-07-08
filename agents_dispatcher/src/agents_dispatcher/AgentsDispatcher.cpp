@@ -54,6 +54,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <exception>
 
 #include <tf/tf.h>
 #include <geometry_msgs/PointStamped.h>
@@ -77,12 +78,16 @@ AgentsDispatcher::AgentsDispatcher()
 
 #ifdef HRVO
   hrvo_add_agent_ = nh_.serviceClient<hrvo::AddAgentService>("hrvo_add_agent");
+  ROS_INFO("connected to service 'hrvo_add_agent'");
 #endif
   
   iteration_ = 0;
 }
 
-AgentsDispatcher::~AgentsDispatcher() {}
+AgentsDispatcher::~AgentsDispatcher()
+{
+  ROS_INFO("shutting down agentsDispatcher");
+}
 
 void AgentsDispatcher::getTargetEstimations(const PTrackingBridge::TargetEstimations::ConstPtr& tgts_msg)
 {
@@ -121,7 +126,7 @@ void AgentsDispatcher::getTargetEstimations(const PTrackingBridge::TargetEstimat
         ROS_INFO_STREAM("advertising the topic " << ss_id.str());
         
       } catch (std::exception e) {
-        ROS_ERROR("unabled to publish the path for agent %d", index);
+        ROS_ERROR("unabled to publish the path for agent %d -- %s", index, e.what());
       }
 
 #ifdef HRVO

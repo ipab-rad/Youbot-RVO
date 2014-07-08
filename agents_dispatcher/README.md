@@ -11,7 +11,7 @@ To launch the node
 	
 * `/agent_1/PtrackingBridge/targetEstimations` (PtrackingBridge/targetEstimations)
 	
- Published topics
+## Published topics
  
 * `/agentsDispatcher/agent_X` (nav_msgs/Path). The path of agent X. The id X is 
  dynamically assigned as a new agent is detected and tracked.
