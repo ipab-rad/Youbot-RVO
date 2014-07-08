@@ -38,4 +38,4 @@ workspace/src/CMakeLists.txt
 *.app
 
 # catking_ignore files
-CATKIN_IGNORE
+*/CATKIN_IGNORE
