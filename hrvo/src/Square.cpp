@@ -89,15 +89,11 @@ int main()
     float fAgentRadius = 15.0f;
     simulator.setTimeStep(fSimTimeStep);
     simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
-    int nAgents = 2;
 
     char spt[] = "\t";          // Tab separation for log
     //char spt[] = ",";           // Comma separation for log
     std::ofstream log;
     log.open ("square1.csv");
-
-    log << fSimTimeStep <<spt<< simulator.getNumAgents() <<spt<< fAgentRadius << std::endl;
-    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
 
 //    for (std::size_t i = 0; i < nAgents; ++i) {
 //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
@@ -115,7 +111,7 @@ int main()
 
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
     log << fSimTimeStep <<spt<< simulator.getNumAgents() <<spt<< fAgentRadius << std::endl;
-    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
+    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<simulator.getNumAgents()<<", rA="<< fAgentRadius << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
 	do {

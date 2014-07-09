@@ -1,6 +1,6 @@
 clear all
 
-file='log2.csv';
+file='square1.csv';
 
 X = 1;
 Y = 2;
