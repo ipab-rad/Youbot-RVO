@@ -83,7 +83,7 @@ namespace hrvo {
 
 Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
 {
-#if YOUBOT
+#ifdef YOUBOT
   add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
 #endif
   kdTree_ = new KdTree(this);
@@ -378,7 +378,7 @@ void Simulator::setAgentWheelTrack(std::size_t agentNo, float wheelTrack)
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-#if YOUBOT
+#ifdef YOUBOT
 bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res)
 {
   std::stringstream ss;

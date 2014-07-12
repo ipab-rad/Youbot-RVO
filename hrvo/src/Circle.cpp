@@ -75,6 +75,9 @@
 #endif
 
 #include "HRVO.h"
+#define ROBOT 1
+#define PERSON 0
+
 
 using namespace hrvo;
 
@@ -90,22 +93,14 @@ void interrupt_callback(int s)
 int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "hrvo_planner");
-  ros::NodeHandle nh;
   Simulator simulator;
   std::cout<<"HRVO Simulator Begins..."<<std::endl;
   float fSimTimeStep = 0.1f;
   float fAgentRadius = 0.5f;
   simulator.setTimeStep(fSimTimeStep);
   simulator.setAgentDefaults(5.0f, 10, fAgentRadius, 1.0f, 0.3f, 0.6f);
-  int nAgents = 2;
 
   std::signal(SIGINT, interrupt_callback);
-  
-  std::ofstream log;
-  log.open ("Git/Youbot-RVO/Matlab/log3.csv");
-
-  // log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
-  std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
 
   //    for (std::size_t i = 0; i < nAgents; ++i) {
   //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
@@ -115,8 +110,14 @@ int main(int argc, char *argv[])
   const Vector2 pos2 = Vector2(-5.0f, 0.0f);
   const Vector2 stop = Vector2(0.0f, 0.0f);
 
-  simulator.addAgent(nh, std::string("youbot_1"), pos1, simulator.addGoal(-pos1));
-  simulator.addAgent(nh, std::string("youbot_2"), pos2, simulator.addGoal(-pos2));
+  simulator.addAgent(std::string("youbot_1"), ROBOT, pos1, simulator.addGoal(-pos1));
+  simulator.addAgent(std::string("youbot_2"), ROBOT, pos2, simulator.addGoal(-pos2));
+
+  std::ofstream log;
+  log.open ("Git/Youbot-RVO/Matlab/log3.csv");
+
+  // log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
+  std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<simulator.getNumAgents()<<", rA="<< fAgentRadius << std::endl;
 
   ros::Rate update_freq(10);
   do {

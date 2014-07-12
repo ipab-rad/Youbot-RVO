@@ -92,7 +92,7 @@ Agent::Agent(Simulator *simulator) : simulator_(simulator), goalNo_(0), maxNeigh
                                      reachedGoal_(false) {}
 
 
-Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
+Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, bool is_robot) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
                                                                           goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f),
                                                                           orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -100,7 +100,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id) : simula
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
                                      reachedGoal_(false)
 {
-#if YOUBOT
+#ifdef YOUBOT
   id_ = id;
   pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
   if ( is_robot ) {
@@ -110,7 +110,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id) : simula
 #endif
 }
 
-Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id) :
+Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, bool is_robot) :
     simulator_(simulator), newVelocity_(simulator_->defaults_->velocity_), position_(position),
     velocity_(simulator_->defaults_->velocity_), goalNo_(goalNo), maxNeighbors_(simulator_->defaults_->maxNeighbors_),
     goalRadius_(simulator_->defaults_->goalRadius_), maxAccel_(simulator_->defaults_->maxAccel_), maxSpeed_(simulator_->defaults_->maxSpeed_),
@@ -121,7 +121,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
     reachedGoal_(false)
 {
-#if YOUBOT
+#ifdef YOUBOT
   id_ = id;
   pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
   if ( is_robot ) {
@@ -139,7 +139,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 #if HRVO_DIFFERENTIAL_DRIVE
              float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-             float uncertaintyOffset, ros::NodeHandle& nh, std::string id) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
+             float uncertaintyOffset, ros::NodeHandle& nh, std::string id, bool is_robot) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
   maxNeighbors_(maxNeighbors), goalRadius_(goalRadius), maxAccel_(maxAccel), maxSpeed_(maxSpeed), neighborDist_(neighborDist),
   orientation_(orientation), prefSpeed_(prefSpeed), radius_(radius), uncertaintyOffset_(uncertaintyOffset),
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -150,7 +150,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 #if HRVO_DIFFERENTIAL_DRIVE
   computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-#if YOUBOT
+#ifdef YOUBOT
   id_ = id;
   pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
   if ( is_robot ) {
@@ -538,4 +538,29 @@ void Agent::update()
 
 #endif /* !HRVO_DIFFERENTIAL_DRIVE */
 }
+
+#ifdef YOUBOT
+void Agent::updatePose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
+{
+  agent_sensed_position_.setX(pose_msg->pose.pose.position.x);
+  agent_sensed_position_.setY(pose_msg->pose.pose.position.y);  
+  agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
+}
+
+std::string Agent::getPoseTopic()
+{
+  return pose_topic_;
+}
+
+void Agent::setPoseTopic(std::string pose_topic)
+{
+  pose_topic_ = pose_topic;
+}
+
+void Agent::attachPoseSubscriber(ros::NodeHandle& nh, std::string pose_topic)
+{
+  setPoseTopic(pose_topic);
+  sub_ = nh.subscribe(pose_topic, 1, &Agent::updatePose, this);
+}
+#endif
 }

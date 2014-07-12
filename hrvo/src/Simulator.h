@@ -437,7 +437,7 @@ namespace hrvo {
      */
     void setTimeStep(float timeStep) { timeStep_ = timeStep; }
 
-#if YOUBOT
+#ifdef YOUBOT
     bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
 #endif
                 
@@ -456,7 +456,7 @@ namespace hrvo {
     friend class Agent;
     friend class Goal;
     friend class KdTree;
-#if YOUBOT
+#ifdef YOUBOT
     ros::NodeHandle nh_;
     ros::ServiceServer add_agent_srv_;
 #endif
