@@ -365,6 +365,10 @@ void Simulator::setAgentUncertaintyOffset(std::size_t agentNo, float uncertainty
 void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
 {
   agents_[agentNo]->velocity_ = velocity;
+  geometry_msgs::Twist vel;
+  vel.linear.x = velocity.getX();
+  vel.linear.y = velocity.getY();
+  agents_[agentNo]->pub_.publish(vel);
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE

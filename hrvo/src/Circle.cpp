@@ -67,6 +67,7 @@
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
 #include <iostream>
 #include <fstream>
+#include <csignal>
 #endif
 
 #if ROS_PUBLISHER
@@ -79,17 +80,26 @@ using namespace hrvo;
 
 const float HRVO_TWO_PI = 6.283185307179586f;
 
+bool SAFETY_STOP = false;
+
+void interrupt_callback(int s)
+{
+    SAFETY_STOP = true;
+}
+
 int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "hrvo_planner");
   ros::NodeHandle nh;
   Simulator simulator;
   std::cout<<"HRVO Simulator Begins..."<<std::endl;
-  float fSimTimeStep = 0.25f;
-  float fAgentRadius = 15.0f;
+  float fSimTimeStep = 0.1f;
+  float fAgentRadius = 0.5f;
   simulator.setTimeStep(fSimTimeStep);
-  simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
+  simulator.setAgentDefaults(5.0f, 10, fAgentRadius, 1.0f, 0.3f, 0.6f);
   int nAgents = 2;
+
+  std::signal(SIGINT, interrupt_callback);
   
   std::ofstream log;
   log.open ("Git/Youbot-RVO/Matlab/log3.csv");
@@ -101,13 +111,14 @@ int main(int argc, char *argv[])
   //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
   //		simulator.addAgent(position, simulator.addGoal(-position));
   //	}
-  const Vector2 pos1 = Vector2(200.0f, 0.0f);
-  const Vector2 pos2 = Vector2(-200.0f, 0.0f);
+  const Vector2 pos1 = Vector2(5.0f, 0.0f);
+  const Vector2 pos2 = Vector2(-5.0f, 0.0f);
+  const Vector2 stop = Vector2(0.0f, 0.0f);
 
-  simulator.addAgent(std::string("robot_1"), true, pos1, simulator.addGoal(-pos1));
-  simulator.addAgent(std::string("robot_2"), true, pos2, simulator.addGoal(-pos2));
+  simulator.addAgent(nh, std::string("youbot_1"), pos1, simulator.addGoal(-pos1));
+  simulator.addAgent(nh, std::string("youbot_2"), pos2, simulator.addGoal(-pos2));
 
-  ros::Rate update_freq(4);
+  ros::Rate update_freq(10);
   do {
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
     log << simulator.getGlobalTime();
@@ -121,8 +132,20 @@ int main(int argc, char *argv[])
     simulator.doStep();
     ros::spinOnce();
     update_freq.sleep();
+
+    if ( SAFETY_STOP ) {
+        for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
+          simulator.setAgentVelocity(i, stop);
+        }
+        std::cout << "EMERGENCY STOP";
+        exit(1);
+    }
   }
   while ( !simulator.haveReachedGoals() && ros::ok() );
+
+  for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
+    simulator.setAgentVelocity(i, stop);
+  }
 
   // log.close();
 

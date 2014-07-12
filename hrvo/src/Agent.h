@@ -89,6 +89,9 @@ namespace hrvo {
    * \brief  An agent in the simulation.
    */
   class Agent {
+  public:
+      std::string id_;
+      ros::Publisher pub_;
  private:
     /**
      * \class  Candidate
@@ -148,7 +151,7 @@ namespace hrvo {
      * \brief      Constructor.
      * \param[in]  simulator  The simulation.
      */
-    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, bool is_robot);
+    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id);
 
     /**
      * \brief      Constructor.
@@ -156,7 +159,7 @@ namespace hrvo {
      * \param[in]  position   The starting position of this agent.
      * \param[in]  goalNo     The goal number of this agent.
      */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, bool is_robot);
+    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id);
 
     /**
      * \brief      Constructor.
@@ -178,7 +181,7 @@ namespace hrvo {
 #if HRVO_DIFFERENTIAL_DRIVE
           float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, bool is_robot);
+          float uncertaintyOffset, ros::NodeHandle& nh, std::string id);
 
     /**
      * \brief  Computes the neighbors of this agent.
@@ -213,7 +216,7 @@ namespace hrvo {
      * \brief  Updates the orientation, position, and velocity of this agent.
      */
     void update();
-    
+
     Simulator *const simulator_;
     Vector2 newVelocity_;
     Vector2 position_;
