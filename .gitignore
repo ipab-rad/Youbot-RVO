@@ -15,6 +15,9 @@ lib
 msg_gen
 workspace/src/CMakeLists.txt
 
+# Mergetool files
+*.orig
+
 # Compiled Object files
 *.slo
 *.lo
