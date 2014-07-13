@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   float fSimTimeStep = 0.1f;
   float fAgentRadius = 0.5f;
   simulator.setTimeStep(fSimTimeStep);
-  simulator.setAgentDefaults(5.0f, 10, fAgentRadius, 1.0f, 0.3f, 0.6f);
+  simulator.setAgentDefaults(5.0f, 10, fAgentRadius, 0.1f, 0.3f, 0.6f);
 
   std::signal(SIGINT, interrupt_callback);
 
@@ -106,12 +106,12 @@ int main(int argc, char *argv[])
   //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
   //		simulator.addAgent(position, simulator.addGoal(-position));
   //	}
-  const Vector2 pos1 = Vector2(5.0f, 0.0f);
-  const Vector2 pos2 = Vector2(-5.0f, 0.0f);
+  const Vector2 pos1 = Vector2(1.5f, 0.0f);
+  const Vector2 pos2 = Vector2(-1.5f, 0.0f);
   const Vector2 stop = Vector2(0.0f, 0.0f);
 
-  simulator.addAgent(std::string("youbot_1"), ROBOT, pos1, simulator.addGoal(-pos1));
-  simulator.addAgent(std::string("youbot_2"), ROBOT, pos2, simulator.addGoal(-pos2));
+  simulator.addAgent(std::string("youbot_2"), ROBOT, pos1, simulator.addGoal(-pos1));
+  simulator.addAgent(std::string("youbot_1"), ROBOT, pos2, simulator.addGoal(-pos2));
 
   std::ofstream log;
   log.open ("Git/Youbot-RVO/Matlab/log3.csv");
@@ -126,6 +126,7 @@ int main(int argc, char *argv[])
 
     for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
       log <<","<< simulator.getAgentPosition(i).getX() <<","<< simulator.getAgentPosition(i).getY();
+      std::cout << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY() << std::endl;
     }
     log << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */

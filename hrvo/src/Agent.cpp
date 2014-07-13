@@ -102,7 +102,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, bool is_
 {
 #ifdef YOUBOT
   id_ = id;
-  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
   if ( is_robot ) {
     std::string robot_prefix(""); 
     sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
@@ -123,7 +123,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 {
 #ifdef YOUBOT
   id_ = id;
-  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
   if ( is_robot ) {
     std::string robot_prefix(""); 
     sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
@@ -152,7 +152,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 #ifdef YOUBOT
   id_ = id;
-  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
   if ( is_robot ) {
     std::string robot_prefix(""); 
     sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
@@ -511,15 +511,15 @@ void Agent::update()
     velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv)) * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv) * newVelocity_;
   }
 
-#if !(YOUBOT) /* YOUBOT */
+//#if !(YOUBOT) /* YOUBOT */
   position_ += velocity_ * simulator_->timeStep_;
-#else
+//#else
   geometry_msgs::Twist vel;
   vel.linear.x = newVelocity_.getX();
   vel.linear.y = newVelocity_.getY();
   pub_.publish(vel);
-  position_ = agent_sensed_position_;
-#endif /* YOUBOT */
+//position_ = agent_sensed_position_;
+//#endif /* YOUBOT */
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
   if (absSq(simulator_->goals_[goalNo_]->position_ - position_) < goalRadius_ * goalRadius_) {
