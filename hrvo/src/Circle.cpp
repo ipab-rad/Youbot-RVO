@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     simulator.addAgent(std::string("youbot_1"), ROBOT, pos2, simulator.addGoal(-pos2));
 
     std::ofstream log;
-    log.open ("Git/Youbot-RVO/Matlab/log3.csv");
+    log.open ("Dropbox/University/PhD/Data/SimulationLogs/log3.csv");
 
     // log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
     std::cout << "Parameters: T=" << fSimTimeStep << ", nA=" << simulator.getNumAgents() << ", rA=" << fAgentRadius << std::endl;
