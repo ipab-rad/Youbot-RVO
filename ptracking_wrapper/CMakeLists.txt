@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(hrvo)
+project(ptracking_wrapper)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  PTrackingBridge
+  geometry_msgs
+  hrvo
   roscpp
   std_msgs
-  geometry_msgs
-  message_generation
+  tf
+  nav_msgs
 )
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -51,10 +55,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  AddAgentService.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -64,10 +69,10 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   geometry_msgs#   std_msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -79,10 +84,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  #  LIBRARIES hrvo
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime 
-  #  DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES agents_dispatcher
+#  CATKIN_DEPENDS PTrackingBridge geometry_msgs hrvo roscpp std_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -98,71 +103,21 @@ include_directories(
 )
 
 ## Declare a cpp library
-add_library(Agent src/Agent.cpp )
-add_library(Goal src/Goal.cpp)
-add_library(KdTree src/KdTree.cpp)
-add_library(Simulator src/Simulator.cpp)
-add_library(Vector2 src/Vector2.cpp)
-
-#set(HRVO_HEADERS
-#	src/HRVO.h
-#	src/Simulator.h
-#	src/Vector2.h)
-
-#set(HRVO_SOURCES
-#	src/Agent.cpp
-#	src/Agent.h
-#	src/Definitions.h
-#	src/Goal.cpp
-#	src/Goal.h
-#	src/KdTree.cpp
-#	src/KdTree.h
-#	src/Simulator.cpp
-#	src/Vector2.cpp)
-
-#add_library(HRVO ${HRVO_HEADERS} ${HRVO_SOURCES})
+add_library(agentsdispatcher
+  src/${PROJECT_NAME}/AgentsDispatcher.cpp
+)
 
 ## Declare a cpp executable
-add_executable(Square
-	src/Square.cpp
-	src/Agent.cpp
-	src/Goal.cpp
-	src/KdTree.cpp
-	src/Simulator.cpp
-	src/Vector2.cpp
-)
+add_executable(ptracking_wrapper src/ptracking_wrapper.cpp)
 
-add_executable(Circle
-	src/Circle.cpp
-	src/Agent.cpp
-	src/Goal.cpp
-	src/KdTree.cpp
-	src/Simulator.cpp
-	src/Vector2.cpp
-)
-
-#	# Add cmake target dependencies of the executable/library
+## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(Circle ${PROJECT_NAME}_gencpp)
-add_dependencies(Simulator ${PROJECT_NAME}_gencpp)
+# add_dependencies(agents_dispatcher_node agents_dispatcher_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(Square
- 	${catkin_LIBRARIES}
-	Agent
-	Goal
-	KdTree
-	Simulator
-	Vector2
-)
-
-target_link_libraries(Circle
-	${catkin_LIBRARIES}
-	Agent
-	Goal
-	KdTree
-	Simulator
-	Vector2
+target_link_libraries(ptracking_wrapper
+  agentsdispatcher
+  ${catkin_LIBRARIES}
 )
 
 #############
@@ -180,7 +135,7 @@ target_link_libraries(Circle
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS hrvo hrvo_node
+# install(TARGETS agents_dispatcher agents_dispatcher_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -205,7 +160,7 @@ target_link_libraries(Circle
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_hrvo.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_agents_dispatcher.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

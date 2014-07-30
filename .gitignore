@@ -15,6 +15,9 @@ lib
 msg_gen
 workspace/src/CMakeLists.txt
 
+# Mergetool files
+*.orig
+
 # Compiled Object files
 *.slo
 *.lo
@@ -36,3 +39,6 @@ workspace/src/CMakeLists.txt
 *.exe
 *.out
 *.app
+
+# catking_ignore files
+*/CATKIN_IGNORE

@@ -67,6 +67,9 @@
 #include <cmath>
 #include <limits>
 
+#include <geometry_msgs/Twist.h>
+#include "Defines.h"
+
 #ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
 #endif
@@ -86,22 +89,56 @@ namespace hrvo {
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 		reachedGoal_(false) { }
 
-	Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo) : simulator_(simulator), newVelocity_(simulator_->defaults_->velocity_), position_(position), velocity_(simulator_->defaults_->velocity_), goalNo_(goalNo), maxNeighbors_(simulator_->defaults_->maxNeighbors_), goalRadius_(simulator_->defaults_->goalRadius_), maxAccel_(simulator_->defaults_->maxAccel_), maxSpeed_(simulator_->defaults_->maxSpeed_), neighborDist_(simulator_->defaults_->neighborDist_), orientation_(simulator_->defaults_->orientation_), prefSpeed_(simulator_->defaults_->prefSpeed_), radius_(simulator_->defaults_->radius_), uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
+
+Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, bool is_robot) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
+                                                                          goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f),
+                                                                          orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE
 		leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(simulator_->defaults_->timeToOrientation_), wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-		reachedGoal_(false)
-	{
+                                     reachedGoal_(false)
+{
+#ifdef YOUBOT
+  id_ = id;
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
+  if ( is_robot ) {
+    std::string robot_prefix(""); 
+    sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
+  }  
+#endif
+}
+
+Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, bool is_robot) :
+    simulator_(simulator), newVelocity_(simulator_->defaults_->velocity_), position_(position),
+    velocity_(simulator_->defaults_->velocity_), goalNo_(goalNo), maxNeighbors_(simulator_->defaults_->maxNeighbors_),
+    goalRadius_(simulator_->defaults_->goalRadius_), maxAccel_(simulator_->defaults_->maxAccel_), maxSpeed_(simulator_->defaults_->maxSpeed_),
+    neighborDist_(simulator_->defaults_->neighborDist_), orientation_(simulator_->defaults_->orientation_), prefSpeed_(simulator_->defaults_->prefSpeed_),
+  radius_(simulator_->defaults_->radius_), uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
 #if HRVO_DIFFERENTIAL_DRIVE
-		computeWheelSpeeds();
+  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(simulator_->defaults_->timeToOrientation_), wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-	}
+    reachedGoal_(false)
+{
+#ifdef YOUBOT
+  id_ = id;
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
+  if ( is_robot ) {
+    std::string robot_prefix(""); 
+    sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
+  }
+#endif
+#if HRVO_DIFFERENTIAL_DRIVE
+  computeWheelSpeeds();
+#endif /* HRVO_DIFFERENTIAL_DRIVE */
+}
 
 	Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, const Vector2 &velocity, float maxAccel, float goalRadius, float prefSpeed, float maxSpeed, float orientation,
 #if HRVO_DIFFERENTIAL_DRIVE
 				 float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-				 float uncertaintyOffset) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo), maxNeighbors_(maxNeighbors), goalRadius_(goalRadius), maxAccel_(maxAccel), maxSpeed_(maxSpeed), neighborDist_(neighborDist), orientation_(orientation), prefSpeed_(prefSpeed), radius_(radius), uncertaintyOffset_(uncertaintyOffset),
+             float uncertaintyOffset, ros::NodeHandle& nh, std::string id, bool is_robot) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
+  maxNeighbors_(maxNeighbors), goalRadius_(goalRadius), maxAccel_(maxAccel), maxSpeed_(maxSpeed), neighborDist_(neighborDist),
+  orientation_(orientation), prefSpeed_(prefSpeed), radius_(radius), uncertaintyOffset_(uncertaintyOffset),
 #if HRVO_DIFFERENTIAL_DRIVE
 		leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(timeToOrientation), wheelTrack_(wheelTrack),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
@@ -110,7 +147,15 @@ namespace hrvo {
 #if HRVO_DIFFERENTIAL_DRIVE
 		computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-	}
+#ifdef YOUBOT
+  id_ = id;
+  pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel_raw", 1);
+  if ( is_robot ) {
+    std::string robot_prefix(""); 
+    sub_ = nh.subscribe("/" + robot_prefix + "amcl_pose", 1, &Agent::updatePose, this);
+  }
+#endif
+}
 
 	void Agent::computeNeighbors()
 	{
@@ -324,25 +369,30 @@ namespace hrvo {
 				}
 			}
 
-            if (valid) {
-                newVelocity_ = candidate.position_;
-				break;
-			}
-		}
-	}
+    if (valid) {
+      newVelocity_ = candidate.position_;
+      break;
+    }
+  }
 
-	void Agent::computePreferredVelocity()
-	{
-		const Vector2 goalPosition = simulator_->goals_[goalNo_]->position_;
-		const float distSqToGoal = absSq(goalPosition - position_);
+  geometry_msgs::Twist vel;
+  vel.linear.x = newVelocity_.getX();
+  vel.linear.y = newVelocity_.getY();
+  pub_.publish(vel);
+}
 
-		if (sqr(prefSpeed_ * simulator_->timeStep_) > distSqToGoal) {
-			prefVelocity_ = (goalPosition - position_) / simulator_->timeStep_;
-		}
-		else {
-			prefVelocity_ = prefSpeed_ * (goalPosition - position_) / std::sqrt(distSqToGoal);
-		}
-	}
+void Agent::computePreferredVelocity()
+{
+  const Vector2 goalPosition = simulator_->goals_[goalNo_]->position_;
+  const float distSqToGoal = absSq(goalPosition - position_);
+
+  if (sqr(prefSpeed_ * simulator_->timeStep_) > distSqToGoal) {
+    prefVelocity_ = (goalPosition - position_) / simulator_->timeStep_;
+  }
+  else {
+    prefVelocity_ = prefSpeed_ * (goalPosition - position_) / std::sqrt(distSqToGoal);
+  }
+}
 
 #if HRVO_DIFFERENTIAL_DRIVE
 	void Agent::computeWheelSpeeds()
@@ -458,7 +508,15 @@ namespace hrvo {
 			velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv)) * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv) * newVelocity_;
 		}
 
-		position_ += velocity_ * simulator_->timeStep_;
+//#if !(YOUBOT) /* YOUBOT */
+  position_ += velocity_ * simulator_->timeStep_;
+//#else
+  geometry_msgs::Twist vel;
+  vel.linear.x = newVelocity_.getX();
+  vel.linear.y = newVelocity_.getY();
+  pub_.publish(vel);
+//position_ = agent_sensed_position_;
+//#endif /* YOUBOT */
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
 		if (absSq(simulator_->goals_[goalNo_]->position_ - position_) < goalRadius_ * goalRadius_) {
@@ -476,5 +534,30 @@ namespace hrvo {
 		}
 
 #endif /* !HRVO_DIFFERENTIAL_DRIVE */
-	}
+}
+
+#ifdef YOUBOT
+void Agent::updatePose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
+{
+  agent_sensed_position_.setX(pose_msg->pose.pose.position.x);
+  agent_sensed_position_.setY(pose_msg->pose.pose.position.y);  
+  agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
+}
+
+std::string Agent::getPoseTopic()
+{
+  return pose_topic_;
+}
+
+void Agent::setPoseTopic(std::string pose_topic)
+{
+  pose_topic_ = pose_topic;
+}
+
+void Agent::attachPoseSubscriber(ros::NodeHandle& nh, std::string pose_topic)
+{
+  setPoseTopic(pose_topic);
+  sub_ = nh.subscribe(pose_topic, 1, &Agent::updatePose, this);
+}
+#endif
 }

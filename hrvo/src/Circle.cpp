@@ -67,65 +67,94 @@
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
 #include <iostream>
 #include <fstream>
+#include <csignal>
 #endif
 
 #if ROS_PUBLISHER
-#include "ros/ros.h"
+#include <ros/ros.h>
 #endif
 
 #include "HRVO.h"
-
+#define ROBOT 1
+#define PERSON 0
 
 
 using namespace hrvo;
 
 const float HRVO_TWO_PI = 6.283185307179586f;
 
-int main()
+bool SAFETY_STOP = false;
+
+void interrupt_callback(int s)
 {
-	Simulator simulator;
-    std::cout<<"HRVO Simulator Begins..."<<std::endl;
-    float fSimTimeStep = 0.25f;
-    float fAgentRadius = 15.0f;
+    SAFETY_STOP = true;
+}
+
+int main(int argc, char *argv[])
+{
+    ros::init(argc, argv, "hrvo_planner");
+    Simulator simulator;
+    std::cout << "HRVO Simulator Begins..." << std::endl;
+    float fSimTimeStep = 0.1f;
+    float fAgentRadius = 0.3f;
     simulator.setTimeStep(fSimTimeStep);
-    simulator.setAgentDefaults(100.0f, 10, fAgentRadius, 15.0f, 10.0f, 20.0f);
-    int nAgents = 2;
+    simulator.setAgentDefaults(5.0f, 10, fAgentRadius, 0.1f, 0.3f, 0.6f);
+
+    std::signal(SIGINT, interrupt_callback);
+
+    //    for (std::size_t i = 0; i < nAgents; ++i) {
+    //        const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
+    //        simulator.addAgent(position, simulator.addGoal(-position));
+    //    }
+    const Vector2 pos1 = Vector2(1.5f, 0.0f);
+    const Vector2 pos2 = Vector2(-1.5f, 0.0f);
+    const Vector2 stop = Vector2(0.0f, 0.0f);
+
+    simulator.addAgent(std::string("youbot_2"), ROBOT, pos1, simulator.addGoal(-pos1));
+    simulator.addAgent(std::string("youbot_1"), ROBOT, pos2, simulator.addGoal(-pos2));
 
     std::ofstream log;
-    log.open ("log1.csv");
+    log.open ("Git/Youbot-RVO/Matlab/log3.csv");
 
-    log << fSimTimeStep <<"\t"<< nAgents <<"\t"<< fAgentRadius << std::endl;
-    std::cout << "Parameters: T="<<fSimTimeStep<<", nA="<<nAgents<<", rA="<< fAgentRadius << std::endl;
+    // log << fSimTimeStep <<","<< nAgents <<","<< fAgentRadius << std::endl;
+    std::cout << "Parameters: T=" << fSimTimeStep << ", nA=" << simulator.getNumAgents() << ", rA=" << fAgentRadius << std::endl;
 
-//    for (std::size_t i = 0; i < nAgents; ++i) {
-//		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
-//		simulator.addAgent(position, simulator.addGoal(-position));
-//	}
-    const Vector2 pos1 = Vector2(200.0f, 0.0f);
-    const Vector2 pos2 = Vector2(-200.0f, 0.0f);
-    const Vector2 pos3 = Vector2(-100.0f, 100.0f);
-    const Vector2 vel = Vector2(5.0f, 5.0f);
-
-    simulator.addAgent(pos1, simulator.addGoal(-pos1));
-    simulator.addAgent(pos2, simulator.addGoal(-pos2));
-
-	do {
+    ros::Rate update_freq(10);
+    do
+    {
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
         log << simulator.getGlobalTime();
 
-		for (std::size_t i = 0; i < simulator.getNumAgents(); ++i) {
-            log <<"\t"<< simulator.getAgentPosition(i).getX() <<"\t"<< simulator.getAgentPosition(i).getY() <<"\t"<< simulator.getAgentVelocity(i);
-		}
+        for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
+        {
+            log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
+            std::cout << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY() << std::endl;
+        }
         log << std::endl;
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
+        simulator.doStep();
+        ros::spinOnce();
+        update_freq.sleep();
 
-    simulator.doStep();
-//    simulator.setAgentVelocity(1, vel);
-	}
-    while (!simulator.haveReachedGoals() && (simulator.getGlobalTime() < 10));
+        if ( SAFETY_STOP )
+        {
+            for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
+            {
+                simulator.setAgentVelocity(i, stop);
+            }
+            std::cout << "EMERGENCY STOP";
+            exit(1);
+        }
+    }
+    while ( !simulator.haveReachedGoals() && ros::ok() );
 
-    log.close();
+    for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
+    {
+        simulator.setAgentVelocity(i, stop);
+    }
 
-	return 0;
+    // log.close();
+
+    return 0;
 }
