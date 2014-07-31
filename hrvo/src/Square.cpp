@@ -60,7 +60,7 @@
  */
 
 #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
-#define ROS_PUBLISHER 1
+#define ROS_PUBLISHER 0
 
 #include <cmath>
 
@@ -70,16 +70,24 @@
 #endif
 
 #if ROS_PUBLISHER
-#include "ros/ros.h"
+#include <ros/ros.h>
 #endif
 
 #include "HRVO.h"
-
+#define ROBOT 1
+#define PERSON 0
 
 
 using namespace hrvo;
 
 const float HRVO_TWO_PI = 6.283185307179586f;
+
+bool SAFETY_STOP = false;
+
+void interrupt_callback(int s)
+{
+    SAFETY_STOP = true;
+}
 
 int main()
 {
@@ -92,8 +100,7 @@ int main()
 
     char spt[] = "\t";          // Tab separation for log
     //char spt[] = ",";           // Comma separation for log
-    std::ofstream log;
-    log.open ("square1.csv");
+
 
 //    for (std::size_t i = 0; i < nAgents; ++i) {
 //		const Vector2 position = 200.0f * Vector2(std::cos(0.004f * i * HRVO_TWO_PI), std::sin(0.004f * i * HRVO_TWO_PI));
@@ -104,10 +111,15 @@ int main()
     const Vector2 pos3 = Vector2(0.0f, 200.0f);
     const Vector2 pos4 = Vector2(0.0f, -200.0f);
 
-    simulator.addAgent(pos1, simulator.addGoal(-pos1));
-    simulator.addAgent(pos2, simulator.addGoal(-pos2));
-    simulator.addAgent(pos3, simulator.addGoal(-pos3));
-    simulator.addAgent(pos4, simulator.addGoal(-pos4));
+    const Vector2 stop = Vector2(0.0f, 0.0f);
+
+    simulator.addAgent("youbot_1"), ROBOT, pos1, simulator.addGoal(-pos1));
+    simulator.addAgent("youbot_2"), ROBOT, pos2, simulator.addGoal(-pos2));
+    simulator.addAgent("youbot_3"), ROBOT, pos3, simulator.addGoal(-pos3));
+    simulator.addAgent("youbot_4"), ROBOT, pos4, simulator.addGoal(-pos4));
+
+    std::ofstream log;
+    log.open ("Dropbox/University/PhD/Data/SimulationLogs/square1.csv");
 
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
     log << fSimTimeStep <<spt<< simulator.getNumAgents() <<spt<< fAgentRadius << std::endl;

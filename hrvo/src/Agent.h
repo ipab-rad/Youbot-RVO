@@ -71,6 +71,8 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <nav_msgs/Odometry.h>
+
 #include <tf/tf.h> 
 
 #include "Defines.h"
@@ -83,6 +85,7 @@
 #endif
 
 #define YOUBOT 1
+#define SIMULATION 1
 
 
 namespace hrvo {
@@ -216,15 +219,19 @@ namespace hrvo {
      * \brief  Updates the orientation, position, and velocity of this agent.
      */
     void update();
+    void odomupdate();
 
     Simulator *const simulator_;
     Vector2 newVelocity_;
     Vector2 position_;
-    Vector2 agent_sensed_position_;
+    Vector2 agent_sensed_position_;     // Federico's sensed position
+    Vector2 previous_odometry_offset_;  // Alex's odometry first offset
+    Vector2 current_odometry_offset_;   // Alex's odometry first offset
     Vector2 prefVelocity_;
     Vector2 velocity_;
     std::size_t goalNo_;
     std::size_t maxNeighbors_;
+    bool updated;
     float goalRadius_;
     float maxAccel_;
     float maxSpeed_;
@@ -256,7 +263,7 @@ namespace hrvo {
     /**
      * \brief  Updates the position from topic.
      */
-    void updatePose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &pose_msg);
+    void updatePose(const nav_msgs::Odometry::ConstPtr &pose_msg);
     /**
      * \brief  get the pose topic.
      */

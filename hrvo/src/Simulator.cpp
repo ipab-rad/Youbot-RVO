@@ -159,6 +159,14 @@ void Simulator::doStep()
   kdTree_->build();
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+    (*iter)->odomupdate();
+  }
+
+  for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+    #if YOUBOT 
+    (*iter)->odomupdate();
+    #endif /* YOUBOT */
+
     (*iter)->computePreferredVelocity();
     (*iter)->computeNeighbors();
     (*iter)->computeNewVelocity();
