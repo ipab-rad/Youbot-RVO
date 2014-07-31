@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   geometry_msgs
+  nav_msgs
   message_generation
 )
 ## System dependencies are found with CMake's conventions
@@ -67,6 +68,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   geometry_msgs
+  nav_msgs
 )
 
 ###################################
@@ -81,7 +83,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   #  LIBRARIES hrvo
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime 
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs nav_msgs message_runtime 
   #  DEPENDS system_lib
 )
 
@@ -123,46 +125,65 @@ add_library(Vector2 src/Vector2.cpp)
 #add_library(HRVO ${HRVO_HEADERS} ${HRVO_SOURCES})
 
 ## Declare a cpp executable
-add_executable(Square
-	src/Square.cpp
-	src/Agent.cpp
-	src/Goal.cpp
-	src/KdTree.cpp
-	src/Simulator.cpp
-	src/Vector2.cpp
-)
+# add_executable(Square
+# 	src/Square.cpp
+# 	src/Agent.cpp
+# 	src/Goal.cpp
+# 	src/KdTree.cpp
+# 	src/Simulator.cpp
+# 	src/Vector2.cpp
+# )
 
-add_executable(Circle
-	src/Circle.cpp
-	src/Agent.cpp
-	src/Goal.cpp
-	src/KdTree.cpp
-	src/Simulator.cpp
-	src/Vector2.cpp
+# add_executable(Circle
+# 	src/Circle.cpp
+# 	src/Agent.cpp
+# 	src/Goal.cpp
+# 	src/KdTree.cpp
+# 	src/Simulator.cpp
+# 	src/Vector2.cpp
+# )
+
+add_executable(Experiment
+  src/Experiment.cpp
+  src/Agent.cpp
+  src/Goal.cpp
+  src/KdTree.cpp
+  src/Simulator.cpp
+  src/Vector2.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(Circle ${PROJECT_NAME}_gencpp)
+# add_dependencies(Circle ${PROJECT_NAME}_gencpp)
+add_dependencies(Experiment ${PROJECT_NAME}_gencpp)
 add_dependencies(Simulator ${PROJECT_NAME}_gencpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(Square
- 	${catkin_LIBRARIES}
-	Agent
-	Goal
-	KdTree
-	Simulator
-	Vector2
-)
+# target_link_libraries(Square
+#  	${catkin_LIBRARIES}
+# 	Agent
+# 	Goal
+# 	KdTree
+# 	Simulator
+# 	Vector2
+# )
 
-target_link_libraries(Circle
-	${catkin_LIBRARIES}
-	Agent
-	Goal
-	KdTree
-	Simulator
-	Vector2
+# target_link_libraries(Circle
+# 	${catkin_LIBRARIES}
+# 	Agent
+# 	Goal
+# 	KdTree
+# 	Simulator
+# 	Vector2
+# )
+
+target_link_libraries(Experiment
+  ${catkin_LIBRARIES}
+  Agent
+  Goal
+  KdTree
+  Simulator
+  Vector2
 )
 
 #############
