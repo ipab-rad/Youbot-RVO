@@ -1,0 +1,13 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+  "sublimeclang_options":
+  [
+    "-I${folder:${project_path:hrvo.sublime-project}}/**"
+  ]
+}

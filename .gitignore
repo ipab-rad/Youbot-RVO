@@ -18,6 +18,9 @@ workspace/src/CMakeLists.txt
 # Mergetool files
 *.orig
 
+# Sublime workspace files
+*.sublime-workspace
+
 # Compiled Object files
 *.slo
 *.lo
