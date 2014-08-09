@@ -3,7 +3,7 @@
 		<param name="tf_prefix" value="agent_1" />
 		
 		<node name="PTrackingBridge" pkg="PTrackingBridge" type="PTrackingBridge">
-			<param name="agentPort" value="11001"/>
+			<param name="agentPort" value="11003"/>
 		</node>
 	</group>
 </launch>
