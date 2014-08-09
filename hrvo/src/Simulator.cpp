@@ -83,9 +83,7 @@ namespace hrvo {
 
 Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
 {
-#ifdef YOUBOT
   add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
-#endif
   kdTree_ = new KdTree(this);
 }
 
@@ -108,19 +106,21 @@ Simulator::~Simulator()
   }
 }
 
-std::size_t Simulator::addAgent(std::string id, bool is_robot, const Vector2 &position, std::size_t goalNo)
+std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo)
 {
   if (defaults_ == NULL) {
     throw std::runtime_error("Agent defaults not set when adding agent.");
   }
 
-  Agent *const agent = new Agent(this, position, goalNo, nh_, id, is_robot);
+  Agent *const agent = new Agent(this, position, goalNo, nh_, id, agent_type);
+  std::cout << "Created Agent: " << id << std::endl;
+  std::cout << position << ", " << goalNo << ", " << agent_type << std::endl;
   agents_.push_back(agent);
 
   return agents_.size() - 1;
 }
 
-std::size_t Simulator::addAgent(std::string id, bool is_robot, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
                                 float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
@@ -130,7 +130,7 @@ std::size_t Simulator::addAgent(std::string id, bool is_robot, const Vector2 &po
 #if HRVO_DIFFERENTIAL_DRIVE
                                  timeToOrientation, wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                                 uncertaintyOffset, nh_, id, is_robot);
+                                 uncertaintyOffset, nh_, id, agent_type);
   agents_.push_back(agent);
 
   return agents_.size() - 1;
@@ -160,12 +160,11 @@ void Simulator::doStep()
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     (*iter)->odomupdate();
-  }
+  }  // Should odometry be updated here?
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    #if YOUBOT 
-    (*iter)->odomupdate();
-    #endif /* YOUBOT */
+    
+    (*iter)->odomupdate(); // And here?
 
     (*iter)->computePreferredVelocity();
     (*iter)->computeNeighbors();
@@ -373,10 +372,13 @@ void Simulator::setAgentUncertaintyOffset(std::size_t agentNo, float uncertainty
 void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
 {
   agents_[agentNo]->velocity_ = velocity;
-  geometry_msgs::Twist vel;
-  vel.linear.x = velocity.getX();
-  vel.linear.y = velocity.getY();
-  agents_[agentNo]->pub_.publish(vel);
+  if (agents_[agentNo]->agent_type == ROBOT)
+  {
+    geometry_msgs::Twist vel;
+    vel.linear.x = velocity.getX();
+    vel.linear.y = velocity.getY();
+    agents_[agentNo]->pub_.publish(vel);
+  }
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -386,7 +388,6 @@ void Simulator::setAgentWheelTrack(std::size_t agentNo, float wheelTrack)
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-#ifdef YOUBOT
 bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res)
 {
   std::stringstream ss;
@@ -407,7 +408,6 @@ bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService:
   res.succeeded = true;
   return true;
 }
-#endif
 
 }
 

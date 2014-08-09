@@ -68,6 +68,12 @@ namespace hrvo {
 	 */
 	const float HRVO_EPSILON = 0.00001f;
 
+
+#define SIMAGENT 0
+#define PERSON 1
+#define ROBOT 2
+
+
 	/**
 	 * \brief      Computes the square of a float.
 	 * \param[in]  scalar  The float to be squared.

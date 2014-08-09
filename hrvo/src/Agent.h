@@ -75,7 +75,9 @@
 
 #include <tf/tf.h> 
 
-#include "Defines.h"
+#ifndef HRVO_DEFINITIONS_H_
+#include "Definitions.h"
+#endif
 
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
@@ -83,9 +85,6 @@
 #ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
 #endif
-
-#define YOUBOT 1
-#define SIMULATION 1
 
 
 namespace hrvo {
@@ -154,7 +153,7 @@ namespace hrvo {
      * \brief      Constructor.
      * \param[in]  simulator  The simulation.
      */
-    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, bool is_robot);
+    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, int agent_type);
 
     /**
      * \brief      Constructor.
@@ -162,7 +161,7 @@ namespace hrvo {
      * \param[in]  position   The starting position of this agent.
      * \param[in]  goalNo     The goal number of this agent.
      */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, bool is_robot);
+    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int agent_type);
 
     /**
      * \brief      Constructor.
@@ -184,7 +183,7 @@ namespace hrvo {
 #if HRVO_DIFFERENTIAL_DRIVE
           float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, bool is_robot);
+          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int agent_type);
 
     /**
      * \brief  Computes the neighbors of this agent.
@@ -232,6 +231,7 @@ namespace hrvo {
     std::size_t goalNo_;
     std::size_t maxNeighbors_;
     bool updated;
+    int agent_type;
     float goalRadius_;
     float maxAccel_;
     float maxSpeed_;
@@ -254,7 +254,6 @@ namespace hrvo {
 
     friend class KdTree;
     friend class Simulator;
-#ifdef YOUBOT
 
  public:
     std::string id_, pose_topic_;
@@ -276,7 +275,7 @@ namespace hrvo {
      * brief  set the pose subscriber.
      */
     void attachPoseSubscriber(ros::NodeHandle &nh, std::string pose_topic);
-#endif    
+// #endif    
   };
 }
 
