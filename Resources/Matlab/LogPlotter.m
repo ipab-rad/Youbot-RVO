@@ -1,6 +1,6 @@
 clear all
 
-file='square1.csv';
+file='log4.csv';
 
 X = 1;
 Y = 2;
@@ -8,7 +8,7 @@ Y = 2;
 Param = csvread(file, 0, 0, [0 0 0 2]);
 dt = Param(1,1) * 0.1;  % Reduced by factor of 10 speed of Simulation
 nAgents = Param(1,2);
-ARadius = Param(1,3) * 10;  % Augmented by factor 10 size of Agents
+ARadius = Param(1,3) * 500;  % Augmented by factor 10 size of Agents
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
@@ -25,7 +25,7 @@ for i=1:Ml
     for a=1:nAgents
         h=scatter(Agent(a,i,X),Agent(a,i,Y),ARadius,'blue');
     end
-    axis([-300 300 -300 300]);
+    axis([-10 10 -10 10]);
     pause(dt);
     
 end
