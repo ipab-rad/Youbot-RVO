@@ -150,6 +150,7 @@ add_executable(Experiment
   src/KdTree.cpp
   src/Simulator.cpp
   src/Vector2.cpp
+  src/Environment.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library

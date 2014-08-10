@@ -75,6 +75,9 @@
  */
 
 #ifndef HRVO_SIMULATOR_H_
+#include "Environment.h"
+#endif
+#ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
 #endif
 #ifndef HRVO_VECTOR2_H_

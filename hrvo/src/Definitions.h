@@ -62,6 +62,10 @@
 #ifndef HRVO_DEFINITIONS_H_
 #define HRVO_DEFINITIONS_H_
 
+#ifndef HRVO_VECTOR2_H_
+#include "Vector2.h"
+#endif
+
 namespace hrvo {
 	/**
 	 * \brief  A sufficiently small positive float.
@@ -72,6 +76,13 @@ namespace hrvo {
 #define SIMAGENT 0
 #define PERSON 1
 #define ROBOT 2
+
+
+const Vector2 STOP = Vector2(0.0f, 0.0f);
+
+const float SIM_TIME_STEP = 0.1f;
+const float AGENT_RADIUS = 0.5f;
+const float GOAL_RADIUS = 0.5f;
 
 
 	/**

@@ -74,7 +74,9 @@
 // #include <ros/ros.h>
 // #endif
 
+#ifndef HRVO_DEFINITIONS_H_
 #include "HRVO.h"
+#endif
 
 #ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
@@ -97,12 +99,8 @@ int main(int argc, char *argv[])
     Simulator simulator;
     // Simulator planner;
     std::cout << "HRVO Simulator Constructed" << std::endl;
-    float fSimTimeStep = 0.1f;
-    float fAgentRadius = 0.5f;
-    float fGoalRadius = 0.5f;
-    const Vector2 stop = Vector2(0.0f, 0.0f);
-    simulator.setTimeStep(fSimTimeStep);
-    simulator.setAgentDefaults(5.0f, 10, fAgentRadius, fGoalRadius, 0.3f, 0.6f, 0.0f, 0.6f, stop, 0.0f);
+    simulator.setTimeStep(SIM_TIME_STEP);
+    simulator.setAgentDefaults(5.0f, 10, AGENT_RADIUS, GOAL_RADIUS, 0.3f, 0.6f, 0.0f, 0.6f, STOP, 0.0f);
     std::cout << "HRVO Parameters set" << std::endl;
 /**
  * \brief      Sets the default properties for any new agent that is added.
@@ -147,16 +145,19 @@ int main(int argc, char *argv[])
 
 #if HRVO_OUTPUT_TIME_AND_POSITIONS
  std::ofstream log;
- //log.open ("Dropbox/University/PhD/Data/SimulationLogs/log3.csv");
- log.open ("log4.csv");
+ const char *path="log3.csv";
+ log.open(path);
+ if (log.fail())
+    {std::cout << "Writing to log failed!" << std::endl;}
+ //log.open ("log4.csv");
  std::cout << "Saving log" << std::endl;
 
-log << fSimTimeStep <<","<< simulator.getNumAgents() <<","<< fAgentRadius << std::endl;
+log << SIM_TIME_STEP <<","<< simulator.getNumAgents() <<","<< AGENT_RADIUS << std::endl;
 
 #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
 
- std::cout << "Parameters: TimeStep=" << fSimTimeStep << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << fAgentRadius << std::endl;
+ std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
 
 
  // ROS_INFO("enter to start:");
@@ -188,10 +189,10 @@ log << fSimTimeStep <<","<< simulator.getNumAgents() <<","<< fAgentRadius << std
 }
 while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
-std::cout << "Agents stopping" << std::endl;
+std::cout << "Agents STOPping" << std::endl;
 for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
 {
-    simulator.setAgentVelocity(i, stop);
+    simulator.setAgentVelocity(i, STOP);
 }
 
  log.close();
