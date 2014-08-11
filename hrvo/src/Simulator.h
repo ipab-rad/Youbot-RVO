@@ -98,6 +98,10 @@ namespace hrvo {
      * \brief  Constructor.
      */
     Simulator();
+
+    Simulator(std::string simtype, std::size_t nsimID);
+
+    Simulator(std::string simtype, std::size_t nactorID, std::size_t nsimID);
                 
     /**
      * \brief  Destructor.

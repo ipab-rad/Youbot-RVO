@@ -4,6 +4,9 @@
 * \brief  Declares the Environment class.
 */
 
+#include <vector>
+#include <map>
+
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
 #endif
@@ -18,22 +21,29 @@ namespace hrvo {
   class Environment
   {
   public:
-    Environment();
+    Environment(enum Actor actorID, const Vector2 startPos);
     ~Environment();
 
     std::size_t addTracker();
     
-    std::size_t setPlannerParam();
+    void setPlannerParam();
 
-    std::size_t setSimParam();
+    std::size_t addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
+
+    std::size_t addPlannerGoal(const Vector2 goalPosition);
+
+    int setPlannerGoal(std::size_t goalNo);
+
+    std::size_t setSimParam(std::size_t simID);
 
     std::size_t addSimulation();
+
+    int deleteSimulation(std::size_t simID);
 
   /**
   * \brief    Sends to all agents an emergency stop command.
   */
     void emergencyStop();
-
 
 
     private:
@@ -42,8 +52,12 @@ namespace hrvo {
       friend class Goal;
       friend class KdTree;
 
+      enum Actor nactorID_;
+      Vector2 startPos_;
+      size_t startGoal_;
+
       Simulator *planner_;
-      Simulator *simulation_;
+      std::map<std::size_t, Simulator *> simvect_;
 
 
 
