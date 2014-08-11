@@ -151,13 +151,21 @@ add_executable(Experiment
   src/Simulator.cpp
   src/Vector2.cpp
   src/Environment.cpp
+  src/Definitions.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(Circle ${PROJECT_NAME}_gencpp)
+
+# TODO: EVERY TIME CATKIN_MAKE CLEAN IS CALLED, MESSAGES NEED TO BE GENERATED FIRST, THEN GENCPP
+add_dependencies(Experiment ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(Simulator ${PROJECT_NAME}_generate_messages_cpp)
+
+# TODO: THESE LINES NEED TO BE COMMENTED OUT FOR THE FIRST COMPILATION, AND THEN UNCOMMENTED AFTER MESSAGE GENERATION
 add_dependencies(Experiment ${PROJECT_NAME}_gencpp)
 add_dependencies(Simulator ${PROJECT_NAME}_gencpp)
+
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(Square

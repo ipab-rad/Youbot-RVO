@@ -67,7 +67,10 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+
 include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(PTrackingBridge src/main.cpp src/PTrackingBridge.cpp src/InetAddress.cpp src/SocketAddress.h src/UdpSocket.cpp)
 target_link_libraries(PTrackingBridge ${catkin_LIBRARIES})
+
+add_dependencies(PTrackingBridge ${PROJECT_NAME}_generate_messages_cpp)
