@@ -4,9 +4,11 @@
 * \brief  Defines the Environment class.
 */
 
-// #ifndef HRVO_ENVIRONMENT_H_
+#ifndef HRVO_ENVIRONMENT_H_
 #include "Environment.h"
-// #endif
+#endif
+
+
 
 
 // #ifndef HRVO_VECTOR2_H_
@@ -22,13 +24,14 @@ namespace hrvo {
 
   Environment::Environment(enum Actor actorID, const Vector2 startPos)
   {
-    nactorID_ = actorID;
+    nActorID_ = actorID;
     startPos_ = startPos;
-    planner_ = new Simulator("planner", nactorID_);
+    planner_ = new Simulator("planner", nActorID_);
     this->setPlannerParam();
+    this->compsActorID();
     startGoal_ = planner_->addGoal(startPos);
-    planner_->addAgent(getActorName(nactorID_), ROBOT, startPos_, startGoal_);
-    std::cout << "HRVO Planner for " << getActorName(nactorID_) << " Constructed" << std::endl;
+    planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
+    std::cout << "HRVO Planner for " << getActorName(nActorID_) << " Constructed" << std::endl;
   }
   Environment::~Environment()
   {
@@ -43,7 +46,12 @@ namespace hrvo {
     }
   }
   
-
+  void Environment::compsActorID()
+  {
+    std::ostringstream ostr;
+    ostr << nActorID_;
+    sActorID_ = ostr.str();
+  }
 
   std::size_t Environment::addTracker()
   {
@@ -58,7 +66,7 @@ namespace hrvo {
 
   std::size_t Environment::addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo)
   {
-    planner_->addAgent(id, SIMAGENT, startPos, goalNo);
+    planner_->addAgent(sActorID_ + "_v" + id, SIMAGENT, startPos, goalNo);
   }
 
   std::size_t Environment::addPlannerGoal(const Vector2 goalPosition)
@@ -73,23 +81,50 @@ namespace hrvo {
     return 0;
   }
 
+  std::size_t Environment::addAndSetPlannerGoal(const Vector2 goalPosition)
+  {
+    std::size_t goalNo = planner_->addGoal(goalPosition);
+    planner_->setAgentGoal(THIS_ROBOT, goalNo);
+    return goalNo;
+  }
+
   std::size_t Environment::setSimParam(std::size_t simID)
   {
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
     simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
   }
 
+  bool Environment::getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo)
+  {
+    return simvect_[simID]->agents_[agentNo]->reachedGoal_;
+  }
+
+  void Environment::doPlannerStep()
+  {
+    planner_->doStep();
+  }
+
+  void Environment::doSimulatorStep(std::size_t simID)
+  {
+    simvect_[simID]->doStep();
+  }
+
+  // bool Environment::plannerReachedGoals() 
+  // { 
+  //   return planner->reachedGoals_;
+  // }
+
   std::size_t Environment::addSimulation()
   {
     if (simvect_.empty())
     {
       std::size_t simID = 0;
-      simvect_[simID] = new Simulator("simulation", nactorID_, simID);
+      simvect_[simID] = new Simulator("simulation", nActorID_, simID);
       return simID;
     }
     
     std::size_t simID = simvect_.rbegin()->first + 1;
-    simvect_[simID] = new Simulator("simulation", nactorID_, simID);
+    simvect_[simID] = new Simulator("simulation", nActorID_, simID);
     return simID;
   }
 
@@ -101,9 +136,28 @@ namespace hrvo {
     return 0;
   }
 
-  void Environment::emergencyStop()
+  void Environment::stopYoubot()
   {
     planner_->setAgentVelocity(THIS_ROBOT, STOP);
+  }
+
+  void Environment::emergencyStop()
+  {
+    for (std::size_t i = 0; i < planner_->getNumAgents(); ++i)
+    {
+        planner_->setAgentVelocity(i, STOP);
+    }
+
+    for(std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
+    {
+      std::size_t simID = iter->first;
+      for (std::size_t i = 0; i < simvect_[simID]->getNumAgents(); ++i)
+      {
+        simvect_[simID]->setAgentVelocity(i, STOP);
+      }
+    }
+
+
   }
 
 

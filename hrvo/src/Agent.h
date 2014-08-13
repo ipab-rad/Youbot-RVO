@@ -94,6 +94,7 @@ namespace hrvo {
    */
   class Agent {
 
+
  private:
     /**
      * \class  Candidate
@@ -254,6 +255,8 @@ namespace hrvo {
 
     friend class KdTree;
     friend class Simulator;
+    friend class Environment;
+
 
  public:
     std::string id_, pose_topic_;

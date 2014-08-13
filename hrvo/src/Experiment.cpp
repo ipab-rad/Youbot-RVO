@@ -86,24 +86,30 @@ using namespace hrvo;
 const float HRVO_PI = 3.141592654f;
 
 bool SAFETY_STOP = false;
+bool STARTED = false;
 
 void interrupt_callback(int s)
 {
+    if ( !STARTED )
+    {
+        std::cout << "Aborted!" << std::endl;
+        exit(1);
+    }
     SAFETY_STOP = true;
 }
 
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "hrvo_planner");
-    Simulator simulator;
+    // Simulator simulator;
     Environment environment1(YOUBOT_1, START_POS1);
-    environment1.addSimulation();
+    std::size_t sim0_0 = environment1.addSimulation();
     Environment environment2(YOUBOT_2, START_POS2);
     // Simulator planner;
     std::cout << "HRVO Simulator Constructed" << std::endl;
 
-    simulator.setTimeStep(SIM_TIME_STEP);
-    simulator.setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
+    // simulator.setTimeStep(SIM_TIME_STEP);
+    // simulator.setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
     std::cout << "HRVO Parameters set" << std::endl;
     /**
     * \brief      Sets the default properties for any new agent that is added.
@@ -127,21 +133,25 @@ int main(int argc, char *argv[])
     //    }
     const Vector2 pos1 = Vector2(-1.5f, 0.0f);
     const Vector2 pos2 = Vector2(1.5f, 0.0f);
-    const Vector2 diag = Vector2(-1.2f, 1.2f);
     const Vector2 g1 = Vector2(-pos1);
     const Vector2 g2 = Vector2(-pos2);
-    Vector2 rob1 = Vector2(-1.5f, 0.0f);
 
 
     // simulator.addAgent(std::string("youbot_2"), ROBOT, pos1, simulator.addGoal(-pos1));
     // simulator.addAgent(std::string("youbot_1"), ROBOT, pos2, simulator.addGoal(-pos2));
 
-    std::size_t goal1 = simulator.addGoal(g1);
-    std::size_t goal2 = simulator.addGoal(g2);
-    environment1.addPlannerGoal(g1);
+    std::size_t goal1_1 = environment1.addPlannerGoal(g1);
+    std::size_t goal1_2 = environment1.addPlannerGoal(g2);
+    std::size_t goal2_1 = environment2.addPlannerGoal(g1);
+    std::size_t goal2_2 = environment2.addPlannerGoal(g2);
+    environment1.setPlannerGoal(goal1_1);
+    environment2.setPlannerGoal(goal2_2);
 
-    simulator.addAgent(std::string("youbot_1"), SIMAGENT, pos1, goal1);
-    simulator.addAgent(std::string("youbot_2"), SIMAGENT, pos2, goal2);
+
+    // simulator.addAgent(std::string("youbot_1"), SIMAGENT, pos1, goal1);
+    // simulator.addAgent(std::string("youbot_2"), SIMAGENT, pos2, goal2);
+    environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
+    environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
 
 
     // simulator.setAgentOrientation(0, 0);
@@ -156,12 +166,12 @@ int main(int argc, char *argv[])
     else
         {std::cout << "Saving log on " << path << std::endl;}
 
-    log << SIM_TIME_STEP <<","<< simulator.getNumAgents() <<","<< AGENT_RADIUS << std::endl;
+    // log << SIM_TIME_STEP <<","<< simulator.getNumAgents() <<","<< AGENT_RADIUS << std::endl;
 
     #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-
-    std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
+    // std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
+    std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << ", AgentRadius=" << AGENT_RADIUS << std::endl;
 
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
@@ -169,37 +179,42 @@ int main(int argc, char *argv[])
     while( std::cin.get() != '\n') {;}
     #endif
 
+    STARTED = true;
+
     ROS_INFO("starting...");
 
     ros::Rate update_freq(ROS_FREQ);
     do
     {
-        #if HRVO_OUTPUT_TIME_AND_POSITIONS
-        log << simulator.getGlobalTime();
+        // #if HRVO_OUTPUT_TIME_AND_POSITIONS
+        // log << simulator.getGlobalTime();
 
-        for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
+        for (std::size_t i = 0; i < environment1.getNumAgents(); ++i)
         {
-            log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
-            std::cout << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY() << std::endl;
+            // log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
+            std::cout << environment2.getAgentPosition(i).getX() << "," << environment2.getAgentPosition(i).getY() << std::endl;
         }
         log << std::endl;
-        #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
+        // #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-        goal2 = simulator.addGoal(simulator.getAgentPosition(0));
-        simulator.setAgentGoal(1, goal2);
+        // goal2 = simulator.addGoal(simulator.getAgentPosition(0));
+        // simulator.setAgentGoal(1, goal2);    // For following another robot
 
-        simulator.doStep();
+        // simulator.doStep();
+        environment1.doPlannerStep();
+        environment2.doPlannerStep();
+        
+
         ros::spinOnce();
         update_freq.sleep();
 
     }
-    while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
+    while ( !environment1.getPlannerReachedGoal() && !environment2.getPlannerReachedGoal() && ros::ok() && !SAFETY_STOP );
+    // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
     std::cout << "Agents Stopping" << std::endl;
-    for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
-    {
-        simulator.setAgentVelocity(i, STOP);
-    }
+    environment1.emergencyStop();
+    environment2.emergencyStop();
 
     log.close();
 

@@ -460,6 +460,7 @@ namespace hrvo {
     friend class Agent;
     friend class Goal;
     friend class KdTree;
+    friend class Environment;
     ros::NodeHandle nh_;
     ros::ServiceServer add_agent_srv_;
   };
