@@ -8,16 +8,16 @@
 #include "Environment.h"
 #endif
 
-
-
-
-// #ifndef HRVO_VECTOR2_H_
+#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-// #endif
+#endif
 
-// #ifndef HRVO_DEFINITIONS_H_
+#ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
-// #endif
+#endif
+
+
+#include <string>
 
 namespace hrvo {
 
@@ -28,10 +28,10 @@ namespace hrvo {
     startPos_ = startPos;
     planner_ = new Simulator("planner", nActorID_);
     this->setPlannerParam();
-    this->compsActorID();
+    sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
-    std::cout << "HRVO Planner for " << getActorName(nActorID_) << " Constructed" << std::endl;
+    std::cout << "HRVO Planner for " << sActorID_ << " Constructed" << std::endl;
   }
   Environment::~Environment()
   {
@@ -44,13 +44,6 @@ namespace hrvo {
     // delete *iter;
     // *iter = NULL;
     }
-  }
-  
-  void Environment::compsActorID()
-  {
-    std::ostringstream ostr;
-    ostr << nActorID_;
-    sActorID_ = ostr.str();
   }
 
   std::size_t Environment::addTracker()
@@ -116,15 +109,29 @@ namespace hrvo {
 
   std::size_t Environment::addSimulation()
   {
+    std::size_t simID;
     if (simvect_.empty())
     {
-      std::size_t simID = 0;
-      simvect_[simID] = new Simulator("simulation", nActorID_, simID);
-      return simID;
+      simID = 0;
     }
-    
-    std::size_t simID = simvect_.rbegin()->first + 1;
+    else
+    {
+      simID = simvect_.rbegin()->first + 1;
+    }
     simvect_[simID] = new Simulator("simulation", nActorID_, simID);
+
+    std::size_t nAgents = planner_->getNumAgents();
+    simvect_[simID]->setTimeStep(SIM_TIME_STEP);
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f); 
+
+    for (int i = 0; i < nAgents; ++i)
+    {
+      const Vector2 plannerPos = planner_->getAgentPosition(i);
+      const Vector2 vplannerGoal = planner_->getGoalPosition(planner_->getAgentGoal(i));
+      std::size_t nplannerGoal = simvect_[simID]->addGoal(vplannerGoal);
+      simvect_[simID]->addAgent(sActorID_ + "_sAgent_" + boost::lexical_cast<std::string>(i), SIMAGENT, plannerPos, nplannerGoal);
+    }
+    std::cout << "HRVO Simulation for " << getActorName(nActorID_) << " with " << nAgents << " Agents with SimID_" << simID << " constructed" << std::endl;
     return simID;
   }
 
@@ -132,7 +139,6 @@ namespace hrvo {
   {
     delete simvect_[simID];
     simvect_.erase(simID);
-
     return 0;
   }
 
@@ -159,8 +165,6 @@ namespace hrvo {
 
 
   }
-
-
 
 
 

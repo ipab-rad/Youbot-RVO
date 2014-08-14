@@ -15,6 +15,7 @@
 #include "Agent.h"
 #endif
 
+
 namespace hrvo {
   class Simulator;
   class Agent;
@@ -26,8 +27,6 @@ namespace hrvo {
   public:
     Environment(enum Actor actorID, const Vector2 startPos);
     ~Environment();
-
-    void compsActorID();
 
     enum Actor getActorID() {return nActorID_;}
 

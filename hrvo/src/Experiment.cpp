@@ -103,14 +103,12 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "hrvo_planner");
     // Simulator simulator;
     Environment environment1(YOUBOT_1, START_POS1);
-    std::size_t sim0_0 = environment1.addSimulation();
     Environment environment2(YOUBOT_2, START_POS2);
     // Simulator planner;
-    std::cout << "HRVO Simulator Constructed" << std::endl;
 
     // simulator.setTimeStep(SIM_TIME_STEP);
     // simulator.setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
-    std::cout << "HRVO Parameters set" << std::endl;
+
     /**
     * \brief      Sets the default properties for any new agent that is added.
     * \param[in]  neighborDist       The default maximum neighbor distance of a new agent.
@@ -171,8 +169,9 @@ int main(int argc, char *argv[])
     #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
     // std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
-    std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << ", AgentRadius=" << AGENT_RADIUS << std::endl;
+    std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
 
+    std::size_t sim0_0 = environment1.addSimulation();
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
     ROS_INFO("enter to start:");
