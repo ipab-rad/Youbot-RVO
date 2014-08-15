@@ -134,15 +134,16 @@ std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &p
   }
 
   Agent *const agent = new Agent(this, position, goalNo, nh_, id, agent_type);
+  /*  // Debugging agent creation message
   switch(agent_type)
   {
-    case 0:   std::cout << "Created Virtual Agent: " << id;  break;
-    case 1:   std::cout << "Created Person Agent: " << id;  break;
-    case 2:   std::cout << "Created Robot Agent: " << id;  break;
-    default:  std::cout << "Created Default Agent: " << id;  break;
-
+    case 0:   std::cout << "Created Virtual Agent " << id;  break;
+    case 1:   std::cout << "Created Person Agent " << id;  break;
+    case 2:   std::cout << "Created Robot Agent " << id;  break;
+    default:  std::cout << "Created Default Agent " << id;  break;
   }
   std::cout << " with Pos [" << position << "] and Goal [" << this->getGoalPosition(goalNo) << "]" << std::endl;
+  */
   agents_.push_back(agent);
 
   return agents_.size() - 1;

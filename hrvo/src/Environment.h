@@ -46,9 +46,13 @@ namespace hrvo {
 
     std::size_t setSimParam(std::size_t simID);
 
-    float getPlannerGlobalTime() const { return planner_->getGlobalTime(); }
+    float getGlobalPlannerTime() const { return planner_->getGlobalTime(); }
 
-    bool getPlannerReachedGoal() const { return planner_->agents_[THIS_ROBOT]->reachedGoal_;}
+    std::size_t getNumPlannerGoals()  { return planner_->getNumGoals(); }
+
+    Vector2 getGoalPlannerPosition(std::size_t goalNo) const { return planner_->getGoalPosition(goalNo); }
+
+    bool getReachedPlannerGoal() const { return planner_->agents_[THIS_ROBOT]->reachedGoal_;}
 
     bool getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo);
     // { simvect_[simID]->agents_[agentNo].reachedGoal_;  }
@@ -57,15 +61,21 @@ namespace hrvo {
 
     void doSimulatorStep(std::size_t simID);
 
+    std::size_t addAndSetSimGoal(std::size_t simID, std::size_t agentNo, const Vector2 goalPosition);
+
+    void setupModel(std::size_t agentNo);
+
+    std::map<std::size_t, float> inferAllGoals(std::size_t agentNo);
+
     // bool plannerReachedGoals();
 
-    std::size_t getNumAgents() const { return planner_->agents_.size(); }
+    std::size_t getNumPlannerAgents() const { return planner_->agents_.size(); }
 
-    Vector2 getAgentPosition(std::size_t agentNo) const { return planner_->agents_[agentNo]->position_; }
+    Vector2 getAgentPlannerPosition(std::size_t agentNo) const { return planner_->agents_[agentNo]->position_; }
 
     std::size_t addSimulation();
 
-    int deleteSimulation(std::size_t simID);
+    void deleteSimulation(std::size_t simID);
 
     void stopYoubot();
 
@@ -88,6 +98,7 @@ namespace hrvo {
 
       Simulator *planner_;
 
+      std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
 
 

@@ -318,6 +318,15 @@ namespace hrvo {
 
 	/**
 	 * \relates    Vector2
+	 * \brief      Computes the normal to a line segment with the specified end points.
+	 * \param[in]  vector1  The first end point of the line segment.
+	 * \param[in]  vector2  The second end point of the line segment.
+	 * \return     The normal vector of the line segment.
+	 */
+	float normaldiff(const Vector2 &vector1, const Vector2 &vector2);
+
+	/**
+	 * \relates    Vector2
 	 * \brief      Computes the scalar multiplication of the specified vector with the specified scalar value.
 	 * \param[in]  scalar  The scalar value with which the scalar multiplication should be computed.
 	 * \param[in]  vector  The vector with which the scalar multiplication should be computed.
