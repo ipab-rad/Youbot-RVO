@@ -109,7 +109,7 @@ namespace hrvo {
     return goalNo;
   }
 
-  void Environment::setupModel(std::size_t agentNo)
+  void Environment::setupPlannerModel(std::size_t agentNo)
   {    
     std::map<std::size_t, std::size_t> simIDs;
     std::size_t numGoals = planner_->getNumGoals();
@@ -127,12 +127,94 @@ namespace hrvo {
     simIDs_ = simIDs;
   }
 
+  std::map<std::size_t, std::size_t> Environment::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)
+  {    
+    std::map<std::size_t, std::size_t> simIDs;
+    std::size_t numGoals = possGoals.size();
+
+    for (std::size_t i = 0; i < numGoals; ++i) 
+    {
+      simIDs[i] = this->addSimulation();
+      std::size_t goalID = simvect_[simIDs[i]]->addGoal(possGoals[i]);
+      simvect_[simIDs[i]]->setAgentGoal(agentNo, goalID);
+      // std::cout << "simID=" << simIDs[i] << " ";
+      // std::cout << " simNumGoals=" << simnumGoals << std::endl;
+      std::cout << "Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs[i]]->getGoalPosition(goalID) << std::endl;
+    }
+
+    return simIDs;
+  }
+
+  std::size_t Environment::inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs)
+  {
+
+    const Vector2 currVel = planner_->getAgentVelocity(agentNo);  // TODO: GET FROM TRACKER
+    std::map<std::size_t, float> inferredGoals;
+
+    // std::cout << "simID size " << simIDs.size() << std::endl;
+
+    for (std::size_t j = 0; j < simIDs.size(); ++j)
+    {
+      this->doSimulatorStep(simIDs[j]);
+      // std::cout << "dostep" << std::endl;
+      Vector2 simVel = simvect_[simIDs[j]]->getAgentVelocity(agentNo);
+      // std::cout << "getsimvel" << std::endl;
+      std::cout << "currVel=[" << currVel << "] " << "simVel=[" << simVel << "]" << std::endl;
+      inferredGoals[j] = normaldiff(currVel, simVel);
+      // std::cout << "DifftoGoal" << j << "=" << inferredGoals[j] << std::endl;
+      // this->deleteSimulation(simIDs[j]);
+    }
+
+    // std::size_t goalInferID;
+    // if (inferredAgentGoalsSum_.empty())
+    // {
+    //   goalInferID = 0;
+    // }
+    // else
+    // {
+    //   goalInferID = inferredAgentGoalsSum_.size();
+    // }
+
+    if (inferredAgentGoalsSum_[agentNo].empty())
+    {
+        for (std::size_t l = 0; l < inferredGoals.size(); ++l)
+        {
+            inferredAgentGoalsSum_[agentNo][l] = GOAL_SUM_PRIOR;
+        }
+    }
+
+    float inferredGoalsTotal(0.0f);
+    for (std::size_t j = 0; j < inferredGoals.size(); ++j)
+    {
+        std::cout << "Goal" << j << "=" << inferredGoals[j] << " ";
+        inferredAgentGoalsSum_[agentNo][j] += inferredGoals[j]; 
+        inferredGoalsTotal += 1 / inferredAgentGoalsSum_[agentNo][j];
+    }
+    std::cout << std::endl;
+
+    std::cout << "Goal ratio=";
+    float goalRatio[inferredGoals.size()];
+    float maxLikelihoodRatio = 0.0f;
+    std::size_t maxLikelihoodGoal = 0;
+    for (std::size_t k = 0; k < inferredGoals.size(); ++k)
+    {
+    goalRatio[k] = ((1 / inferredAgentGoalsSum_[agentNo][k]) / inferredGoalsTotal);
+    if (k != 0) {std::cout <<  ":"; }
+    std::cout << goalRatio[k];
+    if (goalRatio[k] > maxLikelihoodRatio) {maxLikelihoodRatio = goalRatio[k]; maxLikelihoodGoal = k;}
+    }
+    std::cout << std::endl;
+
+    return maxLikelihoodGoal;
+
+  }
+
   std::map<std::size_t, float> Environment::inferAllGoals(std::size_t agentNo)
   {
 
     const Vector2 currVel = planner_->getAgentVelocity(agentNo);  // TODO: GET FROM TRACKER
     std::map<std::size_t, float> inferredGoals;
-    
+
     // std::cout << "simID size " << simIDs.size() << std::endl;
 
     for (std::size_t j = 0; j < simIDs_.size(); ++j)
@@ -196,7 +278,8 @@ namespace hrvo {
   void Environment::deleteSimulation(std::size_t simID)
   {
     // delete simvect_[simID];
-    //simvect_.erase(simID);
+    simvect_.erase(simID);
+
   }
 
   

@@ -63,7 +63,11 @@ namespace hrvo {
 
     std::size_t addAndSetSimGoal(std::size_t simID, std::size_t agentNo, const Vector2 goalPosition);
 
-    void setupModel(std::size_t agentNo);
+    std::map<std::size_t, std::size_t> setupModel(std::size_t agentNo, std::map<size_t, Vector2> possGoals);
+
+    std::size_t inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs);
+
+    void setupPlannerModel(std::size_t agentNo);
 
     std::map<std::size_t, float> inferAllGoals(std::size_t agentNo);
 
@@ -98,8 +102,11 @@ namespace hrvo {
 
       Simulator *planner_;
 
+      std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
+      std::map<std::size_t, float> inferredGoalsSum_;
+      std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
 
 
 

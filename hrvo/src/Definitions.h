@@ -73,12 +73,14 @@ namespace hrvo {
   const float HRVO_EPSILON = 0.00001f;
 
 
-#define SIMAGENT 0
-#define PERSON 1
-#define ROBOT 2
+  #define SIMAGENT 0
+  #define PERSON 1
+  #define ROBOT 2
 
-#define WAIT_FOR_START 1
-#define HRVO_OUTPUT_TIME_AND_POSITIONS 1
+  #define WAIT_FOR_START 1
+  #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
+
+  #define GOAL_SUM_PRIOR 1.0f
 
 
   const Vector2 STOP = Vector2(0.0f, 0.0f);

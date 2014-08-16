@@ -101,27 +101,8 @@ int main(int argc, char *argv[])
 {
     std::cout << std::endl;
     ros::init(argc, argv, "hrvo_planner");
-    // Simulator simulator;
     Environment environment1(YOUBOT_1, START_POS1);
     // Environment environment2(YOUBOT_2, START_POS2);
-    // Simulator planner;
-
-    // simulator.setTimeStep(SIM_TIME_STEP);
-    // simulator.setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
-
-    /**
-    * \brief      Sets the default properties for any new agent that is added.
-    * \param[in]  neighborDist       The default maximum neighbor distance of a new agent.
-    * \param[in]  maxNeighbors       The default maximum neighbor count of a new agent.
-    * \param[in]  radius             The default radius of a new agent.
-    * \param[in]  goalRadius         The default goal radius of a new agent.
-    * \param[in]  prefSpeed          The default preferred speed of a new agent.
-    * \param[in]  maxSpeed           The default maximum speed of a new agent.
-    * \param[in]  uncertaintyOffset  The default uncertainty offset of a new agent.
-    * \param[in]  maxAccel           The default maximum acceleration of a new agent.
-    * \param[in]  velocity           The default initial velocity of a new agent.
-    * \param[in]  orientation        The default initial orientation (in radians) of a new agent.
-    */
 
     std::signal(SIGINT, interrupt_callback);
 
@@ -133,28 +114,18 @@ int main(int argc, char *argv[])
     const Vector2 pos2 = Vector2(1.5f, 0.0f);
     const Vector2 g1 = Vector2(pos2);
     const Vector2 g2 = Vector2(pos1);
+    const Vector2 g3 = Vector2(-2.0f, 0.0f);
 
-
-    // simulator.addAgent(std::string("youbot_2"), ROBOT, pos1, simulator.addGoal(-pos1));
-    // simulator.addAgent(std::string("youbot_1"), ROBOT, pos2, simulator.addGoal(-pos2));
-
-         std::size_t goal1_1 = environment1.addPlannerGoal(g1);
+    std::size_t goal1_1 = environment1.addPlannerGoal(g1);
     std::size_t goal1_2 = environment1.addPlannerGoal(g2);
     // std::size_t goal2_1 = environment2.addPlannerGoal(g1);
     // std::size_t goal2_2 = environment2.addPlannerGoal(g2);
-         environment1.setPlannerGoal(goal1_1);
+    environment1.setPlannerGoal(goal1_1);
     // environment2.setPlannerGoal(goal2_2);
 
 
-    // simulator.addAgent(std::string("youbot_1"), SIMAGENT, pos1, goal1);
-    // simulator.addAgent(std::string("youbot_2"), SIMAGENT, pos2, goal2);
-
     environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
     // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
-
-    // environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
-    // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
-
 
     // simulator.setAgentOrientation(0, 0);
     // simulator.setAgentOrientation(1, 0);
@@ -172,7 +143,6 @@ int main(int argc, char *argv[])
 
     #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-    // std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << simulator.getNumAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
     std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumPlannerAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
@@ -184,12 +154,11 @@ int main(int argc, char *argv[])
 
     ROS_INFO("starting...");
 
-    float goal1Sum(1.0f);   // TODO: Think about priors
-    float goal2Sum(1.0f);
 
     ros::Rate update_freq(ROS_FREQ);
     do
     {
+        std::cout << std::endl;
         // #if HRVO_OUTPUT_TIME_AND_POSITIONS
         // log << simulator.getGlobalTime();
 
@@ -198,33 +167,28 @@ int main(int argc, char *argv[])
             // log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
             std::cout << "Agent" << i << "Pos:" << environment1.getAgentPlannerPosition(i).getX() << "," << environment1.getAgentPlannerPosition(i).getY() << std::endl;
         }
-        log << std::endl;
+        // log << std::endl;
         // #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-        // goal2 = simulator.addGoal(simulator.getAgentPosition(0));
-        // simulator.setAgentGoal(1, goal2);    // For following another robot
 
-        // simulator.doStep();
+        
+        // std::map<std::size_t, float> inferredGoals;
 
-        std::map<std::size_t, float> inferredGoals;
+        std::size_t inferredAgent = 1;
+        std::map<std::size_t, Vector2> possGoals;
+        possGoals[0] = g1;
+        possGoals[1] = g2;
+        possGoals[2] = g3;
+        possGoals[3] = Vector2(0.0f, 0.0f);
+        
 
-        environment1.setupModel(1);
+        std::map<std::size_t, std::size_t> simIDs = environment1.setupModel(inferredAgent, possGoals);
+
         environment1.doPlannerStep();
         // environment2.doPlannerStep();
-        inferredGoals = environment1.inferAllGoals(1);
 
-
-
-        for (std::size_t j = 0; j < inferredGoals.size(); ++j)
-        {
-            std::cout << "Goal" << j << "=" << inferredGoals[j] << " ";
-        }
-        std::cout << std::endl;
-        goal1Sum += inferredGoals[1];
-        goal2Sum += inferredGoals[2];
-        float goal1Ratio = 1 - (goal1Sum / (goal1Sum + goal2Sum));  
-        float goal2Ratio = 1 - (goal2Sum / (goal1Sum + goal2Sum));
-        std::cout << "Goal ratio=" << goal1Ratio << ":" << goal2Ratio << std::endl;
+        std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
+        std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
 
         ros::spinOnce();
         update_freq.sleep();
