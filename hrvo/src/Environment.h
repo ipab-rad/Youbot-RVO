@@ -15,6 +15,10 @@
 #include "Agent.h"
 #endif
 
+#include "PTrackingBridge/TargetEstimations.h"
+#include "geometry_msgs/Twist.h"
+#include "std_msgs/Header.h"
+#include "ros/ros.h"
 
 namespace hrvo {
   class Simulator;
@@ -32,11 +36,13 @@ namespace hrvo {
 
     std::string getsActorID() {return sActorID_;}
 
-    std::size_t addTracker();
+    void addTracker(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();
 
     std::size_t addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
+
+    std::size_t addPedestrianAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
 
     std::size_t addPlannerGoal(const Vector2 goalPosition);
 
@@ -99,6 +105,9 @@ namespace hrvo {
       std::string sActorID_; 
       Vector2 startPos_;
       size_t startGoal_;
+
+      ros::NodeHandle nh_;
+      ros::Subscriber Targsub;
 
       Simulator *planner_;
 

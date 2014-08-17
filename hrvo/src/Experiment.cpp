@@ -124,7 +124,8 @@ int main(int argc, char *argv[])
     // environment2.setPlannerGoal(goal2_2);
 
 
-    environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
+    // environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
+    environment1.addPedestrianAgent("pedestrian_1", pos2, goal1_2);
     // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
 
     // simulator.setAgentOrientation(0, 0);
@@ -158,14 +159,14 @@ int main(int argc, char *argv[])
     ros::Rate update_freq(ROS_FREQ);
     do
     {
-        std::cout << std::endl;
+        // std::cout << std::endl;
         // #if HRVO_OUTPUT_TIME_AND_POSITIONS
         // log << simulator.getGlobalTime();
 
         for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
         {
             // log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
-            std::cout << "Agent" << i << "Pos:" << environment1.getAgentPlannerPosition(i).getX() << "," << environment1.getAgentPlannerPosition(i).getY() << std::endl;
+            // std::cout << "Agent" << i << "Pos:" << environment1.getAgentPlannerPosition(i).getX() << "," << environment1.getAgentPlannerPosition(i).getY() << std::endl;
         }
         // log << std::endl;
         // #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
@@ -182,13 +183,13 @@ int main(int argc, char *argv[])
         possGoals[3] = Vector2(0.0f, 0.0f);
         
 
-        std::map<std::size_t, std::size_t> simIDs = environment1.setupModel(inferredAgent, possGoals);
+        // std::map<std::size_t, std::size_t> simIDs = environment1.setupModel(inferredAgent, possGoals);
 
         environment1.doPlannerStep();
         // environment2.doPlannerStep();
 
-        std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
-        std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
+        // std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
+        // std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
 
         ros::spinOnce();
         update_freq.sleep();

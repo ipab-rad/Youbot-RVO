@@ -87,8 +87,9 @@ Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), time
   kdTree_ = new KdTree(this);
 }
 
-Simulator::Simulator(std::string simtype, std::size_t nactorID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
+Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
 {
+  nh_ = nh;
   std::ostringstream ostr;
   ostr << nactorID;
   std::string sactorID = ostr.str();
@@ -96,8 +97,9 @@ Simulator::Simulator(std::string simtype, std::size_t nactorID) : defaults_(NULL
   kdTree_ = new KdTree(this);
 }
 
-Simulator::Simulator(std::string simtype, std::size_t nactorID, std::size_t nsimID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
+Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID, std::size_t nsimID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
 {
+  nh_ = nh;
   std::ostringstream ostr1;
   std::ostringstream ostr2;
   ostr1 << nactorID;
@@ -188,12 +190,18 @@ void Simulator::doStep()
   kdTree_->build();
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    (*iter)->odomupdate();
-  }  // Should odometry be updated here?
+    if ((*iter)->agent_type == ROBOT)
+    {
+    (*iter)->odomupdate();  // Should odometry be updated here?
+    }
+  }  
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     
-    (*iter)->odomupdate(); // And here?
+    if ((*iter)->agent_type == ROBOT)
+    {
+    (*iter)->odomupdate(); // Should odometry be updated here as well?
+    }
 
     (*iter)->computePreferredVelocity();
     (*iter)->computeNeighbors();
@@ -424,7 +432,7 @@ bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService:
   const Vector2 position(req.position.x, req.position.y);
   const Vector2 velocity(req.velocity.x, req.velocity.y);
 
-  try {
+  try { 
     ROS_INFO_STREAM("detected " << ss.str());
     std::size_t agentNo = addAgent(ss.str(), false, position, addGoal(position));
     setAgentVelocity(agentNo, velocity);

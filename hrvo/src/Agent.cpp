@@ -492,12 +492,9 @@
 
  	void Agent::odomupdate()
  	{
- 		if (agent_type == ROBOT)
- 		{
  			position_ += current_odometry_offset_ - previous_odometry_offset_;
 
  			previous_odometry_offset_ = current_odometry_offset_;
- 		}
  	}
 
 

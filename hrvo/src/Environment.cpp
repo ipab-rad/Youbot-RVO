@@ -17,21 +17,25 @@
 #endif
 
 
+
+
 #include <string>
 
 namespace hrvo {
 
 
   Environment::Environment(enum Actor actorID, const Vector2 startPos)
-  {
+  { 
     nActorID_ = actorID;
     startPos_ = startPos;
-    planner_ = new Simulator("planner", nActorID_);
+    planner_ = new Simulator(nh_, "planner", nActorID_);
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     std::cout << "HRVO Planner for " << sActorID_ << " Constructed" << std::endl;
+    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1000, &Environment::addTracker, this);
+    ROS_INFO("Suscribing to TargetEstimations");
   }
   Environment::~Environment()
   {
@@ -46,9 +50,22 @@ namespace hrvo {
     }
   }
 
-  std::size_t Environment::addTracker()
+  void Environment::addTracker(const PTrackingBridge::TargetEstimations::ConstPtr& msg)
   {
-  ;
+    std::cout << "Received!" << std::endl;
+    if (!msg->identities.empty())
+    {
+      std::size_t size = msg->identities.size();
+      for (std::size_t i = 0; i < size; ++i)
+      {
+        int id = msg->identities[i];
+        float x = msg->positions[i].x;
+        float y = msg->positions[i].y;
+        ROS_INFO("Agent:%d in position %f,%f /n", id, x, y);
+      }
+
+    }
+
   }
 
   void Environment::setPlannerParam()
@@ -61,6 +78,12 @@ namespace hrvo {
   {
     planner_->addAgent(sActorID_ + "_v" + id, SIMAGENT, startPos, goalNo);
   }
+
+  std::size_t Environment::addPedestrianAgent(std::string id, const Vector2 startPos, std::size_t goalNo)
+  {
+    planner_->addAgent(sActorID_ + "_p" + id, PERSON, startPos, goalNo);
+  }
+
 
   std::size_t Environment::addPlannerGoal(const Vector2 goalPosition)
   {
@@ -251,9 +274,10 @@ namespace hrvo {
     else
     {
       // simID = simvect_.rbegin()->first + 1;
+
       simID = simvect_.size();
     }
-    simvect_[simID] = new Simulator("simulation", nActorID_, simID);
+    simvect_[simID] = new Simulator(nh_, "simulation", nActorID_, simID);
 
     std::size_t nAgents = planner_->getNumAgents();
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
@@ -277,8 +301,9 @@ namespace hrvo {
 
   void Environment::deleteSimulation(std::size_t simID)
   {
-    // delete simvect_[simID];
+    free(simvect_[simID]);
     simvect_.erase(simID);
+
 
   }
 
