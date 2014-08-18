@@ -104,13 +104,18 @@ namespace hrvo {
       enum Actor nActorID_;
       std::string sActorID_; 
       Vector2 startPos_;
+      Vector2 prevPos_;
       size_t startGoal_;
+
+
+      bool prevPosInit;
 
       ros::NodeHandle nh_;
       ros::Subscriber Targsub;
 
       Simulator *planner_;
 
+      std::map<int, std::size_t> trackedAgents_;
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;

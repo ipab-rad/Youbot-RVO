@@ -269,6 +269,8 @@ namespace hrvo {
      */
     Vector2 getAgentVelocity(std::size_t agentNo) const;
 
+    std::size_t getAgentType(std::size_t agentNo) const;
+
 #if HRVO_DIFFERENTIAL_DRIVE
     /**
      * \brief      Returns the wheel track of a specified agent.

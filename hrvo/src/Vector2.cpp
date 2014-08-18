@@ -79,5 +79,6 @@ namespace hrvo {
     // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
     // return roundf(val * 100) / 100;
     return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+    // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
   }
 }

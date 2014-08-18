@@ -64,7 +64,6 @@
 #endif
 
 #include <stdexcept>
-#include <sstream>
 #include <exception>
 
 #include "hrvo/AddAgentService.h"
@@ -197,22 +196,27 @@ void Simulator::doStep()
   }  
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    
-    if ((*iter)->agent_type == ROBOT)
+    if ((*iter)->agent_type != PERSON)
     {
-    (*iter)->odomupdate(); // Should odometry be updated here as well?
-    }
+      if ((*iter)->agent_type == ROBOT)
+      {
+      (*iter)->odomupdate(); // Should odometry be updated here as well?
+      }
 
-    (*iter)->computePreferredVelocity();
-    (*iter)->computeNeighbors();
-    (*iter)->computeNewVelocity();
-#if HRVO_DIFFERENTIAL_DRIVE
-    (*iter)->computeWheelSpeeds();
-#endif /* HRVO_DIFFERENTIAL_DRIVE */
+      (*iter)->computePreferredVelocity();
+      (*iter)->computeNeighbors();
+      (*iter)->computeNewVelocity();
+      #if HRVO_DIFFERENTIAL_DRIVE
+      (*iter)->computeWheelSpeeds();
+      #endif /* HRVO_DIFFERENTIAL_DRIVE */
+    }
   }
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    (*iter)->update();
+    if ((*iter)->agent_type != PERSON) 
+    {
+      (*iter)->update();
+    }
   }
 
   globalTime_ += timeStep_;
@@ -300,6 +304,11 @@ float Simulator::getAgentUncertaintyOffset(std::size_t agentNo) const
 Vector2 Simulator::getAgentVelocity(std::size_t agentNo) const
 {
   return agents_[agentNo]->velocity_;
+}
+
+std::size_t Simulator::getAgentType(std::size_t agentNo) const
+{
+  return agents_[agentNo]->agent_type;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE

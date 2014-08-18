@@ -112,12 +112,17 @@ int main(int argc, char *argv[])
     //    }
     const Vector2 pos1 = Vector2(-1.5f, 0.0f);
     const Vector2 pos2 = Vector2(1.5f, 0.0f);
+
     const Vector2 g1 = Vector2(pos2);
     const Vector2 g2 = Vector2(pos1);
     const Vector2 g3 = Vector2(-2.0f, 0.0f);
+    const Vector2 I_g1 = Vector2(-6.9f, 1.5f);
+    const Vector2 I_g2 = Vector2(-2.7f, 1.5f);
+    const Vector2 I_g3 = Vector2(-4.5f, 3.3f);
+
 
     std::size_t goal1_1 = environment1.addPlannerGoal(g1);
-    std::size_t goal1_2 = environment1.addPlannerGoal(g2);
+    // std::size_t goal1_2 = environment1.addPlannerGoal(g2);
     // std::size_t goal2_1 = environment2.addPlannerGoal(g1);
     // std::size_t goal2_2 = environment2.addPlannerGoal(g2);
     environment1.setPlannerGoal(goal1_1);
@@ -125,7 +130,7 @@ int main(int argc, char *argv[])
 
 
     // environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
-    environment1.addPedestrianAgent("pedestrian_1", pos2, goal1_2);
+    // environment1.addPedestrianAgent("pedestrian_1", pos2, goal1_2);
     // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
 
     // simulator.setAgentOrientation(0, 0);
@@ -153,6 +158,10 @@ int main(int argc, char *argv[])
 
     STARTED = true;
 
+    bool inferFlag = false;
+    std::size_t inferredAgent = 1;
+    std::map<std::size_t, std::size_t> simIDs;
+
     ROS_INFO("starting...");
 
 
@@ -165,31 +174,38 @@ int main(int argc, char *argv[])
 
         for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
         {
+            if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
             // log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
-            // std::cout << "Agent" << i << "Pos:" << environment1.getAgentPlannerPosition(i).getX() << "," << environment1.getAgentPlannerPosition(i).getY() << std::endl;
+            std::cout << "Agent" << i << "Pos: [" << environment1.getAgentPlannerPosition(i) << "]" << std::endl;
         }
         // log << std::endl;
-        // #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
-
+        // #endif /*# HRVO_OUTPUT_TIME_AND_POSITIONS */
 
         
         // std::map<std::size_t, float> inferredGoals;
 
-        std::size_t inferredAgent = 1;
+        environment1.doPlannerStep();
+
+        if (inferFlag)
+        {
+        inferredAgent = 1;
         std::map<std::size_t, Vector2> possGoals;
-        possGoals[0] = g1;
-        possGoals[1] = g2;
-        possGoals[2] = g3;
-        possGoals[3] = Vector2(0.0f, 0.0f);
+        possGoals[0] = I_g1;
+        possGoals[1] = I_g2;
+        possGoals[2] = I_g3;
         
 
-        // std::map<std::size_t, std::size_t> simIDs = environment1.setupModel(inferredAgent, possGoals);
+        simIDs = environment1.setupModel(inferredAgent, possGoals);
+        }
 
-        environment1.doPlannerStep();
+
         // environment2.doPlannerStep();
 
-        // std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
-        // std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
+        if (inferFlag)
+        {
+        std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
+        std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
+        }
 
         ros::spinOnce();
         update_freq.sleep();

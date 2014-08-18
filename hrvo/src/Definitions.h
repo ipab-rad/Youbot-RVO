@@ -66,6 +66,9 @@
 #include "Vector2.h"
 #endif
 
+#include <string>
+#include <sstream>
+
 namespace hrvo {
   /**
   * \brief  A sufficiently small positive float.
@@ -94,7 +97,11 @@ namespace hrvo {
   const float AGENT_RADIUS = 0.5f;
   const float GOAL_RADIUS = 0.5f;
   const float PREF_SPEED = 0.3f;
+  const float PREF_PEOPLE_SPEED = 1.0f;
   const float MAX_SPEED = 0.6f;
+  const float MAX_PEOPLE_SPEED = 2.0f;
+  const float MAX_ACCELERATION = 0.6f;
+  const float MAX_PEOPLE_ACCELERATION = 2.0f;
 
   const std::size_t THIS_ROBOT = 0;
 
@@ -109,6 +116,8 @@ namespace hrvo {
   };
 
   const char* getActorName(enum Actor actorID);
+
+  std::string intToString(int i);
 
 
   /**
