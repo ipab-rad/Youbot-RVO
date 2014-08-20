@@ -558,7 +558,7 @@
  		current_odometry_offset_.setY(pose_msg->pose.pose.position.y);  
  		agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
 
- 		ROS_ERROR("CallBack");
+ 		// ROS_ERROR("CallBack");
  		if(!updated)
  		{
  			previous_odometry_offset_ = current_odometry_offset_;

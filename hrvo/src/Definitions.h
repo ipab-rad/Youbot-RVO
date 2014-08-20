@@ -83,25 +83,35 @@ namespace hrvo {
   #define WAIT_FOR_START 1
   #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
 
-  #define GOAL_SUM_PRIOR 1.0f
+  #define GOAL_SUM_PRIOR 0.1f
 
+  
+  const Vector2 I_g0 = Vector2(-6.2f, 1.5f);
+  const Vector2 I_g1 = Vector2(-3.3f, 1.5f);
+  const Vector2 I_g2 = Vector2(-4.45f, 3.3f);
 
   const Vector2 STOP = Vector2(0.0f, 0.0f);
-  const Vector2 START_POS1 = Vector2(-1.5f, 0.0f);
-  const Vector2 START_POS2 = Vector2(1.5f, 0.0f);
+  const Vector2 START_POS1 = Vector2(-7.4f, 1.5f);
+  const Vector2 START_POS2 = Vector2(2.5f, 0.0f);
+
+  const Vector2 goBackVec = START_POS1 - Vector2(1.0f, 0.0f);
+
+  const Vector2 trackerOffset = Vector2(0.25f, 0.0f);
+
+  const std::size_t MAX_NO_TRACKED_AGENTS = 2;
 
   const float SIM_TIME_STEP = 0.1f;
 
   const float NEIGHBOR_DIST = 5.0f;
   const std::size_t MAX_NEIGHBORS = 10;
   const float AGENT_RADIUS = 0.5f;
-  const float GOAL_RADIUS = 0.5f;
+  const float GOAL_RADIUS = 0.25f;
   const float PREF_SPEED = 0.3f;
-  const float PREF_PEOPLE_SPEED = 1.0f;
+  const float PREF_PEOPLE_SPEED = 0.3f;
   const float MAX_SPEED = 0.6f;
   const float MAX_PEOPLE_SPEED = 2.0f;
   const float MAX_ACCELERATION = 0.6f;
-  const float MAX_PEOPLE_ACCELERATION = 2.0f;
+  const float MAX_PEOPLE_ACCELERATION = 1.2f;
 
   const std::size_t THIS_ROBOT = 0;
 

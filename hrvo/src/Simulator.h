@@ -445,6 +445,8 @@ namespace hrvo {
      */
     void setTimeStep(float timeStep) { timeStep_ = timeStep; }
 
+    void setOdomNeeded(bool odomNeeded) { odomNeeded_ = odomNeeded; }
+
     bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
                 
  private:
@@ -456,6 +458,7 @@ namespace hrvo {
     float globalTime_;
     float timeStep_;
     bool reachedGoals_;
+    bool odomNeeded_;
     std::vector<Agent *> agents_;
     std::vector<Goal *> goals_;
 

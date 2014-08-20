@@ -84,6 +84,7 @@ Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), time
 {
   add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
+  odomNeeded_ = true;
 }
 
 Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
@@ -94,6 +95,7 @@ Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactor
   std::string sactorID = ostr.str();
   add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
+  odomNeeded_ = true;
 }
 
 Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID, std::size_t nsimID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
@@ -107,6 +109,7 @@ Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactor
   std::string ssimID = ostr2.str();
   add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID + "_" + ssimID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
+  odomNeeded_ = true;
 }
 
 Simulator::~Simulator()
@@ -189,7 +192,7 @@ void Simulator::doStep()
   kdTree_->build();
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type == ROBOT)
+    if ((*iter)->agent_type == ROBOT && odomNeeded_)
     {
     (*iter)->odomupdate();  // Should odometry be updated here?
     }
@@ -198,7 +201,7 @@ void Simulator::doStep()
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type != PERSON)
     {
-      if ((*iter)->agent_type == ROBOT)
+      if ((*iter)->agent_type == ROBOT && odomNeeded_)
       {
       (*iter)->odomupdate(); // Should odometry be updated here as well?
       }

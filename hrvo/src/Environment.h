@@ -46,6 +46,8 @@ namespace hrvo {
 
     std::size_t addPlannerGoal(const Vector2 goalPosition);
 
+    std::size_t getPlannerGoal(std::size_t agentNo) {return planner_->getAgentGoal(agentNo);}
+
     int setPlannerGoal(std::size_t goalNo);
 
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);
