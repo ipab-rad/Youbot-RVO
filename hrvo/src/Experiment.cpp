@@ -159,18 +159,18 @@ int main(int argc, char *argv[])
 
     ros::Rate update_freq(ROS_FREQ);
 
-    std::cout << "Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl;
-    while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-    {
-        environment1.doPlannerStep();
+    // std::cout << "Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl;
+    // while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+    // {
+    //     environment1.doPlannerStep();
 
-        ros::spinOnce();
-        update_freq.sleep();
-    }
+    //     ros::spinOnce();
+    //     update_freq.sleep();
+    // }
 
-    STARTED = false;
+    // STARTED = false;
 
-    environment1.stopYoubot();
+    // environment1.stopYoubot();
 
     ROS_INFO("Press enter to start Experiment");
     while( std::cin.get() != '\n') {;}

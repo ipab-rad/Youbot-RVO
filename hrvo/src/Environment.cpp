@@ -54,12 +54,38 @@ namespace hrvo {
     {
       std::size_t numAgents = msg->identities.size();
 
-      // int ids[numAgents];
-      // for (std::size_t i = 0; i < numAgents; ++i)
-      // {
-      //   ids[i] = msg->identities[i];
-      // }
-      
+
+      std::cout<<"Identities:";
+      std::map<int, std::size_t> ids;
+      for (int i = 0; i < numAgents; ++i)
+      {
+        ids[i] = msg->identities[i];
+        std::cout<< ids[i] <<",";
+      }
+      std::cout << std::endl;
+      // std::cout<< "Identity size" << ids.size() << "and" << msg->identities.size() << std::endl;
+
+      for(std::map<int, std::size_t>::iterator iter = trackedAgents_.begin(); iter != trackedAgents_.end(); ++iter)
+      {
+        bool found = false;
+        std::cout << "Tracker:" << iter->first << " identity:" << iter->second ;
+        for (int i = 0; i < ids.size(); ++i)
+        {
+          if (ids[i] == iter->first)
+          {
+            std::cout<< " active" << std::endl;
+            found = true;
+          }
+        }
+        if (!found || ids.size() == 0)
+        {
+          std::cout<< " eliminated" << std::endl;
+          trackedAgents_.erase(iter);
+        }
+
+      }
+
+
 
       for (std::size_t i = 0; i < numAgents; ++i)
       {
@@ -78,7 +104,7 @@ namespace hrvo {
         if (trackedAgents_.empty() || numAgents == 1)
         {
           trackedAgents_[id] = THIS_ROBOT;
-          std::cout << "Assigned tracker" << id << "to Youbot_" << nActorID_ << std::endl;
+          // std::cout << "Assigned tracker" << id << "to Youbot_" << nActorID_ << std::endl;
         }
         if (trackedAgents_.find(id)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )
         {

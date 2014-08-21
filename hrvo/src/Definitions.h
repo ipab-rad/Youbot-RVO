@@ -96,7 +96,10 @@ namespace hrvo {
 
   const Vector2 goBackVec = START_POS1 - Vector2(1.0f, 0.0f);
 
-  const Vector2 trackerOffset = Vector2(0.25f, 0.0f);
+  const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
+  const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
+
+  const Vector2 trackerOffset = kinect2Offset;
 
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;
 
