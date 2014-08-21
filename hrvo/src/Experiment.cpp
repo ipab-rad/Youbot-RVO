@@ -91,7 +91,7 @@ void interrupt_callback(int s)
 {
     if ( !STARTED )
     {
-        std::cout << "Aborted!" << std::endl;
+        WARN("Aborted!" << std::endl);
         exit(1);
     }
     SAFETY_STOP = true;
@@ -99,7 +99,7 @@ void interrupt_callback(int s)
 
 int main(int argc, char *argv[])
 {
-    std::cout << std::endl;
+    INFO(std::endl);
     ros::init(argc, argv, "hrvo_planner");
 
     // Environment environment1(YOUBOT_1, START_POS1);
@@ -122,68 +122,68 @@ int main(int argc, char *argv[])
     // environment1.setPlannerGoal(goBack);
     // environment2.setPlannerGoal(goal2_2);
 
-    // environment1.addVirtualAgent("youbot_2", pos2, goal1_2);
+    // environment1.addVirtualAgent("youbot_2", I_g0, goal1_1);
     // environment1.addPedestrianAgent("pedestrian_1", pos2, goal1_2);
     // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
 
     std::signal(SIGINT, interrupt_callback);
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
-    // std::ofstream log;
-    // const char *path="log3.csv";
-    // log.open(path);
-    // if (log.fail())
-    //     {std::cout << "Writing to log failed!" << std::endl;}
-    // else
-    //     {std::cout << "Saving log on " << path << std::endl;}
+    std::ofstream log;
+    const char *path="YoubotPlanner5.csv";
+    log.open(path);
+    if (log.fail())
+        {ERR("Writing to log failed!" << std::endl);}
+    else
+        {DEBUG("Saving log on " << path << std::endl);}
 
-    // log << SIM_TIME_STEP <<","<< simulator.getNumAgents() <<","<< AGENT_RADIUS << std::endl;
+    log << SIM_TIME_STEP <<","<< environment1.getNumPlannerAgents() <<","<< AGENT_RADIUS << std::endl;
 
     #endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
 
-    std::cout << "Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumPlannerAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl;
+    INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumPlannerAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 
-    #if HRVO_OUTPUT_TIME_AND_POSITIONS
-    ROS_INFO("Press enter to perform setup");
+    INFO("Press enter to perform setup");
     while( std::cin.get() != '\n') {;}
-    #endif
-
 
     STARTED = true;
 
     bool cycleGoals = true;
-    bool enableModel = false;
-    bool inferFlag = false;
-    std::size_t inferredAgent = 1;
+    bool enableModel = true;
+
+    bool inferFlag = false; // KEEP FALSE
+    std::size_t inferredAgent = 0;
     std::map<std::size_t, std::size_t> simIDs;
+    std::size_t numYoubots = 2;
 
     ros::Rate update_freq(ROS_FREQ);
 
-    // std::cout << "Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl;
-    // while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-    // {
-    //     environment1.doPlannerStep();
 
-    //     ros::spinOnce();
-    //     update_freq.sleep();
-    // }
+    INFO("Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
+    while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+    {
+        environment1.doPlannerStep();
 
-    // STARTED = false;
+        ros::spinOnce();
+        update_freq.sleep();
+    }
 
-    // environment1.stopYoubot();
+    STARTED = false;
 
-    ROS_INFO("Press enter to start Experiment");
+    environment1.stopYoubot();
+
+    INFO("Press enter to start Experiment");
     while( std::cin.get() != '\n') {;}
 
     STARTED = true;
 
-    std::cout << "Starting Experiment..." << std::endl;
+    INFO("Starting Experiment..." << std::endl);
 
     while ( ros::ok() && !SAFETY_STOP )
     {
-        // std::cout << std::endl;
+        INFO(std::endl);
         // #if HRVO_OUTPUT_TIME_AND_POSITIONS
-        // log << simulator.getGlobalTime();
+        log << environment1.getGlobalPlannerTime();
 
         if (environment1.getReachedPlannerGoal() && cycleGoals)
         {
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
                 {environment1.setPlannerGoal(goal1_0);}
         }
 
-        std::cout << "Youbot goal:" << environment1.getPlannerGoal(THIS_ROBOT) << " ";
+        INFO("Youbot goal:" << environment1.getPlannerGoal(THIS_ROBOT) << " ");
 
         for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
         {
@@ -203,10 +203,12 @@ int main(int argc, char *argv[])
             {
             if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
             }
-            // log << "," << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY();
-            std::cout << "Agent" << i << " Pos: [" << environment1.getAgentPlannerPosition(i) << "]" << std::endl;
+            INFO("Agent" << i << " Pos: [" << environment1.getPlannerAgentPosition(i) << "]" << std::endl);
+            // log << "," << environment1.getPlannerAgentPosition(i).getX() << "," << environment1.getPlannerAgentPosition(i).getY();
         }
         // log << std::endl;
+
+
         // #endif /*# HRVO_OUTPUT_TIME_AND_POSITIONS */
 
         
@@ -221,7 +223,6 @@ int main(int argc, char *argv[])
 
         if (inferFlag)
         {
-        inferredAgent = 1;
         std::map<std::size_t, Vector2> possGoals;
         possGoals[0] = I_g0;
         possGoals[1] = I_g1;
@@ -236,9 +237,19 @@ int main(int argc, char *argv[])
         if (inferFlag)
         {
         std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
-        std::cout << "Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl;
-        std::cout << std::endl;
+        INFO("Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
+        INFO(std::endl);
+        log << "," << environment1.getPlannerAgentPosition(inferredAgent).getX() << "," << environment1.getPlannerAgentPosition(inferredAgent).getY();
+        log << "," << environment1.getPlannerAgentVelocity(inferredAgent).getX() << "," << environment1.getPlannerAgentVelocity(inferredAgent).getY();
+        log << "," << environment1.getGoalRatio(0) << "," << environment1.getGoalRatio(1) << "," << environment1.getGoalRatio(2);
+        
+        for (std::size_t i = 1; i < environment1.getNumPlannerAgents(); ++i)
+        {
+            log << "," << environment1.getPlannerAgentPosition(i).getX() << "," << environment1.getPlannerAgentPosition(i).getY();
+            log << "," << environment1.getPlannerAgentVelocity(i).getX() << "," << environment1.getPlannerAgentVelocity(i).getY();
         }
+        }
+        log << std::endl;
 
         ros::spinOnce();
         update_freq.sleep();
@@ -247,16 +258,16 @@ int main(int argc, char *argv[])
     // while ( !environment1.getReachedPlannerGoal() &&  ros::ok() && !SAFETY_STOP );
     // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
-    std::cout << "Agents Stopping" << std::endl;
+    WARN("Agents Stopping" << std::endl);
     environment1.stopYoubot();
     // environment2.emergencyStop();
 
-    // log.close();
+    log.close();
 
     if ( SAFETY_STOP )
     {
         environment1.emergencyStop();
-        std::cout << "EMERGENCY STOP!" << std::endl;
+        WARN("EMERGENCY STOP!" << std::endl);
         exit(1);
     }
 

@@ -447,6 +447,8 @@ namespace hrvo {
 
     void setOdomNeeded(bool odomNeeded) { odomNeeded_ = odomNeeded; }
 
+    void deleteAgent(std::size_t agentNo) {;}
+
     bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
                 
  private:

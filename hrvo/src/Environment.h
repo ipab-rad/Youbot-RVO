@@ -36,6 +36,8 @@ namespace hrvo {
 
     std::string getsActorID() {return sActorID_;}
 
+    float getPlannerGlobalTime() {return planner_->getGlobalTime();}
+
     void addTracker(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();
@@ -79,12 +81,16 @@ namespace hrvo {
 
     std::map<std::size_t, float> inferAllGoals(std::size_t agentNo);
 
+    float getGoalRatio (std::size_t goalNo) {return goalRatio_[goalNo];}
+
     // bool plannerReachedGoals();
 
     std::size_t getNumPlannerAgents() const { return planner_->agents_.size(); }
 
-    Vector2 getAgentPlannerPosition(std::size_t agentNo) const { return planner_->agents_[agentNo]->position_; }
+    Vector2 getPlannerAgentPosition(std::size_t agentNo) const { return planner_->getAgentPosition(agentNo); }
 
+    Vector2 getPlannerAgentVelocity(std::size_t agentNo) const { return planner_->getAgentVelocity(agentNo); }
+    
     std::size_t addSimulation();
 
     void deleteSimulation(std::size_t simID);
@@ -95,6 +101,8 @@ namespace hrvo {
   * \brief    Sends to all agents an emergency stop command.
   */
     void emergencyStop();
+
+
 
 
     private:
@@ -108,8 +116,8 @@ namespace hrvo {
       Vector2 startPos_;
       Vector2 prevPos_;
       size_t startGoal_;
-
-
+      float goalRatio_[3];
+      
       bool prevPosInit;
 
       ros::NodeHandle nh_;

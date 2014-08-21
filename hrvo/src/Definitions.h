@@ -76,15 +76,22 @@ namespace hrvo {
   const float HRVO_EPSILON = 0.00001f;
 
 
+  #define ERR(x) std::cerr << "\033[22;31;1m" << x << "\033[0m";  // RED
+  #define WARN(x) std::cerr << "\033[22;33;1m" << x << "\033[0m"; // YELLOW
+  #define INFO(x) std::cerr << "\033[22;37;1m" << x << "\033[0m"; // WHITE
+  #define DEBUG(x) std::cerr << "\033[22;34;1m" << x << "\033[0m";// BLUE
+
   #define SIMAGENT 0
   #define PERSON 1
   #define ROBOT 2
+  #define DEACTIVATED 3
 
   #define WAIT_FOR_START 1
   #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
 
   #define GOAL_SUM_PRIOR 0.1f
 
+  const bool assignTrackerWhenAlone = true;
   
   const Vector2 I_g0 = Vector2(-6.2f, 1.5f);
   const Vector2 I_g1 = Vector2(-3.3f, 1.5f);
