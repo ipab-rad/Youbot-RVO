@@ -1,6 +1,6 @@
 clear all
 
-file='PersonWalk1.csv';
+file='PersonWalk4.csv';
 
 X = 1;
 Y = 2;
@@ -18,6 +18,9 @@ nGoals = 3;
 Goal(1,:) = [-6.2, 1.5];
 Goal(2,:) = [-3.3, 1.5];
 Goal(3,:) = [-4.45, 3.3];
+
+% offset = 0.25;
+offset = 0;
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
@@ -52,8 +55,8 @@ for i=1:Ml
 
 %     Plotting Agent Positions and Velocities
     for a=1:nAgents
-      h=scatter(Agent(a,i,X)+0.25,Agent(a,i,Y),ARadius,'blue');
-      x=[Agent(a,i,X)+0.25,Agent(a,i,X)+0.25+Vel(a,i,X)];
+      h=scatter(Agent(a,i,X)+offset,Agent(a,i,Y),ARadius,'blue');
+      x=[Agent(a,i,X)+offset,Agent(a,i,X)+offset+Vel(a,i,X)];
       y=[Agent(a,i,Y),Agent(a,i,Y)+Vel(a,i,Y)];
       plot(x, y);
       
