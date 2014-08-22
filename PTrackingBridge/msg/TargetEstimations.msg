@@ -5,3 +5,4 @@ geometry_msgs/Point32[] standardDeviations
 int32[] widths
 int32[] heights
 geometry_msgs/Point32[] velocities
+geometry_msgs/Point32[] averagedVelocities
