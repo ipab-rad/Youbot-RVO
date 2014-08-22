@@ -97,7 +97,6 @@ namespace hrvo {
 
 
 
-
       for (std::size_t i = 0; i < numAgents; ++i)
       {
         int id = msg->identities[i];

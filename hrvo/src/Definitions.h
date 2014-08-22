@@ -91,7 +91,7 @@ namespace hrvo {
 
   #define GOAL_SUM_PRIOR 0.1f
 
-  const bool assignTrackerWhenAlone = true;
+  const bool assignTrackerWhenAlone = false;
   
   const Vector2 I_g0 = Vector2(-6.2f, 1.5f);
   const Vector2 I_g1 = Vector2(-3.3f, 1.5f);

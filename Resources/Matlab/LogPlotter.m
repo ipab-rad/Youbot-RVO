@@ -1,6 +1,6 @@
 clear all
 
-file='YoubotPlanner3.csv';
+file='PersonWalk1.csv';
 
 X = 1;
 Y = 2;

@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
     std::ofstream log;
-    const char *path="YoubotPlanner5.csv";
+    const char *path="YoubotRemote2.csv";
     log.open(path);
     if (log.fail())
         {ERR("Writing to log failed!" << std::endl);}
@@ -152,25 +152,26 @@ int main(int argc, char *argv[])
     bool enableModel = true;
 
     bool inferFlag = false; // KEEP FALSE
-    std::size_t inferredAgent = 0;
+    std::size_t inferredAgent = 1;
     std::map<std::size_t, std::size_t> simIDs;
     std::size_t numYoubots = 2;
+    
 
     ros::Rate update_freq(ROS_FREQ);
 
 
-    INFO("Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
-    while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-    {
-        environment1.doPlannerStep();
+    // INFO("Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
+    // while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+    // {
+    //     environment1.doPlannerStep();
 
-        ros::spinOnce();
-        update_freq.sleep();
-    }
+    //     ros::spinOnce();
+    //     update_freq.sleep();
+    // }
 
-    STARTED = false;
+    // STARTED = false;
 
-    environment1.stopYoubot();
+    // environment1.stopYoubot();
 
     INFO("Press enter to start Experiment");
     while( std::cin.get() != '\n') {;}
