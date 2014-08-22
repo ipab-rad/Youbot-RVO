@@ -29,50 +29,51 @@ namespace PTracking
 	
 	void PTrackingBridge::exec() const
 	{
-		vector<Point32> positions, standardDeviations, velocities;
+		vector<Point32> averagedVelocities, positions, standardDeviations, velocities;
 		vector<int> heights, identities, widths;
 		UdpSocket receiverSocket;
 		InetAddress sender;
 		stringstream s;
 		string dataReceived, token;
+		float timeout;
 		int iterations, ret; 
 		bool binding;
-                double timeout;
-                
+		
 		if (agentPort != -1)
 		{
 			binding = receiverSocket.bind(agentPort);
 			
 			if (!binding)
 			{
-				ROS_ERROR("error during the binding operation, exiting...");
+				ERR("Error during the binding operation, exiting..." << endl);
 				
 				exit(-1);
 			}
 		}
 		else
 		{
-			ROS_ERROR("agent id not set, please check the launch file");
+			ERR("Agent id not set, please check the launch file." << endl);
 			
 			exit(-1);
 		}
 		
-		ROS_INFO_STREAM("ptracking bridge bound on port: " << agentPort);
+		INFO("PTracking bridge bound on port: " << agentPort << endl);
 		
 		iterations = 0;
-                timeout = 0.05;
+		timeout = 0.05;
 		
 		while (true)
 		{
-                        ret = receiverSocket.recv(dataReceived,sender,timeout);
+			ret = receiverSocket.recv(dataReceived,sender,timeout);
 			
 			if (ret == -1)
 			{
-                                ROS_ERROR("error in receiving message from: '%s'", sender.toString().c_str());
+				ERR("Error in receiving message from: " << sender.toString());
 				
 				continue;
 			}
 			
+			averagedVelocities.clear();
 			heights.clear();
 			identities.clear();
 			positions.clear();
@@ -88,13 +89,13 @@ namespace PTracking
 			/// Splitting message (each estimation is separated by the ';' character).
 			while (getline(s,token,';'))
 			{
-				Point32 position, standardDeviation, velocity;
+				Point32 averagedVelocity, position, standardDeviation, velocity;
 				stringstream tokenStream;
 				int height, identity, width;
 				
 				tokenStream << token;
 				
-				tokenStream >> identity >> position.x >> position.y >> standardDeviation.x >> standardDeviation.y >> width >> height >> velocity.x >> velocity.y;
+				tokenStream >> identity >> position.x >> position.y >> standardDeviation.x >> standardDeviation.y >> width >> height >> velocity.x >> velocity.y >> averagedVelocity.x >> averagedVelocity.y;
 				
 				identities.push_back(identity);
 				positions.push_back(position);
@@ -102,6 +103,7 @@ namespace PTracking
 				widths.push_back(width);
 				heights.push_back(height);
 				velocities.push_back(velocity);
+				averagedVelocities.push_back(averagedVelocity);
 			}
 			
 			TargetEstimations targetEstimations;
@@ -115,16 +117,18 @@ namespace PTracking
 			targetEstimations.widths = widths;
 			targetEstimations.heights = heights;
 			targetEstimations.velocities = velocities;
+			targetEstimations.averagedVelocities = averagedVelocities;
 			
 			publisherTargetEstimations.publish(targetEstimations);
-
-                        timeout = identities.size() > 0 ? 0.05 : 0.0;
+			
+			timeout = identities.size() > 0 ? 0.2 : 0.0;
 		}
 	}
 	
 	void PTrackingBridge::interruptCallback(int)
 	{
-                ROS_INFO("caught Ctrl^C, exiting...");
+		ERR("Caught Ctrl+C. Exiting...");
+		
 		exit(0);
 	}
 }
