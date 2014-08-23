@@ -129,10 +129,12 @@ namespace hrvo {
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
+      std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;
+      std::map<std::size_t, std::size_t>  agentVelCount_;
       std::map<std::size_t, float> inferredGoalsSum_;
       std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
-
-
+      std::map<std::size_t, std::map<std::size_t, std::map<std::size_t, float> > > inferredGoalHistory_;
+      std::map<std::size_t, std::map<std::size_t, std::size_t> > inferredGoalCount_;
 
 
   };

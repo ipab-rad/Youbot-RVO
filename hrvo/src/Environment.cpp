@@ -54,7 +54,6 @@ namespace hrvo {
     {
       std::size_t numAgents = msg->identities.size();
 
-
       DEBUG("Identities:");
       std::map<int, std::size_t> ids;
       for (int i = 0; i < numAgents; ++i)
@@ -102,7 +101,7 @@ namespace hrvo {
         int id = msg->identities[i];
         std::string sid = intToString(id);
         Vector2 agentPos = Vector2(-1 * msg->positions[i].x, msg->positions[i].y);
-        Vector2 agentVel = Vector2(-1 * msg->velocities[i].x, msg->velocities[i].y);
+        Vector2 agentVel = Vector2(-1 * msg->averagedVelocities[i].x, msg->averagedVelocities[i].y);
 
         // ROS_INFO("Agent:%d detected", id);
         if (!prevPosInit)
@@ -116,26 +115,47 @@ namespace hrvo {
           trackedAgents_[id] = THIS_ROBOT;
           // DEBUG("Assigned tracker" << id << "to Youbot_" << nActorID_ << std::endl);
         }
-        if (trackedAgents_.find(id)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )
+        if (trackedAgents_.find(id)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  // TODO: Limit num of created agents
         {
           trackedAgents_[id] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
           DEBUG("New agent" << trackedAgents_[id] << " with tracker" << sid << std::endl);
-          planner_->setAgentMaxAccel(trackedAgents_[id], 2.0f);
-          planner_->setAgentMaxSpeed(trackedAgents_[id], 2.0f);
-          planner_->setAgentPrefSpeed(trackedAgents_[id], 1.0f);
+          agentVelCount_[trackedAgents_[id]] = 0;
+          // planner_->setAgentMaxAccel(trackedAgents_[id], 2.0f);
+          // planner_->setAgentMaxSpeed(trackedAgents_[id], 2.0f);
+          // planner_->setAgentPrefSpeed(trackedAgents_[id], 1.0f);
         }
         else
         {
           if (trackedAgents_[id] == THIS_ROBOT)
           {
             planner_->setOdomNeeded(false);
-            planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
+            planner_->setAgentPosition(THIS_ROBOT, agentPos);
+            // planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
           }
           else if (trackedAgents_.find(id)!=trackedAgents_.end())
           {
           planner_->setAgentPosition(trackedAgents_[id], prevPos_);
           planner_->setAgentVelocity(trackedAgents_[id], agentVel);
-          // planner_->setAgentVelocity(trackedAgents_[id], STOP);
+
+          agentVelHistory_[trackedAgents_[id]][agentVelCount_[trackedAgents_[id]]] = abs(agentVel);
+          agentVelCount_[trackedAgents_[id]] += 1;
+          if (agentVelCount_[trackedAgents_[id]] == VELOCITY_AVERAGE_WINDOW)
+            {agentVelCount_[trackedAgents_[id]] = 0;}
+
+          float avgVel_ = 0.0f;
+          float maxVel_ = 0.0f;
+          for (int j = 0; j < agentVelHistory_[trackedAgents_[id]].size(); ++j)
+          {
+            avgVel_ += agentVelHistory_[trackedAgents_[id]][j];
+            if (agentVelHistory_[trackedAgents_[id]][j] > maxVel_)
+              {maxVel_ = agentVelHistory_[trackedAgents_[id]][j];}
+          }
+          avgVel_ = avgVel_ / agentVelHistory_[trackedAgents_[id]].size();
+
+          DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxVel_<<std::endl);
+          planner_->setAgentPrefSpeed(trackedAgents_[id], avgVel_);  // TODO
+          planner_->setAgentMaxSpeed(trackedAgents_[id], maxVel_);  // TODO
+          // planner_->setAgentMaxAcceleration(trackedAgents_[id], maxAcc_);
           prevPos_ = agentPos;
           }
         }
@@ -149,7 +169,7 @@ namespace hrvo {
   void Environment::setPlannerParam()
   {
     planner_->setTimeStep(SIM_TIME_STEP);
-    planner_->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f); 
+    planner_->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f); 
   }
 
   std::size_t Environment::addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo)
@@ -184,7 +204,7 @@ namespace hrvo {
   std::size_t Environment::setSimParam(std::size_t simID)
   {
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f);
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f);
   }
 
   bool Environment::getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo)
@@ -238,6 +258,8 @@ namespace hrvo {
       simIDs[i] = this->addSimulation();
       std::size_t goalID = simvect_[simIDs[i]]->addGoal(possGoals[i]);
       simvect_[simIDs[i]]->setAgentGoal(agentNo, goalID);
+      if (inferredGoalCount_[agentNo].find(i) == inferredGoalCount_[agentNo].end())
+      {inferredGoalCount_[agentNo][i] = 0;}
       // INFO("simID=" << simIDs[i] << " ");
       // INFO(simNumGoals=" << simnumGoals << std::endl);
       // INFO("Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs[i]]->getGoalPosition(goalID) << std::endl);
@@ -300,11 +322,29 @@ namespace hrvo {
         }
     }
 
+
+
     float inferredGoalsTotal(0.0f);
     for (std::size_t j = 0; j < inferredGoals.size(); ++j)
     {
         INFO("Goal" << j << "=" << inferredGoals[j] << " ");
-        inferredAgentGoalsSum_[agentNo][j] += inferredGoals[j]; 
+        
+        inferredGoalHistory_[agentNo][j][inferredGoalCount_[agentNo][j]] = inferredGoals[j];
+
+        // inferredGoalHistory_[agentNo][j][0] = inferredGoals[j];
+
+        inferredGoalCount_[agentNo][j] += 1;
+        if (inferredGoalCount_[agentNo][j] == GOAL_INFERENCE_HISTORY) 
+          {inferredGoalCount_[agentNo][j] = 0;}
+
+        inferredAgentGoalsSum_[agentNo][j] = GOAL_SUM_PRIOR;
+        for (int i = 0; i < inferredGoalHistory_[agentNo][j].size(); ++i)
+        {
+          inferredAgentGoalsSum_[agentNo][j] += inferredGoalHistory_[agentNo][j][i];
+        }
+        
+
+        // inferredAgentGoalsSum_[agentNo][j] += inferredGoals[j]; // TODO: Add moving average
         inferredGoalsTotal += 1 / inferredAgentGoalsSum_[agentNo][j];
         INFO("GoalSum" << j << "=" << inferredAgentGoalsSum_[agentNo][j] << " " << std::endl);
     }
@@ -377,8 +417,8 @@ namespace hrvo {
 
     std::size_t nAgents = planner_->getNumAgents();
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    // simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, 0.6f, STOP, 0.0f); 
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_PEOPLE_SPEED, MAX_PEOPLE_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f); 
+    // simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_PEOPLE_SPEED, MAX_PEOPLE_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
     
 
     simvect_[simID]->goals_=planner_->goals_;
@@ -403,7 +443,6 @@ namespace hrvo {
     simvect_.erase(simID);
   }
 
-  
 
   void Environment::stopYoubot()
   {

@@ -78,7 +78,8 @@ namespace hrvo {
     Vector2 vdiff = vector1 - vector2;
     // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
     // return roundf(val * 100) / 100;
-    return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+    // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
     // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
+    return abs(vdiff);
   }
 }

@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
     #if HRVO_OUTPUT_TIME_AND_POSITIONS
     std::ofstream log;
-    const char *path="YoubotRemote2.csv";
+    const char *path="PersonWalk4.csv";
     log.open(path);
     if (log.fail())
         {ERR("Writing to log failed!" << std::endl);}
@@ -182,7 +182,8 @@ int main(int argc, char *argv[])
 
     while ( ros::ok() && !SAFETY_STOP )
     {
-        INFO(std::endl);
+        // INFO(std::endl);
+        CLEAR();
         // #if HRVO_OUTPUT_TIME_AND_POSITIONS
         log << environment1.getGlobalPlannerTime();
 

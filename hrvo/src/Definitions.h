@@ -66,6 +66,7 @@
 #include "Vector2.h"
 #endif
 
+#include <iostream>
 #include <string>
 #include <sstream>
 
@@ -93,8 +94,8 @@ namespace hrvo {
 
   const bool assignTrackerWhenAlone = false;
   
-  const Vector2 I_g0 = Vector2(-6.2f, 1.5f);
-  const Vector2 I_g1 = Vector2(-3.3f, 1.5f);
+  const Vector2 I_g0 = Vector2(-6.3f, 1.5f);
+  const Vector2 I_g1 = Vector2(-3.07f, 1.5f);
   const Vector2 I_g2 = Vector2(-4.45f, 3.3f);
 
   const Vector2 STOP = Vector2(0.0f, 0.0f);
@@ -110,6 +111,9 @@ namespace hrvo {
 
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;
 
+  const std::size_t VELOCITY_AVERAGE_WINDOW = 10;
+  const std::size_t GOAL_INFERENCE_HISTORY = 10;
+
   const float SIM_TIME_STEP = 0.1f;
 
   const float NEIGHBOR_DIST = 5.0f;
@@ -120,7 +124,7 @@ namespace hrvo {
   const float PREF_PEOPLE_SPEED = 0.3f;
   const float MAX_SPEED = 0.6f;
   const float MAX_PEOPLE_SPEED = 2.0f;
-  const float MAX_ACCELERATION = 0.6f;
+  const float MAX_ACCELERATION = 5.0f;
   const float MAX_PEOPLE_ACCELERATION = 1.2f;
 
   const std::size_t THIS_ROBOT = 0;
@@ -139,6 +143,7 @@ namespace hrvo {
 
   std::string intToString(int i);
 
+  void CLEAR();
 
   /**
   * \brief      Computes the square of a float.
