@@ -92,7 +92,7 @@ namespace hrvo {
 
   #define GOAL_SUM_PRIOR 0.1f
 
-  const bool assignTrackerWhenAlone = false;
+  const bool assignTrackerWhenAlone = true;
   
   const Vector2 I_g0 = Vector2(-6.3f, 1.5f);
   const Vector2 I_g1 = Vector2(-3.07f, 1.5f);
@@ -107,7 +107,7 @@ namespace hrvo {
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
   const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
 
-  const Vector2 trackerOffset = kinect2Offset;
+  const Vector2 trackerOffset = kinect1Offset;
 
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;
 

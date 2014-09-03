@@ -75,22 +75,22 @@ namespace hrvo {
             found = true;
           }
         }
-        if (!found || ids.size() == 0)
-        {
-          DEBUG(" eliminated" << std::endl);
-          if (iter->second != THIS_ROBOT)
-          {
-            {planner_->setAgentPosition(iter->second, STOP);
-              planner_->setAgentVelocity(iter->second, STOP);}
-          // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
-          // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
-          // delete planner_->agents_[iter->second];
-          // delete Viter;
-          // Viter = NULL;
-          }
-            // planner_->agents_.erase(iterator __position);
-          trackedAgents_.erase(iter);
-        }
+        // if (!found || ids.size() == 0)
+        // {
+        //   DEBUG(" eliminated" << std::endl);
+        //   if (iter->second != THIS_ROBOT)
+        //   {
+        //     {planner_->setAgentPosition(iter->second, STOP);
+        //       planner_->setAgentVelocity(iter->second, STOP);}
+        //   // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
+        //   // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
+        //   // delete planner_->agents_[iter->second];
+        //   // delete Viter;
+        //   // Viter = NULL;
+        //   }
+        //     // planner_->agents_.erase(iterator __position);
+        //   trackedAgents_.erase(iter);
+        // }
 
       }
 

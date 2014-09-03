@@ -1,6 +1,6 @@
 clear all
 
-file='PersonWalk4.csv';
+file='YoubotRemote12(BigAcc-MagnFix).csv';
 
 X = 1;
 Y = 2;
@@ -19,7 +19,7 @@ Goal(1,:) = [-6.2, 1.5];
 Goal(2,:) = [-3.3, 1.5];
 Goal(3,:) = [-4.45, 3.3];
 
-% offset = 0.25;
+% offset = -0.25;
 offset = 0;
 
 M = csvread(file, 1);
@@ -43,6 +43,10 @@ end
 %       goalRat(1:3)=[0.3, 0.3, 0.4];
 
 %     fig1 = 
+goalLine1=Rat(1,:,1);
+goalLine2=Rat(1,:,2);
+goalLine3=Rat(1,:,3);
+
 for i=1:Ml
     subplot(1,2,1);
     plot(NaN);      % Clear subplot
@@ -76,3 +80,4 @@ for i=1:Ml
     
     
 end
+

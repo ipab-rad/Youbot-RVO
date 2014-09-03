@@ -160,18 +160,18 @@ int main(int argc, char *argv[])
     ros::Rate update_freq(ROS_FREQ);
 
 
-    // INFO("Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
-    // while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-    // {
-    //     environment1.doPlannerStep();
+    INFO("Moving to Start Goal" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
+    while ( !environment1.getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+    {
+        environment1.doPlannerStep();
 
-    //     ros::spinOnce();
-    //     update_freq.sleep();
-    // }
+        ros::spinOnce();
+        update_freq.sleep();
+    }
 
-    // STARTED = false;
+    STARTED = false;
 
-    // environment1.stopYoubot();
+    environment1.stopYoubot();
 
     INFO("Press enter to start Experiment");
     while( std::cin.get() != '\n') {;}
@@ -190,10 +190,10 @@ int main(int argc, char *argv[])
         if (environment1.getReachedPlannerGoal() && cycleGoals)
         {
             if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_0)
-                {environment1.setPlannerGoal(goal1_1);}
-            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_1)
                 {environment1.setPlannerGoal(goal1_2);}
             else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_2)
+                {environment1.setPlannerGoal(goal1_1);}
+            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_1)
                 {environment1.setPlannerGoal(goal1_0);}
         }
 
