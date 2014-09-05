@@ -82,7 +82,7 @@ namespace hrvo {
 
 Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
 {
-  add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
+  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }
@@ -93,7 +93,7 @@ Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactor
   std::ostringstream ostr;
   ostr << nactorID;
   std::string sactorID = ostr.str();
-  add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID, &Simulator::addAgentCallback, this);
+  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }
@@ -107,7 +107,7 @@ Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactor
   ostr2 << nsimID;
   std::string sactorID = ostr1.str();
   std::string ssimID = ostr2.str();
-  add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID + "_" + ssimID, &Simulator::addAgentCallback, this);
+  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID + "_" + ssimID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }

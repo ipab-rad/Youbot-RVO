@@ -77,7 +77,6 @@
 #endif
 
  namespace hrvo {
- 	const float HRVO_PI = 3.141592653589793f;
 
  	Agent::Agent(Simulator *simulator) : simulator_(simulator), goalNo_(0), maxNeighbors_(0), goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f), orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE

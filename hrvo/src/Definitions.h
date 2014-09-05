@@ -75,46 +75,61 @@ namespace hrvo {
   * \brief  A sufficiently small positive float.
   */
   const float HRVO_EPSILON = 0.00001f;
+  const float HRVO_PI = 3.141592653589793f;
 
-
+  // Console printing MACROS
   #define ERR(x) std::cerr << "\033[22;31;1m" << x << "\033[0m";  // RED
   #define WARN(x) std::cerr << "\033[22;33;1m" << x << "\033[0m"; // YELLOW
   #define INFO(x) std::cerr << "\033[22;37;1m" << x << "\033[0m"; // WHITE
   #define DEBUG(x) std::cerr << "\033[22;34;1m" << x << "\033[0m";// BLUE
+  #define CLEAR() std::cerr << "\x1B[2J\x1B[H"; // CSI[2J clears screen, CSI[H moves the cursor to top-left corner
 
+  // Types of agent, determine their sim param, data subscribers and publishers
   #define SIMAGENT 0
   #define PERSON 1
   #define ROBOT 2
   #define DEACTIVATED 3
 
-  #define WAIT_FOR_START 1
-  #define HRVO_OUTPUT_TIME_AND_POSITIONS 1
 
-  #define GOAL_SUM_PRIOR 0.1f
+  // Experimental setup parameters
+  const bool PERFORM_ROBOT_SETUP = true;        // Robots move into initial positions
+  const bool LOG_DATA = true;                   // Log data into a file
+  const bool ASSIGN_TRACKER_WHEN_ALONE = true;  // When only one agent is tracked, assign tracker to robot
+  const int ROS_FREQ = 10;
+  const std::size_t MAX_NO_TRACKED_AGENTS = 2;  // TODO: Not working as intended
 
-  const bool assignTrackerWhenAlone = true;
-  
+  // Simulation setup parameters
+  const std::size_t THIS_ROBOT = 0;
+  const float SIM_TIME_STEP = 0.1f;
+
+  // Model setup parameters
+  const float GOAL_SUM_PRIOR = 0.1f;             // Goal inference initial prior
+
+  // Goal positions for InSpace Setup
   const Vector2 I_g0 = Vector2(-6.3f, 1.5f);
   const Vector2 I_g1 = Vector2(-3.07f, 1.5f);
   const Vector2 I_g2 = Vector2(-4.45f, 3.3f);
 
+  // Start positions for InSpace Setup
   const Vector2 STOP = Vector2(0.0f, 0.0f);
   const Vector2 START_POS1 = Vector2(-7.4f, 1.5f);
   const Vector2 START_POS2 = Vector2(2.5f, 0.0f);
 
+  // Handy velocities
   const Vector2 goBackVec = START_POS1 - Vector2(1.0f, 0.0f);
 
+  // Counter offsets generated for Youbots, as tracker gives feet position.
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
   const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
 
-  const Vector2 trackerOffset = kinect1Offset;
+  const Vector2 trackerOffset = kinect1Offset;  // When using only one kinect, select appropriate robot offset
 
-  const std::size_t MAX_NO_TRACKED_AGENTS = 2;
+
+
 
   const std::size_t VELOCITY_AVERAGE_WINDOW = 10;
   const std::size_t GOAL_INFERENCE_HISTORY = 10;
 
-  const float SIM_TIME_STEP = 0.1f;
 
   const float NEIGHBOR_DIST = 5.0f;
   const std::size_t MAX_NEIGHBORS = 10;
@@ -127,10 +142,7 @@ namespace hrvo {
   const float MAX_ACCELERATION = 5.0f;
   const float MAX_PEOPLE_ACCELERATION = 1.2f;
 
-  const std::size_t THIS_ROBOT = 0;
-
-  const int ROS_FREQ = 10;
-
+  // Actor name for the environment created
   enum Actor{
     YOUBOT_1 = 0,
     YOUBOT_2 ,
@@ -142,8 +154,6 @@ namespace hrvo {
   const char* getActorName(enum Actor actorID);
 
   std::string intToString(int i);
-
-  void CLEAR();
 
   /**
   * \brief      Computes the square of a float.

@@ -34,7 +34,7 @@ namespace hrvo {
 
     enum Actor getActorID() {return nActorID_;}
 
-    std::string getsActorID() {return sActorID_;}
+    std::string getStringActorID() {return sActorID_;}
 
     float getPlannerGlobalTime() {return planner_->getGlobalTime();}
 

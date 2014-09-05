@@ -59,12 +59,12 @@
  * \brief  Example with 250 agents navigating through a circular environment.
  */
 
-#define HRVO_OUTPUT_TIME_AND_POSITIONS 1
+#define LOG_DATA 1
 #define ROS_PUBLISHER 1
 
 #include <cmath>
 
-#if HRVO_OUTPUT_TIME_AND_POSITIONS
+#if LOG_DATA
 #include <iostream>
 #include <fstream>
 #include <csignal>
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     ros::Rate update_freq(10);
     do
     {
-#if HRVO_OUTPUT_TIME_AND_POSITIONS
+#if LOG_DATA
         log << simulator.getGlobalTime();
 
         for (std::size_t i = 0; i < simulator.getNumAgents(); ++i)
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
             std::cout << simulator.getAgentPosition(i).getX() << "," << simulator.getAgentPosition(i).getY() << std::endl;
         }
         log << std::endl;
-#endif /* HRVO_OUTPUT_TIME_AND_POSITIONS */
+#endif /* LOG_DATA */
 
         simulator.doStep();
         ros::spinOnce();

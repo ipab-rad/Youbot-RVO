@@ -30,7 +30,7 @@ namespace hrvo {
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
-    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1000, &Environment::addTracker, this);
+    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::addTracker, this);
     ROS_INFO("Suscribing to TargetEstimations");
     prevPosInit = false;
   }
@@ -110,7 +110,7 @@ namespace hrvo {
           prevPosInit = true;
         }
 
-        if (assignTrackerWhenAlone && (trackedAgents_.empty() || numAgents == 1))
+        if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
         {
           trackedAgents_[id] = THIS_ROBOT;
           // DEBUG("Assigned tracker" << id << "to Youbot_" << nActorID_ << std::endl);
