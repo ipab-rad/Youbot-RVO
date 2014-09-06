@@ -194,21 +194,21 @@ void Simulator::doStep()
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type == ROBOT)
     { // Should odometry be updated here?
-      (*iter)->odomUpdate();
       if (odomNeeded_)
         {(*iter)->odomPosUpdate();}  
+      (*iter)->odomUpdate();
     }
   }  
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type != PERSON)
     {
-      if ((*iter)->agent_type == ROBOT)
-      { // Should odometry be updated here too?
-        (*iter)->odomUpdate();
-        if (odomNeeded_)
-          {(*iter)->odomPosUpdate();}  
-      }
+      // if ((*iter)->agent_type == ROBOT)
+      // { // Should odometry be updated here too?
+      //   if (odomNeeded_)
+      //     {(*iter)->odomPosUpdate();}  
+      //    (*iter)->odomUpdate();
+      // }
 
       (*iter)->computePreferredVelocity();
       (*iter)->computeNeighbors();

@@ -42,6 +42,8 @@ namespace hrvo {
 
     void setAgentTracker(int TrackerID, std::size_t AgentID)  {trackedAgents_[TrackerID] = AgentID;}
 
+    std::map<int, std::size_t> getTrackerIDs();
+
     void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();

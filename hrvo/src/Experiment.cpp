@@ -113,11 +113,9 @@ int main(int argc, char *argv[])
     std::size_t goal1_0 = environment1.addPlannerGoal(I_g0);
     std::size_t goal1_1 = environment1.addPlannerGoal(I_g1);
     std::size_t goal1_2 = environment1.addPlannerGoal(I_g2);
-    // std::size_t goBack = environment1.addPlannerGoal(goBackVec);
 
     // std::size_t goal2_1 = environment2.addPlannerGoal(g1);
     // std::size_t goal2_2 = environment2.addPlannerGoal(g2);
-    environment1.setPlannerGoal(goal1_0);
 
     // environment1.setPlannerGoal(goBack);
     // environment2.setPlannerGoal(goal2_2);
@@ -162,10 +160,14 @@ int main(int argc, char *argv[])
             INFO("Press enter to perform setup for " << iter->second->getStringActorID() << std::endl);
             while( std::cin.get() != '\n') {;}
 
+            Vector2 ForwVec = iter->second->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
+            iter->second->addAndSetPlannerGoal(ForwVec);
+
             STARTED = true;
-            INFO("Moving to Start Goal" << iter->second->getPlannerGoal(THIS_ROBOT) << std::endl);
             while ( !iter->second->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-            {
+            {   
+                CLEAR();
+                INFO("Moving from " << iter->second->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
                 iter->second->updateTracker();
                 iter->second->doPlannerStep();
 
@@ -173,9 +175,22 @@ int main(int argc, char *argv[])
                 update_freq.sleep();
             }
 
+            iter->second->stopYoubot();
             STARTED = false;
 
-            iter->second->stopYoubot();
+            std::map<int, std::size_t> ids = iter->second->getTrackerIDs();
+
+            if (ids.empty())
+            {
+                WARN("No Trackers were found" << std::endl);
+            }
+            else if (MANUAL_TRACKER_ASSIGNMENT)
+            {
+                INFO("Enter TrackerID for " << iter->second->getStringActorID() << ":" << std::endl);
+                int TrackerID = cinInteger();
+                iter->second->setAgentTracker(TrackerID, THIS_ROBOT);
+            }
+
         }
 
     }
@@ -190,8 +205,9 @@ int main(int argc, char *argv[])
     STARTED = true;
 
     INFO("Starting Experiment..." << std::endl);
+    environment1.setPlannerGoal(goal1_0);
 
-    while ( ros::ok() && !SAFETY_STOP )
+        while ( ros::ok() && !SAFETY_STOP )
     {
         // INFO(std::endl);
         CLEAR();
@@ -202,14 +218,14 @@ int main(int argc, char *argv[])
         if (environment1.getReachedPlannerGoal() && CYCLE_GOALS)
         {
             if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_0)
-                {environment1.setPlannerGoal(goal1_2);}
-            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_2)
                 {environment1.setPlannerGoal(goal1_1);}
             else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_1)
+                {environment1.setPlannerGoal(goal1_2);}
+            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_2)
                 {environment1.setPlannerGoal(goal1_0);}
         }
 
-        INFO("Youbot goal:" << environment1.getPlannerGoal(THIS_ROBOT) << " ");
+        INFO("Youbot Goal:" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
 
         for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
         {

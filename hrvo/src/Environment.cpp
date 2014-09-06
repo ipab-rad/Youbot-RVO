@@ -53,20 +53,13 @@ namespace hrvo {
     {
       std::size_t numAgents = msg_.identities.size();
 
-      DEBUG("Identities:");
-      std::map<int, std::size_t> ids;     // First = Index, Second = Tracker ID
-      for (int i = 0; i < numAgents; ++i)
-      {
-        ids[i] = msg_.identities[i];
-        DEBUG(ids[i] <<",");
-      }
-      INFO(std::endl);
+      std::map<int, std::size_t> ids = this->getTrackerIDs();
       
       // Check if trackers for existing agents are still active
       for(std::map<int, std::size_t>::iterator iter = trackedAgents_.begin(); iter != trackedAgents_.end(); ++iter)
       {
         bool found = false;
-        DEBUG("Tracker:" << iter->first << " identity:" << iter->second);
+        DEBUG("Tracker" << iter->first << " for Agent" << iter->second);
         for (int i = 0; i < ids.size(); ++i)
         {
           if (ids[i] == iter->first)
@@ -140,6 +133,21 @@ namespace hrvo {
 
   }
 
+  std::map<int, std::size_t> Environment::getTrackerIDs()
+  {
+    std::size_t numAgents = msg_.identities.size();
+
+    DEBUG("Identities:");
+    std::map<int, std::size_t> ids;     // First = Index, Second = Tracker ID
+    for (int i = 0; i < numAgents; ++i)
+    {
+      ids[i] = msg_.identities[i];
+      DEBUG(ids[i] <<",");
+    }
+    INFO(std::endl);
+    return ids;
+  }
+
   void Environment::receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg)
   {
     msg_ = *msg;
@@ -193,6 +201,7 @@ namespace hrvo {
 
   void Environment::doPlannerStep()
   {
+    if (planner_->odomNeeded_) {WARN(sActorID_<< " using odometry for navigation" << std::endl);}
     planner_->doStep();
     planner_->setOdomNeeded(true);
   }

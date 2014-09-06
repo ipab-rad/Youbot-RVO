@@ -93,9 +93,10 @@ namespace hrvo {
   // ************************************************************
   // Experimental setup parameters
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
-  const bool ENABLE_MODELLING = true;             // Enable inference model
+  const bool MANUAL_TRACKER_ASSIGNMENT = true;
+  const bool ENABLE_MODELLING = false;             // Enable inference model
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool LOG_DATA = true;                     // Log data into a file
+  const bool LOG_DATA = false;                     // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
   const int ROS_FREQ = 10;
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;  // TODO: Not working as intended
@@ -118,7 +119,8 @@ namespace hrvo {
   const Vector2 START_POS2 = Vector2(2.5f, 0.0f);
 
   // Handy velocities
-  const Vector2 goBackVec = START_POS1 - Vector2(1.0f, 0.0f);
+  const Vector2 goBackVec = Vector2(-1.0f, 0.0f);
+  const Vector2 goForwVec = Vector2(1.0f, 0.0f);
 
   // Youbot Tracking Offsets (Tracker gives feet position which is innacurate for robots when using 1 kinect)
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
@@ -155,6 +157,8 @@ namespace hrvo {
   const char* getActorName(enum Actor actorID);
 
   std::string intToString(int i);
+
+  int cinInteger();
 
   /**
   * \brief      Computes the square of a float.

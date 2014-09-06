@@ -25,4 +25,21 @@ namespace hrvo {
     return str;
   }
 
+  int cinInteger()
+  {
+    std::string input = "";
+    int myNumber = 0;
+
+    while (true) {
+        std::getline(std::cin, input);
+
+        // This code converts from string to number safely.
+        std::stringstream myStream(input);
+        if (myStream >> myNumber)
+            {break;}
+        ERR("Invalid number, please try again" << std::endl);
+        }
+    return myNumber;
+  }
+
 }

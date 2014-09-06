@@ -495,7 +495,7 @@
  	}
 
  	void Agent::odomUpdate()
- 	{
+ 	{		
  			previous_odometry_offset_ = current_odometry_offset_;
  	}
 
