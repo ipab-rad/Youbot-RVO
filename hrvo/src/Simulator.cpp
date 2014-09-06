@@ -192,18 +192,22 @@ void Simulator::doStep()
   kdTree_->build();
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type == ROBOT && odomNeeded_)
-    {
-    (*iter)->odomupdate();  // Should odometry be updated here?
+    if ((*iter)->agent_type == ROBOT)
+    { // Should odometry be updated here?
+      (*iter)->odomUpdate();
+      if (odomNeeded_)
+        {(*iter)->odomPosUpdate();}  
     }
   }  
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type != PERSON)
     {
-      if ((*iter)->agent_type == ROBOT && odomNeeded_)
-      {
-      (*iter)->odomupdate(); // Should odometry be updated here as well?
+      if ((*iter)->agent_type == ROBOT)
+      { // Should odometry be updated here too?
+        (*iter)->odomUpdate();
+        if (odomNeeded_)
+          {(*iter)->odomPosUpdate();}  
       }
 
       (*iter)->computePreferredVelocity();

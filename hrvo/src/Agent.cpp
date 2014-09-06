@@ -489,10 +489,13 @@
  		}
  	}
 
- 	void Agent::odomupdate()
+ 	void Agent::odomPosUpdate()
  	{
  			position_ += current_odometry_offset_ - previous_odometry_offset_;
+ 	}
 
+ 	void Agent::odomUpdate()
+ 	{
  			previous_odometry_offset_ = current_odometry_offset_;
  	}
 

@@ -219,7 +219,8 @@ namespace hrvo {
      * \brief  Updates the orientation, position, and velocity of this agent.
      */
     void update();
-    void odomupdate();
+    void odomPosUpdate();
+    void odomUpdate();
 
     Simulator *const simulator_;
     Vector2 newVelocity_;
