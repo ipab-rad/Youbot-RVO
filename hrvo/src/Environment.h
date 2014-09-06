@@ -118,7 +118,6 @@ namespace hrvo {
       enum Actor nActorID_;
       std::string sActorID_; 
       Vector2 startPos_;
-      Vector2 prevPos_;
       size_t startGoal_;
       float goalRatio_[3];
       

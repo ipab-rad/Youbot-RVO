@@ -123,6 +123,7 @@ namespace hrvo {
   // Youbot Tracking Offsets (Tracker gives feet position which is innacurate for robots when using 1 kinect)
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
   const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
+  const Vector2 noOffset = Vector2(0.0f, 0.0f);
 
   const Vector2 trackerOffset = kinect1Offset;
 

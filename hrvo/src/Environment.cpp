@@ -32,7 +32,6 @@ namespace hrvo {
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
     Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
-    prevPosInit = false;
   }
   Environment::~Environment()
   {
@@ -103,13 +102,6 @@ namespace hrvo {
         Vector2 agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
         Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
 
-        // ROS_INFO("Agent:%d detected", TrackerID);
-        if (!prevPosInit)
-        {
-          prevPos_ = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
-          prevPosInit = true;
-        }
-
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
         { // TODO: REPLACE WITH MANUAL/AUTOMATIC ASSIGNMENT AT SETUP
           this->setAgentTracker(TrackerID, THIS_ROBOT);
@@ -121,9 +113,6 @@ namespace hrvo {
           trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
           DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
           agentVelCount_[trackedAgents_[TrackerID]] = 0;
-          // planner_->setAgentMaxAccel(trackedAgents_[TrackerID], 2.0f);
-          // planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], 2.0f);
-          // planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], 1.0f);
         }
         else
         {
@@ -135,14 +124,13 @@ namespace hrvo {
           }
           else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
           {
-          planner_->setAgentPosition(trackedAgents_[TrackerID], prevPos_);
+          planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
           planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
           std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
           planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);  // TODO
           planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);  // TODO
           // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
-          prevPos_ = agentPos;
           }
         }
 
