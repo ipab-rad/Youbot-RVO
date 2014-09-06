@@ -40,6 +40,8 @@ namespace hrvo {
 
     void updateTracker();
 
+    void setAgentTracker(int TrackerID, std::size_t AgentID)  {trackedAgents_[TrackerID] = AgentID;}
+
     void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();
@@ -104,7 +106,7 @@ namespace hrvo {
   */
     void emergencyStop();
 
-
+    std::pair<float, float> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
 
     private:
@@ -128,11 +130,11 @@ namespace hrvo {
 
       Simulator *planner_;
 
-      std::map<int, std::size_t> trackedAgents_;
+      std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
-      std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;
+      std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, std::size_t>  agentVelCount_;
       std::map<std::size_t, float> inferredGoalsSum_;
       std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;

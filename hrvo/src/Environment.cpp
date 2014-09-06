@@ -55,7 +55,7 @@ namespace hrvo {
       std::size_t numAgents = msg_.identities.size();
 
       DEBUG("Identities:");
-      std::map<int, std::size_t> ids;
+      std::map<int, std::size_t> ids;     // First = Index, Second = Tracker ID
       for (int i = 0; i < numAgents; ++i)
       {
         ids[i] = msg_.identities[i];
@@ -63,6 +63,7 @@ namespace hrvo {
       }
       INFO(std::endl);
       
+      // Check if trackers for existing agents are still active
       for(std::map<int, std::size_t>::iterator iter = trackedAgents_.begin(); iter != trackedAgents_.end(); ++iter)
       {
         bool found = false;
@@ -75,35 +76,34 @@ namespace hrvo {
             found = true;
           }
         }
-        // if (!found || ids.size() == 0)
-        // {
+        if (!found || ids.size() == 0)
+        {
+          DEBUG(" inactive" << std::endl);
         //   DEBUG(" eliminated" << std::endl);
-        //   if (iter->second != THIS_ROBOT)
-        //   {
-        //     {planner_->setAgentPosition(iter->second, STOP);
-        //       planner_->setAgentVelocity(iter->second, STOP);}
-        //   // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
-        //   // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
-        //   // delete planner_->agents_[iter->second];
-        //   // delete Viter;
-        //   // Viter = NULL;
-        //   }
-        //     // planner_->agents_.erase(iterator __position);
-        //   trackedAgents_.erase(iter);
-        // }
-
+          // if (iter->second != THIS_ROBOT)
+          // {
+          //   {planner_->setAgentPosition(iter->second, STOP);
+          //     planner_->setAgentVelocity(iter->second, STOP);}
+          // // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
+          // // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
+          // // delete planner_->agents_[iter->second];
+          // // delete Viter;
+          // // Viter = NULL;
+          // }
+          //   // planner_->agents_.erase(iterator __position);
+          // trackedAgents_.erase(iter);
+        }
       }
 
-
-
+      // Update existing tracked agents or create new agents for new trackers
       for (std::size_t i = 0; i < numAgents; ++i)
       {
-        int id = msg_.identities[i];
-        std::string sid = intToString(id);
+        int TrackerID = msg_.identities[i];
+        std::string sid = intToString(TrackerID);
         Vector2 agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
         Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
 
-        // ROS_INFO("Agent:%d detected", id);
+        // ROS_INFO("Agent:%d detected", TrackerID);
         if (!prevPosInit)
         {
           prevPos_ = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
@@ -111,51 +111,37 @@ namespace hrvo {
         }
 
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
-        {
-          trackedAgents_[id] = THIS_ROBOT;
-          // DEBUG("Assigned tracker" << id << "to Youbot_" << nActorID_ << std::endl);
+        { // TODO: REPLACE WITH MANUAL/AUTOMATIC ASSIGNMENT AT SETUP
+          this->setAgentTracker(TrackerID, THIS_ROBOT);
+          // DEBUG("Assigned tracker" << TrackerID << "to Youbot_" << nActorID_ << std::endl);
         }
-        if (trackedAgents_.find(id)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  // TODO: Limit num of created agents
-        {
-          trackedAgents_[id] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
-          DEBUG("New agent" << trackedAgents_[id] << " with tracker" << sid << std::endl);
-          agentVelCount_[trackedAgents_[id]] = 0;
-          // planner_->setAgentMaxAccel(trackedAgents_[id], 2.0f);
-          // planner_->setAgentMaxSpeed(trackedAgents_[id], 2.0f);
-          // planner_->setAgentPrefSpeed(trackedAgents_[id], 1.0f);
+
+        if (trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
+        { // TODO: Limit number of created agents
+          trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
+          DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
+          agentVelCount_[trackedAgents_[TrackerID]] = 0;
+          // planner_->setAgentMaxAccel(trackedAgents_[TrackerID], 2.0f);
+          // planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], 2.0f);
+          // planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], 1.0f);
         }
         else
         {
-          if (trackedAgents_[id] == THIS_ROBOT)
+          if (trackedAgents_[TrackerID] == THIS_ROBOT)
           {
             planner_->setOdomNeeded(false);
-            planner_->setAgentPosition(THIS_ROBOT, agentPos);
-            // planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
+            // planner_->setAgentPosition(THIS_ROBOT, agentPos);
+            planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
           }
-          else if (trackedAgents_.find(id)!=trackedAgents_.end())
+          else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
           {
-          planner_->setAgentPosition(trackedAgents_[id], prevPos_);
-          planner_->setAgentVelocity(trackedAgents_[id], agentVel);
+          planner_->setAgentPosition(trackedAgents_[TrackerID], prevPos_);
+          planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
-          agentVelHistory_[trackedAgents_[id]][agentVelCount_[trackedAgents_[id]]] = abs(agentVel);
-          agentVelCount_[trackedAgents_[id]] += 1;
-          if (agentVelCount_[trackedAgents_[id]] == VELOCITY_AVERAGE_WINDOW)
-            {agentVelCount_[trackedAgents_[id]] = 0;}
-
-          float avgVel_ = 0.0f;
-          float maxVel_ = 0.0f;
-          for (int j = 0; j < agentVelHistory_[trackedAgents_[id]].size(); ++j)
-          {
-            avgVel_ += agentVelHistory_[trackedAgents_[id]][j];
-            if (agentVelHistory_[trackedAgents_[id]][j] > maxVel_)
-              {maxVel_ = agentVelHistory_[trackedAgents_[id]][j];}
-          }
-          avgVel_ = avgVel_ / agentVelHistory_[trackedAgents_[id]].size();
-
-          DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxVel_<<std::endl);
-          planner_->setAgentPrefSpeed(trackedAgents_[id], avgVel_);  // TODO
-          planner_->setAgentMaxSpeed(trackedAgents_[id], maxVel_);  // TODO
-          // planner_->setAgentMaxAcceleration(trackedAgents_[id], maxAcc_);
+          std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
+          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);  // TODO
+          planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);  // TODO
+          // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
           prevPos_ = agentPos;
           }
         }
@@ -471,6 +457,28 @@ namespace hrvo {
     }
 
 
+  }
+
+  std::pair<float, float> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
+  {
+    agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = abs(AgentVel);
+    agentVelCount_[trackedAgents_[AgentID]] += 1;
+    if (agentVelCount_[trackedAgents_[AgentID]] == VELOCITY_AVERAGE_WINDOW)
+      {agentVelCount_[trackedAgents_[AgentID]] = 0;}
+
+    float avgVel_ = 0.0f;
+    float maxVel_ = 0.0f;
+    for (int j = 0; j < agentVelHistory_[trackedAgents_[AgentID]].size(); ++j)
+    {
+      avgVel_ += agentVelHistory_[trackedAgents_[AgentID]][j];
+      if (agentVelHistory_[trackedAgents_[AgentID]][j] > maxVel_)
+        {maxVel_ = agentVelHistory_[trackedAgents_[AgentID]][j];}
+    }
+    avgVel_ = avgVel_ / agentVelHistory_[trackedAgents_[AgentID]].size();
+
+    DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxVel_<<std::endl);
+
+    return std::make_pair(avgVel_, maxVel_);
   }
 
 
