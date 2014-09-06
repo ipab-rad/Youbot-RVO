@@ -71,9 +71,7 @@
 #include <sstream>
 
 namespace hrvo {
-  /**
-  * \brief  A sufficiently small positive float.
-  */
+  //A sufficiently small positive float.
   const float HRVO_EPSILON = 0.00001f;
   const float HRVO_PI = 3.141592653589793f;
 
@@ -90,8 +88,12 @@ namespace hrvo {
   #define ROBOT 2
   #define DEACTIVATED 3
 
-
+  // ************************************************************
+  //                SETUP EXPERIMENT BEFORE START
+  // ************************************************************
   // Experimental setup parameters
+  const bool CYCLE_GOALS = true;                 // Make Planning robot cycle between goals
+  const bool ENABLE_MODELLING = true;                // Enable inference model
   const bool PERFORM_ROBOT_SETUP = true;        // Robots move into initial positions
   const bool LOG_DATA = true;                   // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = true;  // When only one agent is tracked, assign tracker to robot
@@ -118,15 +120,13 @@ namespace hrvo {
   // Handy velocities
   const Vector2 goBackVec = START_POS1 - Vector2(1.0f, 0.0f);
 
-  // Counter offsets generated for Youbots, as tracker gives feet position.
+  // Youbot Tracking Offsets (Tracker gives feet position which is innacurate for robots when using 1 kinect)
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
   const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
 
-  const Vector2 trackerOffset = kinect1Offset;  // When using only one kinect, select appropriate robot offset
+  const Vector2 trackerOffset = kinect1Offset;
 
-
-
-
+ 
   const std::size_t VELOCITY_AVERAGE_WINDOW = 10;
   const std::size_t GOAL_INFERENCE_HISTORY = 10;
 

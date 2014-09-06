@@ -38,7 +38,9 @@ namespace hrvo {
 
     float getPlannerGlobalTime() {return planner_->getGlobalTime();}
 
-    void addTracker(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
+    void updateTracker();
+
+    void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();
 
@@ -122,6 +124,7 @@ namespace hrvo {
 
       ros::NodeHandle nh_;
       ros::Subscriber Targsub;
+      PTrackingBridge::TargetEstimations msg_;
 
       Simulator *planner_;
 

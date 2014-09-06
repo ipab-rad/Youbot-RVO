@@ -30,7 +30,7 @@ namespace hrvo {
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
-    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::addTracker, this);
+    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
     prevPosInit = false;
   }
@@ -47,18 +47,18 @@ namespace hrvo {
     }
   }
 
-  void Environment::addTracker(const PTrackingBridge::TargetEstimations::ConstPtr& msg)
+  void Environment::updateTracker()
   {
     // DEBUG("Received!" << std::endl);
-    if (!msg->identities.empty())
+    if (!msg_.identities.empty())
     {
-      std::size_t numAgents = msg->identities.size();
+      std::size_t numAgents = msg_.identities.size();
 
       DEBUG("Identities:");
       std::map<int, std::size_t> ids;
       for (int i = 0; i < numAgents; ++i)
       {
-        ids[i] = msg->identities[i];
+        ids[i] = msg_.identities[i];
         DEBUG(ids[i] <<",");
       }
       INFO(std::endl);
@@ -98,15 +98,15 @@ namespace hrvo {
 
       for (std::size_t i = 0; i < numAgents; ++i)
       {
-        int id = msg->identities[i];
+        int id = msg_.identities[i];
         std::string sid = intToString(id);
-        Vector2 agentPos = Vector2(-1 * msg->positions[i].x, msg->positions[i].y);
-        Vector2 agentVel = Vector2(-1 * msg->averagedVelocities[i].x, msg->averagedVelocities[i].y);
+        Vector2 agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
+        Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
 
         // ROS_INFO("Agent:%d detected", id);
         if (!prevPosInit)
         {
-          prevPos_ = Vector2(-1 * msg->positions[i].x, msg->positions[i].y);
+          prevPos_ = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
           prevPosInit = true;
         }
 
@@ -164,6 +164,11 @@ namespace hrvo {
 
     }
 
+  }
+
+  void Environment::receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg)
+  {
+    msg_ = *msg;
   }
 
   void Environment::setPlannerParam()

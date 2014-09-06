@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
     // std::size_t goal2_1 = environment2.addPlannerGoal(g1);
     // std::size_t goal2_2 = environment2.addPlannerGoal(g2);
     environment1.setPlannerGoal(goal1_0);
+
     // environment1.setPlannerGoal(goBack);
     // environment2.setPlannerGoal(goal2_2);
 
@@ -142,8 +143,7 @@ int main(int argc, char *argv[])
     
     INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumPlannerAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 
-    bool cycleGoals = true;
-    bool enableModel = true;
+
 
     bool inferFlag = false; // KEEP FALSE, disables model inference when planning agent is alone
     std::size_t inferredAgent = 1;
@@ -166,6 +166,7 @@ int main(int argc, char *argv[])
             INFO("Moving to Start Goal" << iter->second->getPlannerGoal(THIS_ROBOT) << std::endl);
             while ( !iter->second->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
             {
+                iter->second->updateTracker();
                 iter->second->doPlannerStep();
 
                 ros::spinOnce();
@@ -194,9 +195,11 @@ int main(int argc, char *argv[])
     {
         // INFO(std::endl);
         CLEAR();
+        environment1.updateTracker();
+
         if (LOG_DATA){log << environment1.getGlobalPlannerTime();}
         
-        if (environment1.getReachedPlannerGoal() && cycleGoals)
+        if (environment1.getReachedPlannerGoal() && CYCLE_GOALS)
         {
             if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_0)
                 {environment1.setPlannerGoal(goal1_2);}
@@ -210,8 +213,9 @@ int main(int argc, char *argv[])
 
         for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
         {
-            if (enableModel)
+            if (ENABLE_MODELLING)
             {
+                // TODO: REPLACE WITH SPECIFIC INFERRING AGENT CHECK
                 if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
             }
             INFO("Agent" << i << " Pos: [" << environment1.getPlannerAgentPosition(i) << "]" << std::endl);
@@ -219,7 +223,7 @@ int main(int argc, char *argv[])
         }
         if (LOG_DATA){log << std::endl;}
         
-        if (environment1.getReachedPlannerGoal() && !cycleGoals)
+        if (environment1.getReachedPlannerGoal() && !CYCLE_GOALS)
         {
             environment1.stopYoubot();
         }
