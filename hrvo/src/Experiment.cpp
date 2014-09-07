@@ -168,7 +168,6 @@ int main(int argc, char *argv[])
             {   
                 CLEAR();
                 INFO("Moving from " << iter->second->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
-                iter->second->updateTracker();
                 iter->second->doPlannerStep();
 
                 ros::spinOnce();
@@ -178,6 +177,7 @@ int main(int argc, char *argv[])
             iter->second->stopYoubot();
             STARTED = false;
 
+            iter->second->updateTracker();
             std::map<int, std::size_t> ids = iter->second->getTrackerIDs();
 
             if (ids.empty())
@@ -195,6 +195,8 @@ int main(int argc, char *argv[])
                 int TrackerID = cinInteger();
                 iter->second->setAgentTracker(TrackerID, THIS_ROBOT);
             }
+
+            iter->second->setTrackOtherAgents(true);
 
         }
 

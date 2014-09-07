@@ -29,6 +29,7 @@ namespace hrvo {
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
+    trackOtherAgents_ = false;
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
     Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
@@ -71,19 +72,18 @@ namespace hrvo {
         if (!found || ids.size() == 0)
         {
           DEBUG(" inactive" << std::endl);
-        //   DEBUG(" eliminated" << std::endl);
-          // if (iter->second != THIS_ROBOT)
-          // {
-          //   {planner_->setAgentPosition(iter->second, STOP);
-          //     planner_->setAgentVelocity(iter->second, STOP);}
-          // // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
-          // // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
-          // // delete planner_->agents_[iter->second];
-          // // delete Viter;
-          // // Viter = NULL;
-          // }
-          //   // planner_->agents_.erase(iterator __position);
-          // trackedAgents_.erase(iter);
+          if (iter->second != THIS_ROBOT)
+          {
+            {planner_->setAgentPosition(iter->second, STOP);
+              planner_->setAgentVelocity(iter->second, STOP);}
+          // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
+          // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
+          // delete planner_->agents_[iter->second];
+          // delete Viter;
+          // Viter = NULL;
+          }
+            // planner_->agents_.erase(iterator __position);
+          trackedAgents_.erase(iter);
         }
       }
 
@@ -101,7 +101,7 @@ namespace hrvo {
           // DEBUG("Assigned tracker" << TrackerID << "to Youbot_" << nActorID_ << std::endl);
         }
 
-        if (trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
+        if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
         { // TODO: Limit number of created agents
           trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
           DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);

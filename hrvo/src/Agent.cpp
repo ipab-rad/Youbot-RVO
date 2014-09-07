@@ -103,7 +103,7 @@
  		if ( agent_type == ROBOT )
  		{
  			std::string robot_prefix("");
- 			ROS_ERROR("Subscribing %s to odometry topic", id_.c_str());
+ 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 
@@ -127,7 +127,7 @@
  		if ( agent_type == ROBOT )
  		{
  			std::string robot_prefix(""); 
- 			ROS_ERROR("Subscribing %s to odometry topic", id_.c_str());
+ 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -157,7 +157,7 @@
  		if ( agent_type == ROBOT )
  		{
  			std::string robot_prefix(""); 
- 			ROS_ERROR("Subscribing %s to odometry topic", id_.c_str());
+ 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 

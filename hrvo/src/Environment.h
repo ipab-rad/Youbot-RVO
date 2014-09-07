@@ -40,6 +40,8 @@ namespace hrvo {
 
     void updateTracker();
 
+    void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
+
     void setAgentTracker(int TrackerID, std::size_t AgentID)  {trackedAgents_[TrackerID] = AgentID;}
 
     std::map<int, std::size_t> getTrackerIDs();
@@ -124,6 +126,7 @@ namespace hrvo {
       float goalRatio_[3];
       
       bool prevPosInit;
+      bool trackOtherAgents_;
 
       ros::NodeHandle nh_;
       ros::Subscriber Targsub;
