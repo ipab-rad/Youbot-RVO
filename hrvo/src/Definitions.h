@@ -93,13 +93,14 @@ namespace hrvo {
   // ************************************************************
   // Experimental setup parameters
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
-  const bool MANUAL_TRACKER_ASSIGNMENT = true;
-  const bool ENABLE_MODELLING = false;             // Enable inference model
+  const bool MANUAL_TRACKER_ASSIGNMENT = true;    
+  const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
+  const bool ENABLE_MODELLING = false;            // Enable inference model
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool LOG_DATA = false;                     // Log data into a file
+  const bool LOG_DATA = false;                    // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
   const int ROS_FREQ = 10;
-  const std::size_t MAX_NO_TRACKED_AGENTS = 2;  // TODO: Not working as intended
+  const std::size_t MAX_NO_TRACKED_AGENTS = 2;    // TODO: Not working as intended
 
   // Simulation setup parameters
   const std::size_t THIS_ROBOT = 0;

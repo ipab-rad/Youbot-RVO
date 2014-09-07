@@ -109,10 +109,9 @@ namespace hrvo {
         }
         else
         {
-          if (trackedAgents_[TrackerID] == THIS_ROBOT)
+          if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY)
           {
             planner_->setOdomNeeded(false);
-            // planner_->setAgentPosition(THIS_ROBOT, agentPos);
             planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
           }
           else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
@@ -121,8 +120,8 @@ namespace hrvo {
           planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
           std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
-          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);  // TODO
-          planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);  // TODO
+          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);
+          planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);
           // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
           }
         }
