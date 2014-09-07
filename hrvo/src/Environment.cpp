@@ -29,11 +29,13 @@ namespace hrvo {
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
+    this->goalSetup();
     trackOtherAgents_ = false;
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
     Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
   }
+
   Environment::~Environment()
   {
     delete planner_;
@@ -45,6 +47,13 @@ namespace hrvo {
     // delete *iter;
     // *iter = NULL;
     }
+  }
+
+  void Environment::goalSetup()
+  {
+    goal1_ = this->addPlannerGoal(I_g1);
+    goal2_ = this->addPlannerGoal(I_g2);
+    goal3_ = this->addPlannerGoal(I_g3);
   }
 
   void Environment::updateTracker()
@@ -174,10 +183,27 @@ namespace hrvo {
     return planner_->addGoal(goalPosition);
   }
 
-  int Environment::setPlannerGoal(std::size_t goalNo)
+  void Environment::setPlannerGoal(std::size_t goalNo)
   {
     planner_->setAgentGoal(THIS_ROBOT, goalNo);
-    return 0;
+  }
+
+  void Environment::setPlannerInitialGoal(int goalIndex)
+  {
+    switch (goalIndex) {
+    case 1:
+      this->setPlannerGoal(goal1_);
+      break;
+    case 2:
+      this->setPlannerGoal(goal2_);
+      break;
+    case 3:
+      this->setPlannerGoal(goal3_);
+      break;
+    default:
+      ERR("Initial goal for" << this->getStringActorID() << "does not exist!" << std::endl);
+      break;
+    }
   }
 
   std::size_t Environment::addAndSetPlannerGoal(const Vector2 goalPosition)
@@ -196,6 +222,30 @@ namespace hrvo {
   bool Environment::getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo)
   {
     return simvect_[simID]->agents_[agentNo]->reachedGoal_;
+  }
+
+  void Environment::cycleGoalsClockwise()
+  {
+    if (this->getPlannerGoal() == goal1_)
+    {this->setPlannerGoal(goal3_);}
+    else if (this->getPlannerGoal() == goal3_)
+      {this->setPlannerGoal(goal2_);}
+    else if (this->getPlannerGoal() == goal2_)
+      {this->setPlannerGoal(goal1_);}
+    else
+    {ERR("Could not cycle goals for " << this->getStringActorID() << std::endl)}
+  }
+
+  void Environment::cycleGoalsCounterClockwise()
+  {
+    if (this->getPlannerGoal() == goal1_)
+    {this->setPlannerGoal(goal2_);}
+    else if (this->getPlannerGoal() == goal2_)
+      {this->setPlannerGoal(goal3_);}
+    else if (this->getPlannerGoal() == goal3_)
+      {this->setPlannerGoal(goal1_);}
+    else
+    {ERR("Could not cycle goals for " << this->getStringActorID() << std::endl)}
   }
 
   void Environment::doPlannerStep()

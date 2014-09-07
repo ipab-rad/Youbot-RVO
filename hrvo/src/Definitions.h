@@ -94,7 +94,7 @@ namespace hrvo {
   // Experimental setup parameters
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup for 1 robot
+  const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup for 1 robot
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = false;            // Enable inference model
   const bool LOG_DATA = false;                    // Log data into a file
@@ -110,9 +110,9 @@ namespace hrvo {
   const float GOAL_SUM_PRIOR = 0.1f;             // Goal inference initial prior
 
   // Goal positions for InSpace Setup
-  const Vector2 I_g0 = Vector2(-6.3f, 1.5f);
-  const Vector2 I_g1 = Vector2(-3.07f, 1.5f);
-  const Vector2 I_g2 = Vector2(-4.45f, 3.3f);
+  const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
+  const Vector2 I_g2 = Vector2(-3.07f, 1.5f);
+  const Vector2 I_g3 = Vector2(-4.45f, 3.3f);
 
   // Start positions for InSpace Setup
   const Vector2 STOP = Vector2(0.0f, 0.0f);

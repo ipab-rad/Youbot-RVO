@@ -32,6 +32,8 @@ namespace hrvo {
     Environment(enum Actor actorID, const Vector2 startPos);
     ~Environment();
 
+    void goalSetup();
+
     enum Actor getActorID() {return nActorID_;}
 
     std::string getStringActorID() {return sActorID_;}
@@ -56,9 +58,11 @@ namespace hrvo {
 
     std::size_t addPlannerGoal(const Vector2 goalPosition);
 
-    std::size_t getPlannerGoal(std::size_t agentNo) {return planner_->getAgentGoal(agentNo);}
+    std::size_t getPlannerGoal() {return planner_->getAgentGoal(THIS_ROBOT);}
 
-    int setPlannerGoal(std::size_t goalNo);
+    void setPlannerGoal(std::size_t goalNo);
+
+    void setPlannerInitialGoal(int goalIndex);
 
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);
 
@@ -73,7 +77,10 @@ namespace hrvo {
     bool getReachedPlannerGoal() const { return planner_->agents_[THIS_ROBOT]->reachedGoal_;}
 
     bool getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo);
-    // { simvect_[simID]->agents_[agentNo].reachedGoal_;  }
+
+    void cycleGoalsClockwise();
+
+    void cycleGoalsCounterClockwise();
 
     void doPlannerStep();
 
@@ -123,6 +130,9 @@ namespace hrvo {
       std::string sActorID_; 
       Vector2 startPos_;
       size_t startGoal_;
+      std::size_t goal1_;
+      std::size_t goal2_;
+      std::size_t goal3_;
       float goalRatio_[3];
       
       bool prevPosInit;

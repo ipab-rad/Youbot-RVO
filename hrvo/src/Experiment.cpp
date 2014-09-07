@@ -100,29 +100,18 @@ int main(int argc, char *argv[])
     INFO(std::endl);
     ros::init(argc, argv, "hrvo_planner");
 
-    std::map<std::size_t, Environment *> PlannerMap_;
-
-    Environment environment1(YOUBOT_1, START_POS1);
-    PlannerMap_[1] = &environment1;
-    // Environment environment2(YOUBOT_2, START_POS2);
-
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
 
-    std::size_t goal1_0 = environment1.addPlannerGoal(I_g0);
-    std::size_t goal1_1 = environment1.addPlannerGoal(I_g1);
-    std::size_t goal1_2 = environment1.addPlannerGoal(I_g2);
+    std::map<std::size_t, Environment *> PlannerMap_;
 
-    // std::size_t goal2_1 = environment2.addPlannerGoal(g1);
-    // std::size_t goal2_2 = environment2.addPlannerGoal(g2);
+    Environment environment1(YOUBOT_1, START_POS1);
+    PlannerMap_[1] = &environment1;
+    Environment environment2(YOUBOT_2, START_POS2);
+    PlannerMap_[2] = &environment2;
 
-    // environment1.setPlannerGoal(goBack);
-    // environment2.setPlannerGoal(goal2_2);
-
-    // environment1.addVirtualAgent("youbot_2", I_g0, goal1_1);
-    // environment1.addPedestrianAgent("pedestrian_1", pos2, goal1_2);
-    // environment2.addVirtualAgent("youbot_1", pos1, goal2_1);
+    std::size_t LogPlanner = 1;
 
     std::signal(SIGINT, interrupt_callback);
 
@@ -136,10 +125,10 @@ int main(int argc, char *argv[])
         else
             {DEBUG("Saving log on " << path << std::endl);}
 
-        log << SIM_TIME_STEP <<","<< environment1.getNumPlannerAgents() <<","<< AGENT_RADIUS << std::endl;
+        log << SIM_TIME_STEP <<","<< PlannerMap_.size() <<","<< AGENT_RADIUS << std::endl;
     }
     
-    INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumAgents=" << environment1.getNumPlannerAgents() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
+    INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumPlanningAgents=" << PlannerMap_.size() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 
 
 
@@ -157,28 +146,31 @@ int main(int argc, char *argv[])
 
         for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
         {
-            INFO("Press enter to perform setup for " << iter->second->getStringActorID() << std::endl);
+            Environment* planner = iter->second;
+            INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
             while( std::cin.get() != '\n') {;}
 
-            Vector2 ForwVec = iter->second->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
-            iter->second->addAndSetPlannerGoal(ForwVec);
+            Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
+            planner->addAndSetPlannerGoal(ForwVec);
 
+            //  **** MOVE YOUBOT INTO AREA ****
             STARTED = true;
-            while ( !iter->second->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+            while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
             {   
                 CLEAR();
-                INFO("Moving from " << iter->second->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
-                iter->second->doPlannerStep();
+                INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+                planner->doPlannerStep();
 
                 ros::spinOnce();
                 update_freq.sleep();
             }
 
-            iter->second->stopYoubot();
+            planner->stopYoubot();
             STARTED = false;
 
-            iter->second->updateTracker();
-            std::map<int, std::size_t> ids = iter->second->getTrackerIDs();
+            //  **** ASSIGN TRACKER ****
+            planner->updateTracker();
+            std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
             if (ids.empty())
             {
@@ -186,18 +178,17 @@ int main(int argc, char *argv[])
             }
             else if (!MANUAL_TRACKER_ASSIGNMENT && ids.size() == 1)
             {
-                iter->second->setAgentTracker(ids[0], THIS_ROBOT);
-                INFO("Automatically assigned TrackerID " << ids[0] << " for " << iter->second->getStringActorID() << std::endl);
+                planner->setAgentTracker(ids[0], THIS_ROBOT);
+                INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
             }
             else if (MANUAL_TRACKER_ASSIGNMENT)
             {
-                INFO("Enter TrackerID for " << iter->second->getStringActorID() << ":" << std::endl);
+                INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
                 int TrackerID = cinInteger();
-                iter->second->setAgentTracker(TrackerID, THIS_ROBOT);
+                planner->setAgentTracker(TrackerID, THIS_ROBOT);
             }
 
-            iter->second->setTrackOtherAgents(true);
-
+            planner->setTrackOtherAgents(true);
         }
 
     }
@@ -212,63 +203,60 @@ int main(int argc, char *argv[])
     STARTED = true;
 
     INFO("Starting Experiment..." << std::endl);
-    environment1.setPlannerGoal(goal1_0);
+    ros::Time begin = ros::Time::now();
+    environment1.setPlannerInitialGoal(1);
+    environment2.setPlannerInitialGoal(3);
 
-        while ( ros::ok() && !SAFETY_STOP )
+    while ( ros::ok() && !SAFETY_STOP )
     {
-        // INFO(std::endl);
         CLEAR();
-        environment1.updateTracker();
+        if (LOG_DATA){log << ros::Time::now() - begin;}
 
-        if (LOG_DATA){log << environment1.getGlobalPlannerTime();}
-        
-        if (environment1.getReachedPlannerGoal() && CYCLE_GOALS)
+        //  **** SENSING UPDATE STEP ****
+        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
         {
-            if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_0)
-                {environment1.setPlannerGoal(goal1_1);}
-            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_1)
-                {environment1.setPlannerGoal(goal1_2);}
-            else if (environment1.getPlannerGoal(THIS_ROBOT) == goal1_2)
-                {environment1.setPlannerGoal(goal1_0);}
+            Environment* planner = iter->second;
+            planner->updateTracker();
         }
 
-        INFO("Youbot Goal:" << environment1.getPlannerGoal(THIS_ROBOT) << std::endl);
-
-        for (std::size_t i = 0; i < environment1.getNumPlannerAgents(); ++i)
+        for (std::size_t i = 0; i < PlannerMap_[LogPlanner]->getNumPlannerAgents(); ++i)
         {
-            if (ENABLE_MODELLING)
-            {
-                // TODO: REPLACE WITH SPECIFIC INFERRING AGENT CHECK
-                if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
-            }
-            INFO("Agent" << i << " Pos: [" << environment1.getPlannerAgentPosition(i) << "]" << std::endl);
-            if (LOG_DATA){log << "," << environment1.getPlannerAgentPosition(i).getX() << "," << environment1.getPlannerAgentPosition(i).getY();}
+            INFO("Agent" << i << " Pos: [" << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
+            if (LOG_DATA){log << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getX() << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getY();}
         }
         if (LOG_DATA){log << std::endl;}
         
-        if (environment1.getReachedPlannerGoal() && !CYCLE_GOALS)
+        //  **** PLANNER STEP ****
+        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
         {
-            environment1.stopYoubot();
-        }
-        else
-        {
-            environment1.doPlannerStep();
+            Environment* planner = iter->second;
+
+            //  **** PLANNER STEP ****
+            if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
+                {planner->cycleGoalsCounterClockwise();}
+
+            INFO(planner->getStringActorID() << " Goal:" << planner->getPlannerGoal() << std::endl);
+            if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
+                {planner->stopYoubot();}
+            else
+                {planner->doPlannerStep();}
         }
 
+        //  **** MODEL STEP ****
+        if (ENABLE_MODELLING)
+        {
+            // TODO: REPLACE WITH SPECIFIC INFERRING AGENT CHECK
+            if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
+        }
         if (inferFlag)
         {
-        std::map<std::size_t, Vector2> possGoals;
-        possGoals[0] = I_g0;
-        possGoals[1] = I_g1;
-        possGoals[2] = I_g2;
+            std::map<std::size_t, Vector2> possGoals;
+            possGoals[0] = I_g1;
+            possGoals[1] = I_g2;
+            possGoals[2] = I_g3;
+
+            simIDs = environment1.setupModel(inferredAgent, possGoals);
         
-
-        simIDs = environment1.setupModel(inferredAgent, possGoals);
-        }
-
-
-        if (inferFlag)
-        {
             std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
             INFO("Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
             INFO(std::endl);
@@ -294,15 +282,22 @@ int main(int argc, char *argv[])
     // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
     WARN("Agents Stopping" << std::endl);
-    environment1.stopYoubot();
-    // environment2.emergencyStop();
+    for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+    {
+        Environment* planner = iter->second;
+        planner->stopYoubot();
+    }
 
     if (LOG_DATA){log.close();}
 
     if ( SAFETY_STOP )
     {
-        environment1.emergencyStop();
-        WARN("EMERGENCY STOP!" << std::endl);
+        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+        {
+            Environment* planner = iter->second;
+            planner->emergencyStop();
+            ERR("EMERGENCY STOP!" << std::endl);
+        }
         exit(1);
     }
 
