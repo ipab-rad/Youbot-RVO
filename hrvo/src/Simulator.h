@@ -439,6 +439,8 @@ namespace hrvo {
      */
     void setAgentVelocity(std::size_t agentNo, const Vector2 &velocity);
 
+    void setAgentType(std::size_t agentNo, int agent_type);
+
     /**
      * \brief      Sets the time step of the simulation.
      * \param[in]  timeStep  The replacement time step of the simulation.
@@ -447,7 +449,17 @@ namespace hrvo {
 
     void setOdomNeeded(bool odomNeeded) { odomNeeded_ = odomNeeded; }
 
-    void deleteAgent(std::size_t agentNo) {;}
+    void setOdomUpdated(std::size_t agentNo, bool odomUpdated);
+
+    Vector2 getCurrOdomOffset(std::size_t agentNo);
+
+    void setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset);
+
+    Vector2 getPrevOdomOffset(std::size_t agentNo);
+
+    void setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry_offset);
+
+    void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
 
     bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
                 

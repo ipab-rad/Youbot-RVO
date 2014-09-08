@@ -219,21 +219,24 @@ namespace hrvo {
      * \brief  Updates the orientation, position, and velocity of this agent.
      */
     void update();
+
     void odomPosUpdate();
+
     void odomUpdate();
 
     Simulator *const simulator_;
     Vector2 newVelocity_;
     Vector2 position_;
-    Vector2 agent_sensed_position_;     // Federico's sensed position
-    Vector2 previous_odometry_offset_;  // Alex's odometry first offset
-    Vector2 current_odometry_offset_;   // Alex's odometry first offset
+    Vector2 agent_sensed_position_;
+    Vector2 previous_odometry_offset_;  // Odometry offset before action step
+    Vector2 current_odometry_offset_;   // Odometry offset after action step
+    bool odomFlag_;
     Vector2 prefVelocity_;
     Vector2 velocity_;
     std::size_t goalNo_;
     std::size_t maxNeighbors_;
-    bool updated;
-    int agent_type;
+    bool updated_;
+    int agent_type_;
     float goalRadius_;
     float maxAccel_;
     float maxSpeed_;

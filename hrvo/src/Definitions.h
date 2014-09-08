@@ -86,7 +86,7 @@ namespace hrvo {
   #define SIMAGENT 0
   #define PERSON 1
   #define ROBOT 2
-  #define DEACTIVATED 3
+  #define INACTIVE 3
 
   // ************************************************************
   //                SETUP EXPERIMENT BEFORE START
@@ -94,7 +94,7 @@ namespace hrvo {
   // Experimental setup parameters
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup for 1 robot
+  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup for 1 robot
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = false;            // Enable inference model
   const bool LOG_DATA = false;                    // Log data into a file
@@ -117,7 +117,7 @@ namespace hrvo {
   // Start positions for InSpace Setup
   const Vector2 STOP = Vector2(0.0f, 0.0f);
   const Vector2 START_POS1 = Vector2(-7.4f, 1.5f);
-  const Vector2 START_POS2 = Vector2(2.5f, 0.0f);
+  const Vector2 START_POS2 = Vector2(-7.4f, 2.5f);
 
   // Set velocities for the Youbot to advance 2 tiles Backwards/Forwards
   const Vector2 goBackVec = Vector2(-1.2f, 0.0f);
@@ -143,8 +143,8 @@ namespace hrvo {
   const float PREF_PEOPLE_SPEED = 0.3f;
   const float MAX_SPEED = 0.6f;
   const float MAX_PEOPLE_SPEED = 2.0f;
-  const float MAX_ACCELERATION = 5.0f;
-  const float MAX_PEOPLE_ACCELERATION = 1.2f;
+  const float MAX_ACCELERATION = 1.2f;
+  const float MAX_PEOPLE_ACCELERATION = 5.0f;
 
   // Actor name for the environment created
   enum Actor{

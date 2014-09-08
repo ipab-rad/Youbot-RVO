@@ -97,7 +97,7 @@ void interrupt_callback(int s)
 
 int main(int argc, char *argv[])
 {
-    INFO(std::endl);
+    CLEAR();
     ros::init(argc, argv, "hrvo_planner");
 
     // ************************************************************
@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
 
     Environment environment1(YOUBOT_1, START_POS1);
     PlannerMap_[1] = &environment1;
-    Environment environment2(YOUBOT_2, START_POS2);
-    PlannerMap_[2] = &environment2;
+    // Environment environment2(YOUBOT_2, START_POS2);
+    // PlannerMap_[2] = &environment2;
 
     std::size_t LogPlanner = 1;
 
@@ -159,6 +159,8 @@ int main(int argc, char *argv[])
             {   
                 CLEAR();
                 INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+                
+                // planner->setupPlanner();
                 planner->doPlannerStep();
 
                 ros::spinOnce();
@@ -205,7 +207,7 @@ int main(int argc, char *argv[])
     INFO("Starting Experiment..." << std::endl);
     ros::Time begin = ros::Time::now();
     environment1.setPlannerInitialGoal(1);
-    environment2.setPlannerInitialGoal(3);
+    // environment2.setPlannerInitialGoal(3);
 
     while ( ros::ok() && !SAFETY_STOP )
     {
@@ -216,13 +218,19 @@ int main(int argc, char *argv[])
         for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
         {
             Environment* planner = iter->second;
+            // planner->setupPlanner();
             planner->updateTracker();
         }
 
         for (std::size_t i = 0; i < PlannerMap_[LogPlanner]->getNumPlannerAgents(); ++i)
         {
-            INFO("Agent" << i << " Pos: [" << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
-            if (LOG_DATA){log << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getX() << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getY();}
+            if (PlannerMap_[LogPlanner]->getAgentType(i) == INACTIVE)
+                {INFO("Agent" << i << " Inactive"<< std::endl);}
+            else
+            {
+                INFO("Agent" << i << " Pos: [" << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
+                if (LOG_DATA){log << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getX() << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getY();}
+            }
         }
         if (LOG_DATA){log << std::endl;}
         
@@ -235,7 +243,7 @@ int main(int argc, char *argv[])
             if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
                 {planner->cycleGoalsCounterClockwise();}
 
-            INFO(planner->getStringActorID() << " Goal:" << planner->getPlannerGoal() << std::endl);
+            INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
             if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
                 {planner->stopYoubot();}
             else
@@ -281,10 +289,11 @@ int main(int argc, char *argv[])
     // while ( !environment1.getReachedPlannerGoal() &&  ros::ok() && !SAFETY_STOP );
     // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
-    WARN("Agents Stopping" << std::endl);
+    
     for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
     {
         Environment* planner = iter->second;
+        WARN("Agent " << planner->getStringActorID() << " Stopping" << std::endl);
         planner->stopYoubot();
     }
 
@@ -296,8 +305,8 @@ int main(int argc, char *argv[])
         {
             Environment* planner = iter->second;
             planner->emergencyStop();
-            ERR("EMERGENCY STOP!" << std::endl);
         }
+        ERR("EMERGENCY STOP!" << std::endl);
         exit(1);
     }
 

@@ -40,6 +40,8 @@ namespace hrvo {
 
     float getPlannerGlobalTime() {return planner_->getGlobalTime();}
 
+    void setupPlanner();
+
     void updateTracker();
 
     void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
@@ -57,6 +59,8 @@ namespace hrvo {
     std::size_t addPedestrianAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
 
     std::size_t addPlannerGoal(const Vector2 goalPosition);
+
+    std::size_t getAgentType(std::size_t agentNo) const {return planner_->getAgentType(agentNo);}
 
     std::size_t getPlannerGoal() {return planner_->getAgentGoal(THIS_ROBOT);}
 
@@ -102,9 +106,9 @@ namespace hrvo {
 
     std::size_t getNumPlannerAgents() const { return planner_->agents_.size(); }
 
-    Vector2 getPlannerAgentPosition(std::size_t agentNo) const { return planner_->getAgentPosition(agentNo); }
+    Vector2 getPlannerAgentPosition(std::size_t agentNo) { return planner_->getAgentPosition(agentNo); }
 
-    Vector2 getPlannerAgentVelocity(std::size_t agentNo) const { return planner_->getAgentVelocity(agentNo); }
+    Vector2 getPlannerAgentVelocity(std::size_t agentNo) { return planner_->getAgentVelocity(agentNo); }
     
     std::size_t addSimulation();
 
@@ -130,6 +134,9 @@ namespace hrvo {
       std::string sActorID_; 
       Vector2 startPos_;
       size_t startGoal_;
+      Vector2 currPos_;
+      size_t currGoal_;
+      Vector2 currVel_;
       std::size_t goal1_;
       std::size_t goal2_;
       std::size_t goal3_;

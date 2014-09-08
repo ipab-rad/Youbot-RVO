@@ -84,11 +84,11 @@
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  	reachedGoal_(false) 
  	{
- 		updated = false; 
+ 		updated_ = false; 
  	}
 
 
- 	Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, int at) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
+ 	Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, int agent_type) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
  	goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f),
  	orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -96,20 +96,21 @@
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  	reachedGoal_(false)
  	{
-		agent_type = at;
- 		updated = false;
+		agent_type_ = agent_type;
+ 		updated_ = false;
  		id_ = id;
  		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
- 		if ( agent_type == ROBOT )
+ 		if ( agent_type_ == ROBOT )
  		{
  			std::string robot_prefix("");
- 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			odomFlag_ = true;
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 
  	}
 
- 	Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int at) :
+ 	Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int agent_type) :
  	simulator_(simulator), newVelocity_(simulator_->defaults_->velocity_), position_(position),
  	velocity_(simulator_->defaults_->velocity_), goalNo_(goalNo), maxNeighbors_(simulator_->defaults_->maxNeighbors_),
  	goalRadius_(simulator_->defaults_->goalRadius_), maxAccel_(simulator_->defaults_->maxAccel_), maxSpeed_(simulator_->defaults_->maxSpeed_),
@@ -120,14 +121,15 @@
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  	reachedGoal_(false)
  	{
- 		agent_type = at;
- 		updated = false; 
+ 		agent_type_ = agent_type;
+ 		updated_ = false; 
  		id_ = id;
  		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
- 		if ( agent_type == ROBOT )
+ 		if ( agent_type_ == ROBOT )
  		{
  			std::string robot_prefix(""); 
- 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			odomFlag_ = true;
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -139,7 +141,7 @@
 #if HRVO_DIFFERENTIAL_DRIVE
  		float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
- 		float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int at) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
+ 		float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int agent_type) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
  	maxNeighbors_(maxNeighbors), goalRadius_(goalRadius), maxAccel_(maxAccel), maxSpeed_(maxSpeed), neighborDist_(neighborDist),
  	orientation_(orientation), prefSpeed_(prefSpeed), radius_(radius), uncertaintyOffset_(uncertaintyOffset),
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -147,17 +149,18 @@
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  	reachedGoal_(false)
  	{
- 		agent_type = at;
- 		updated = false; 
+ 		agent_type_ = agent_type;
+ 		updated_ = false; 
 #if HRVO_DIFFERENTIAL_DRIVE
  		computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  		id_ = id;
  		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
- 		if ( agent_type == ROBOT )
+ 		if ( agent_type_ == ROBOT )
  		{
  			std::string robot_prefix(""); 
- 			ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
+ 			odomFlag_ = true;
  			sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
  		}
 
@@ -490,7 +493,9 @@
  	}
 
  	void Agent::odomPosUpdate()
- 	{
+ 	{		
+ 			// &Agent::updatePose;
+ 			// DEBUG("Pos " << position_ << ", Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
  			position_ += current_odometry_offset_ - previous_odometry_offset_;
  	}
 
@@ -521,7 +526,7 @@
  			velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv)) * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv) * newVelocity_;
  		}
 
- 		if (agent_type == SIMAGENT)
+ 		if (agent_type_ == SIMAGENT)
  		{
  			position_ += velocity_ * simulator_->timeStep_;
  			// std::cout << id_ << "Position updated" << std::endl;
@@ -560,11 +565,19 @@
  		current_odometry_offset_.setY(pose_msg->pose.pose.position.y);  
  		agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
 
- 		// ROS_ERROR("CallBack");
- 		if(!updated)
+ 		// DEBUG("Pose Update CallBack" << std::endl);
+ 		// DEBUG("Msg Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
+
+ 		// if (odomFlag_)
+ 		// {position_ += current_odometry_offset_ - previous_odometry_offset_;
+ 		// 	odomFlag_ = false;}
+
+ 		// DEBUG("Pos " << position_ << ", Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
+ 			
+ 		if(!updated_)
  		{
  			previous_odometry_offset_ = current_odometry_offset_;
- 			updated = true;
+ 			updated_ = true;
  			ROS_INFO("Odometry Initialised");
  		}
 

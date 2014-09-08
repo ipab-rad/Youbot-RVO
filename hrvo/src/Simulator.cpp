@@ -141,10 +141,11 @@ std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &p
   /*  // Debugging agent creation message
   switch(agent_type)
   {
-    case 0:   std::cout << "Created Virtual Agent " << id;  break;
-    case 1:   std::cout << "Created Person Agent " << id;  break;
-    case 2:   std::cout << "Created Robot Agent " << id;  break;
-    default:  std::cout << "Created Default Agent " << id;  break;
+    case 0:   DEBUG("Created Virtual Agent " << id);  break;
+    case 1:   DEBUG("Created Person Agent " << id);  break;
+    case 2:   DEBUG("Created Robot Agent " << id);  break;
+    case 2:   DEBUG("Created Inactive Agent " << id);  break;
+    default:  DEBUG("Created Default Agent " << id);  break;
   }
   std::cout << " with Pos [" << position << "] and Goal [" << this->getGoalPosition(goalNo) << "]" << std::endl;
   */
@@ -192,24 +193,20 @@ void Simulator::doStep()
   kdTree_->build();
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type == ROBOT)
+    if ((*iter)->agent_type_ == ROBOT)
     { // Should odometry be updated here?
       if (odomNeeded_)
-        {(*iter)->odomPosUpdate();}  
+        {
+          (*iter)->odomPosUpdate();
+          // (*iter)->odomFlag_ = true;
+        }  
       (*iter)->odomUpdate();
     }
   }  
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type != PERSON)
+    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
     {
-      // if ((*iter)->agent_type == ROBOT)
-      // { // Should odometry be updated here too?
-      //   if (odomNeeded_)
-      //     {(*iter)->odomPosUpdate();}  
-      //    (*iter)->odomUpdate();
-      // }
-
       (*iter)->computePreferredVelocity();
       (*iter)->computeNeighbors();
       (*iter)->computeNewVelocity();
@@ -220,7 +217,7 @@ void Simulator::doStep()
   }
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type != PERSON) 
+    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE) 
     {
       (*iter)->update();
     }
@@ -315,7 +312,7 @@ Vector2 Simulator::getAgentVelocity(std::size_t agentNo) const
 
 std::size_t Simulator::getAgentType(std::size_t agentNo) const
 {
-  return agents_[agentNo]->agent_type;
+  return agents_[agentNo]->agent_type_;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -425,7 +422,8 @@ void Simulator::setAgentUncertaintyOffset(std::size_t agentNo, float uncertainty
 void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
 {
   agents_[agentNo]->velocity_ = velocity;
-  if (agents_[agentNo]->agent_type == ROBOT)
+  // Publish Velocity if Robot
+  if (agents_[agentNo]->agent_type_ == ROBOT)
   {
     geometry_msgs::Twist vel;
     vel.linear.x = velocity.getX();
@@ -434,12 +432,42 @@ void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
   }
 }
 
+void Simulator::setAgentType(std::size_t agentNo, int agent_type) 
+{
+  agents_[agentNo]->agent_type_ = agent_type;
+}
+
 #if HRVO_DIFFERENTIAL_DRIVE
 void Simulator::setAgentWheelTrack(std::size_t agentNo, float wheelTrack)
 {
   agents_[agentNo]->wheelTrack_ = wheelTrack;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
+
+void Simulator::setOdomUpdated(std::size_t agentNo, bool odomUpdated)
+{
+  agents_[agentNo]->updated_ = odomUpdated;
+}
+
+Vector2 Simulator::getCurrOdomOffset(std::size_t agentNo)
+{
+  return agents_[agentNo]->current_odometry_offset_;
+}
+
+void Simulator::setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset)
+{
+  agents_[agentNo]->current_odometry_offset_ = current_odometry_offset;
+}
+
+Vector2 Simulator::getPrevOdomOffset(std::size_t agentNo)
+{
+  return agents_[agentNo]->previous_odometry_offset_;
+}
+
+void Simulator::setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry_offset)
+{
+  agents_[agentNo]->previous_odometry_offset_ = previous_odometry_offset;
+}
 
 bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res)
 {

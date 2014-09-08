@@ -27,7 +27,7 @@ namespace hrvo {
     planner_ = new Simulator(nh_, "planner", nActorID_);
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
-    startGoal_ = planner_->addGoal(startPos);
+    startGoal_ = planner_->addGoal(startPos_);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
     trackOtherAgents_ = false;
@@ -44,6 +44,8 @@ namespace hrvo {
     for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter) 
     {
       delete iter->second;
+      iter->second = NULL;
+      simvect_.erase(iter);
     // delete *iter;
     // *iter = NULL;
     }
@@ -54,6 +56,31 @@ namespace hrvo {
     goal1_ = this->addPlannerGoal(I_g1);
     goal2_ = this->addPlannerGoal(I_g2);
     goal3_ = this->addPlannerGoal(I_g3);
+  }
+
+  void Environment::setupPlanner()
+  {
+    currPos_ = this->getPlannerAgentPosition(THIS_ROBOT);
+    currVel_ = this->getPlannerAgentVelocity(THIS_ROBOT);
+    currGoal_ = this->getPlannerGoal();
+    Vector2 curr_odom = planner_->getCurrOdomOffset(THIS_ROBOT);
+    Vector2 prev_odom = planner_->getPrevOdomOffset(THIS_ROBOT);
+    DEBUG("Extracted pos " << currPos_ << " vel " << currVel_ << " goal " << currGoal_ << std::endl);
+    DEBUG("Extracted curr " << curr_odom << " prev " << prev_odom << std::endl);
+
+    std::vector<Goal *> plannerGoals_ = planner_->goals_;
+
+    // delete planner_;
+    // planner_ = NULL;
+
+    // planner_ = new Simulator(nh_, "planner", nActorID_);
+    // this->setPlannerParam();
+    // planner_->goals_ = plannerGoals_;
+    // planner_->addAgent(getActorName(nActorID_), ROBOT, currPos_, currGoal_);
+    // planner_->setAgentVelocity(THIS_ROBOT, currVel_);
+    // planner_->setCurrOdomOffset(THIS_ROBOT, curr_odom);
+    // planner_->setPrevOdomOffset(THIS_ROBOT, prev_odom);
+    // planner_->setOdomUpdated(THIS_ROBOT, true);
   }
 
   void Environment::updateTracker()
@@ -68,11 +95,13 @@ namespace hrvo {
       // Check if trackers for existing agents are still active
       for(std::map<int, std::size_t>::iterator iter = trackedAgents_.begin(); iter != trackedAgents_.end(); ++iter)
       {
+        int TrackID = iter->first;
+        std::size_t AgentID = iter->second;
         bool found = false;
-        DEBUG("Tracker" << iter->first << " for Agent" << iter->second);
+        DEBUG("Tracker" << TrackID << " for Agent" << AgentID);
         for (int i = 0; i < ids.size(); ++i)
         {
-          if (ids[i] == iter->first)
+          if (ids[i] == TrackID)
           {
             DEBUG(" active" << std::endl);
             found = true;
@@ -81,13 +110,16 @@ namespace hrvo {
         if (!found || ids.size() == 0)
         {
           DEBUG(" inactive" << std::endl);
-          if (iter->second != THIS_ROBOT)
+          if (AgentID != THIS_ROBOT)
           {
-            {planner_->setAgentPosition(iter->second, STOP);
-              planner_->setAgentVelocity(iter->second, STOP);}
-          // std::find(planner_->agents_.begin(), planner_->agents_.end(), iter->second)!=planner_->agents_.end() {
+            {
+              planner_->setAgentPosition(AgentID, STOP);
+              planner_->setAgentVelocity(AgentID, STOP);
+              planner_->setAgentType(AgentID, INACTIVE);
+            }
+          // std::find(planner_->agents_.begin(), planner_->agents_.end(), AgentID)!=planner_->agents_.end() {
           // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
-          // delete planner_->agents_[iter->second];
+          // delete planner_->agents_[AgentID];
           // delete Viter;
           // Viter = NULL;
           }
@@ -110,6 +142,7 @@ namespace hrvo {
           // DEBUG("Assigned tracker" << TrackerID << "to Youbot_" << nActorID_ << std::endl);
         }
 
+        // TODO: SWITCH ORDER OF PREFERENCE, ROBOT POSITION/TRACKER SHOULD NOT BE ASSIGNED TO NEW AGENT!
         if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
         { // TODO: Limit number of created agents
           trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
@@ -216,7 +249,7 @@ namespace hrvo {
   std::size_t Environment::setSimParam(std::size_t simID)
   {
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f);
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f);
   }
 
   bool Environment::getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo)
@@ -454,7 +487,7 @@ namespace hrvo {
 
     std::size_t nAgents = planner_->getNumAgents();
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f); 
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
     // simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_PEOPLE_SPEED, MAX_PEOPLE_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
     
 
