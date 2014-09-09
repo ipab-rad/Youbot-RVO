@@ -125,8 +125,11 @@ namespace hrvo {
           }
             // planner_->agents_.erase(iterator __position);
           trackedAgents_.erase(iter);
+          trackerCompOdom_.erase(TrackID);
         }
       }
+
+
 
       // Update existing tracked agents or create new agents for new trackers
       for (std::size_t i = 0; i < numAgents; ++i)
@@ -139,10 +142,9 @@ namespace hrvo {
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
         { 
           this->setAgentTracker(TrackerID, THIS_ROBOT);
+          planner_->resetOdomPosition();
           DEBUG("Assigned lone tracker" << TrackerID << "to "<< sActorID_ << std::endl);
         }
-
-        
 
         // If TrackerID has not been assigned to an agent yet, reassing to robot or create new agent
         if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
@@ -150,6 +152,7 @@ namespace hrvo {
           if (TrackerID == robotTrackerID_)
           { 
             this->setAgentTracker(TrackerID, THIS_ROBOT);
+            planner_->resetOdomPosition();
             DEBUG("Re-assigned robot tracker" << TrackerID << " to "<< sActorID_ << std::endl);
           }
           else
@@ -175,12 +178,68 @@ namespace hrvo {
         planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);
         planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);
         // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
-        
         }
 
+        // TODO: Add method to assign most-likely tracker if runing with odometry for a while
+        // if (planner_->getOdomNeeded())
+        // {
+
+
+        // }
+        // Increase comparison magnitude proportional to the difference between odometry and tracker positions
+        if (trackerComparisonCounter_ < MAX_TRACKER_REASSIGN_ITERATIONS)
+        {
+          trackerCompOdom_[TrackerID] += normaldiff(planner_->getOdomPosition(), agentPos);
+        }
       }
 
+      // Compare robot odometry with tracker positions in order to reacquire stolen tracker
+      if (trackerComparisonCounter_ < MAX_TRACKER_REASSIGN_ITERATIONS)
+      {
+        trackerComparisonCounter_++;
+      }
+      else 
+      {
+        int TargetTrackerID = -1; // Initialisation values
+        float minComp = -1.0f;
+        // Smallest comparison = closest tracker
+        for(std::map<int, float>::iterator iter = trackerCompOdom_.begin(); iter != trackerCompOdom_.end(); ++iter)
+        {
+          int TrackerID = iter->first;
+          float OdomComparison = iter->second;
+          if (OdomComparison < minComp || minComp == -1.0f)
+          {
+            TargetTrackerID = TrackerID;
+            minComp = OdomComparison;
+          }
+          
+        }
+        if (TargetTrackerID == -1 || minComp == -1.0f)
+          { ERR("ERROR: NO TRACKER CAN BE ASSIGNED TO YOUBOT")}
+        else if (trackedAgents_[TargetTrackerID] != THIS_ROBOT)
+        {
+          // If smallest is not the one assigned to robot, then substitute and delete extra tracked agent
+          planner_->setAgentPosition(trackedAgents_[TargetTrackerID], STOP);
+          planner_->setAgentVelocity(trackedAgents_[TargetTrackerID], STOP);
+          planner_->setAgentType(trackedAgents_[TargetTrackerID], INACTIVE);
+          trackedAgents_.erase(TargetTrackerID);
+          trackedAgents_[TargetTrackerID] = THIS_ROBOT;
+          robotTrackerID_ = TargetTrackerID;
+          for(std::map<int, float>::iterator iter = trackerCompOdom_.begin(); iter != trackerCompOdom_.end(); ++iter)
+          {
+            // Reset all comparisons
+            int TrackerID = iter->first;
+            trackerCompOdom_[TrackerID] = 0.0f;
+          }
+        }
+        trackerComparisonCounter_ = 0;
+      }
+      
+
+
     }
+
+  DEBUG( "Odometry Position: " << planner_->getOdomPosition() << std::endl);
 
   }
 
@@ -208,6 +267,7 @@ namespace hrvo {
   {
     planner_->setTimeStep(SIM_TIME_STEP);
     planner_->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f); 
+    trackerComparisonCounter_ = 0;
   }
 
   std::size_t Environment::addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo)

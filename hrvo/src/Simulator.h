@@ -449,6 +449,8 @@ namespace hrvo {
 
     void setOdomNeeded(bool odomNeeded) { odomNeeded_ = odomNeeded; }
 
+    bool getOdomNeeded() { return odomNeeded_; }
+
     void setOdomUpdated(std::size_t agentNo, bool odomUpdated);
 
     Vector2 getCurrOdomOffset(std::size_t agentNo);
@@ -458,6 +460,10 @@ namespace hrvo {
     Vector2 getPrevOdomOffset(std::size_t agentNo);
 
     void setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry_offset);
+
+    void resetOdomPosition();
+
+    Vector2 getOdomPosition();
 
     void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
 

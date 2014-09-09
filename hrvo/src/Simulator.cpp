@@ -469,6 +469,10 @@ void Simulator::setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry
   agents_[agentNo]->previous_odometry_offset_ = previous_odometry_offset;
 }
 
+void Simulator::resetOdomPosition() { agents_[THIS_ROBOT]->odomPosition_ = agents_[THIS_ROBOT]->position_;}
+
+Vector2 Simulator::getOdomPosition()  {return agents_[THIS_ROBOT]->odomPosition_;}
+
 bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res)
 {
   std::stringstream ss;

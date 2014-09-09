@@ -98,6 +98,7 @@
  	{
 		agent_type_ = agent_type;
  		updated_ = false;
+ 		odomPosition_ = position_;
  		id_ = id;
  		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
  		if ( agent_type_ == ROBOT )
@@ -122,7 +123,8 @@
  	reachedGoal_(false)
  	{
  		agent_type_ = agent_type;
- 		updated_ = false; 
+ 		updated_ = false;
+ 		odomPosition_ = position_;
  		id_ = id;
  		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
  		if ( agent_type_ == ROBOT )
@@ -150,7 +152,8 @@
  	reachedGoal_(false)
  	{
  		agent_type_ = agent_type;
- 		updated_ = false; 
+ 		updated_ = false;
+ 		odomPosition_ = position_;
 #if HRVO_DIFFERENTIAL_DRIVE
  		computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
@@ -501,6 +504,7 @@
 
  	void Agent::odomUpdate()
  	{		
+ 			odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
  			previous_odometry_offset_ = current_odometry_offset_;
  	}
 

@@ -231,6 +231,7 @@ namespace hrvo {
     Vector2 previous_odometry_offset_;  // Odometry offset before action step
     Vector2 current_odometry_offset_;   // Odometry offset after action step
     bool odomFlag_;
+    Vector2 odomPosition_;
     Vector2 prefVelocity_;
     Vector2 velocity_;
     std::size_t goalNo_;
