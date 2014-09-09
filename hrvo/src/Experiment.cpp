@@ -178,9 +178,9 @@ int main(int argc, char *argv[])
             {
                 WARN("No Trackers were found" << std::endl);
             }
-            else if (!MANUAL_TRACKER_ASSIGNMENT && ids.size() == 1)
+            else if (!MANUAL_TRACKER_ASSIGNMENT)
             {
-                planner->setAgentTracker(ids[0], THIS_ROBOT);
+                planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
                 INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
             }
             else if (MANUAL_TRACKER_ASSIGNMENT)

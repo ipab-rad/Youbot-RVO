@@ -94,7 +94,7 @@ namespace hrvo {
   // Experimental setup parameters
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup for 1 robot
+  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = false;            // Enable inference model
   const bool LOG_DATA = false;                    // Log data into a file

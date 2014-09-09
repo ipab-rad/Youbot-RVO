@@ -142,6 +142,7 @@ namespace hrvo {
           // DEBUG("Assigned tracker" << TrackerID << "to Youbot_" << nActorID_ << std::endl);
         }
 
+        
         // TODO: SWITCH ORDER OF PREFERENCE, ROBOT POSITION/TRACKER SHOULD NOT BE ASSIGNED TO NEW AGENT!
         if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
         { // TODO: Limit number of created agents
@@ -374,16 +375,6 @@ namespace hrvo {
     if (!stopAtGoal)
       {INFO("Agent is travelling..."<<std::endl);}
 
-    // std::size_t goalInferID;
-    // if (inferredAgentGoalsSum_.empty())
-    // {
-    //   goalInferID = 0;
-    // }
-    // else
-    // {
-    //   goalInferID = inferredAgentGoalsSum_.size();
-    // }
-
     if (inferredAgentGoalsSum_[agentNo].empty())
     {
         for (std::size_t l = 0; l < inferredGoals.size(); ++l)
@@ -391,7 +382,6 @@ namespace hrvo {
             inferredAgentGoalsSum_[agentNo][l] = GOAL_SUM_PRIOR;
         }
     }
-
 
 
     float inferredGoalsTotal(0.0f);
@@ -413,7 +403,6 @@ namespace hrvo {
           inferredAgentGoalsSum_[agentNo][j] += inferredGoalHistory_[agentNo][j][i];
         }
         
-
         // inferredAgentGoalsSum_[agentNo][j] += inferredGoals[j]; // TODO: Add moving average
         inferredGoalsTotal += 1 / inferredAgentGoalsSum_[agentNo][j];
         INFO("GoalSum" << j << "=" << inferredAgentGoalsSum_[agentNo][j] << " " << std::endl);
@@ -465,9 +454,7 @@ namespace hrvo {
       // std::cout << "EGoal" << iter->first << "=" << inferredGoals[iter->second] << std::endl;
       // this->deleteSimulation(iter->second);
     }
-
     return inferredGoals;
-
   }
 
   std::size_t Environment::addSimulation()
