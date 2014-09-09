@@ -515,7 +515,7 @@
  		position_ += simulator_->timeStep_ * averageWheelSpeed * Vector2(std::cos(orientation_), std::sin(orientation_));
  		orientation_ += wheelSpeedDifference * simulator_->timeStep_ / wheelTrack_;
  		velocity_ = averageWheelSpeed * Vector2(std::cos(orientation_), std::sin(orientation_));
-		#else /* HRVO_DIFFERENTIAL_DRIVE */
+		#else
 
  		const float dv = abs(newVelocity_ - velocity_);
 
@@ -526,13 +526,35 @@
  			velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv)) * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv) * newVelocity_;
  		}
 
+ 		// Limit velocity if robot attempts to leave the workspace
+ 		if (agent_type_ == ROBOT && LIMIT_WORKSPACE_VEL)
+ 		{
+ 			if ((velocity_.getY() + position_.getY()) > MAX_Y)
+ 			{
+ 				velocity_.setY(MAX_Y - position_.getY());
+ 			}
+ 			if ((velocity_.getY() + position_.getY()) < MIN_Y)
+ 			{
+ 				velocity_.setY(MIN_Y - position_.getY());
+ 			}
+
+ 			if ((velocity_.getX() + position_.getX()) > MAX_X)
+ 			{
+ 				velocity_.setX(MAX_X - position_.getX());
+ 			}
+ 			if ((velocity_.getX() + position_.getX()) < MIN_X)
+ 			{
+ 				velocity_.setX(MIN_X - position_.getX());
+ 			}
+ 		}
+
  		if (agent_type_ == SIMAGENT)
  		{
  			position_ += velocity_ * simulator_->timeStep_;
  			// std::cout << id_ << "Position updated" << std::endl;
  		}
  		else
- 		{
+ 		{	// NEW VELOCITY PUBLISHED
  			geometry_msgs::Twist vel;
  			vel.linear.x = velocity_.getX();
  			vel.linear.y = velocity_.getY();

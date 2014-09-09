@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
                 CLEAR();
                 INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
                 
-                // planner->setupPlanner();
                 planner->doPlannerStep();
 
                 ros::spinOnce();
@@ -218,7 +217,6 @@ int main(int argc, char *argv[])
         for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
         {
             Environment* planner = iter->second;
-            // planner->setupPlanner();
             planner->updateTracker();
         }
 

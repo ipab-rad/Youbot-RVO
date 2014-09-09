@@ -102,6 +102,13 @@ namespace hrvo {
   const int ROS_FREQ = 10;
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;    // TODO: Not working as intended
 
+  // Inspace Workspace limits
+  const bool LIMIT_WORKSPACE_VEL = true;
+  const float MAX_Y = 3.5f;
+  const float MIN_Y = -0.0f;
+  const float MAX_X = -2.0f;
+  const float MIN_X = -8.0f;
+
   // Simulation setup parameters
   const std::size_t THIS_ROBOT = 0;
   const float SIM_TIME_STEP = 0.1f;

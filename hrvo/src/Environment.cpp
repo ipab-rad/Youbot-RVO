@@ -137,36 +137,45 @@ namespace hrvo {
         Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
 
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
-        { // TODO: REPLACE WITH MANUAL/AUTOMATIC ASSIGNMENT AT SETUP
+        { 
           this->setAgentTracker(TrackerID, THIS_ROBOT);
-          // DEBUG("Assigned tracker" << TrackerID << "to Youbot_" << nActorID_ << std::endl);
+          DEBUG("Assigned lone tracker" << TrackerID << "to "<< sActorID_ << std::endl);
         }
 
         
-        // TODO: SWITCH ORDER OF PREFERENCE, ROBOT POSITION/TRACKER SHOULD NOT BE ASSIGNED TO NEW AGENT!
+
+        // If TrackerID has not been assigned to an agent yet, reassing to robot or create new agent
         if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
         { // TODO: Limit number of created agents
-          trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
-          DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
-          agentVelCount_[trackedAgents_[TrackerID]] = 0;
+          if (TrackerID == robotTrackerID_)
+          { 
+            this->setAgentTracker(TrackerID, THIS_ROBOT);
+            DEBUG("Re-assigned robot tracker" << TrackerID << " to "<< sActorID_ << std::endl);
+          }
+          else
+          {
+            trackedAgents_[TrackerID] = this->addPedestrianAgent("TrackedPerson" + sid, agentPos, this->addPlannerGoal(agentPos));
+            DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
+            agentVelCount_[trackedAgents_[TrackerID]] = 0;
+          }
         }
-        else
-        {
-          if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY)
-          {
-            planner_->setOdomNeeded(false);
-            planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
-          }
-          else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
-          {
-          planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
-          planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
-          std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
-          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);
-          planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);
-          // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
-          }
+        // If TrackerID has been assigned already, update agent information
+        if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY)
+        {
+          planner_->setOdomNeeded(false);
+          planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
+        }
+        else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
+        {
+        planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
+        planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
+
+        std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
+        planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);
+        planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);
+        // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
+        
         }
 
       }

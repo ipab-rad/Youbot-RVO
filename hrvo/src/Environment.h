@@ -46,7 +46,8 @@ namespace hrvo {
 
     void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
 
-    void setAgentTracker(int TrackerID, std::size_t AgentID)  {trackedAgents_[TrackerID] = AgentID;}
+    void setAgentTracker(int TrackerID, std::size_t AgentID)  {trackedAgents_[TrackerID] = AgentID;
+      if (AgentID == THIS_ROBOT) {robotTrackerID_ = TrackerID;}}
 
     std::map<int, std::size_t> getTrackerIDs();
 
@@ -151,6 +152,7 @@ namespace hrvo {
 
       Simulator *planner_;
 
+      int robotTrackerID_;
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
