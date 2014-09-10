@@ -51,6 +51,10 @@ namespace hrvo {
 
     std::map<int, std::size_t> getTrackerIDs();
 
+    void setPlannerPosition(Vector2 plannerPos) {planner_->setAgentPosition(THIS_ROBOT, plannerPos);}
+
+    void disablePlannerAgent()  {planner_->setAgentType(THIS_ROBOT, INACTIVE);}
+
     void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();

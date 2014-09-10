@@ -92,15 +92,17 @@ namespace hrvo {
   //                SETUP EXPERIMENT BEFORE START
   // ************************************************************
   // Experimental setup parameters
+  const bool ENABLE_PLANNER = false;             // Enables robot planner, disable when only inferring / tracking
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
-  const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
+  const bool PERFORM_ROBOT_SETUP = false;          // Robots move into initial positions
   const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
-  const bool ENABLE_MODELLING = false;            // Enable inference model
+  const bool ENABLE_MODELLING = true;            // Enable inference model
   const bool LOG_DATA = false;                    // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
   const int MAX_TRACKER_REASSIGN_ITERATIONS = 10;      // How many iterations after tracker of another agent is reassigned to robot
   const int ROS_FREQ = 10;
+  const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
   const std::size_t MAX_NO_TRACKED_AGENTS = 2;    // TODO: Not working as intended
 
   // Inspace Workspace limits

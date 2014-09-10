@@ -125,10 +125,10 @@ Simulator::~Simulator()
     *iter = NULL;
   }
 
-  for (std::vector<Goal *>::iterator iter = goals_.begin(); iter != goals_.end(); ++iter) {
+  /*for (std::vector<Goal *>::iterator iter = goals_.begin(); iter != goals_.end(); ++iter) {
     delete *iter;
     *iter = NULL;
-  }
+  }*/
 }
 
 std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo)

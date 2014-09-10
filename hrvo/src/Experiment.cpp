@@ -97,7 +97,7 @@ void interrupt_callback(int s)
 
 int main(int argc, char *argv[])
 {
-    CLEAR();
+    if (CLEAR_SCREEN) {CLEAR();}
     ros::init(argc, argv, "hrvo_planner");
 
     // ************************************************************
@@ -110,6 +110,17 @@ int main(int argc, char *argv[])
     PlannerMap_[1] = &environment1;
     // Environment environment2(YOUBOT_2, START_POS2);
     // PlannerMap_[2] = &environment2;
+
+    if (!ENABLE_PLANNER)
+    {
+        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+        {
+            Environment* planner = iter->second;
+            planner->setPlannerPosition(STOP);
+            planner->disablePlannerAgent();
+            planner->setTrackOtherAgents(true);
+        }
+    }
 
     std::size_t LogPlanner = 1;
 
@@ -144,55 +155,58 @@ int main(int argc, char *argv[])
 
     if (PERFORM_ROBOT_SETUP){
 
-        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+        if (ENABLE_PLANNER)
         {
-            Environment* planner = iter->second;
-            INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
-            while( std::cin.get() != '\n') {;}
-
-            Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
-            planner->addAndSetPlannerGoal(ForwVec);
-
-            //  **** MOVE YOUBOT INTO AREA ****
-            STARTED = true;
-            while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-            {   
-                CLEAR();
-                INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
-                
-                planner->doPlannerStep();
-
-                ros::spinOnce();
-                update_freq.sleep();
-            }
-
-            planner->stopYoubot();
-            STARTED = false;
-
-            //  **** ASSIGN TRACKER ****
-            planner->updateTracker();
-            std::map<int, std::size_t> ids = planner->getTrackerIDs();
-
-            if (ids.empty())
+            for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
             {
-                WARN("No Trackers were found" << std::endl);
-            }
-            else if (!MANUAL_TRACKER_ASSIGNMENT)
-            {
-                planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-                INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
-            }
-            else if (MANUAL_TRACKER_ASSIGNMENT)
-            {
-                INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
-                int TrackerID = cinInteger();
-                planner->setAgentTracker(TrackerID, THIS_ROBOT);
-            }
+                Environment* planner = iter->second;
+                INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
+                while( std::cin.get() != '\n') {;}
 
-            planner->resetOdomPosition();
-            planner->setTrackOtherAgents(true);
+                Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
+                planner->addAndSetPlannerGoal(ForwVec);
+
+                //  **** MOVE YOUBOT INTO AREA ****
+                STARTED = true;
+                while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+                {   
+                    if (CLEAR_SCREEN) {CLEAR();}
+                    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+                    
+                    planner->doPlannerStep();
+
+                    ros::spinOnce();
+                    update_freq.sleep();
+                }
+
+                planner->stopYoubot();
+                STARTED = false;
+
+                //  **** ASSIGN TRACKER ****
+                planner->updateTracker();
+                std::map<int, std::size_t> ids = planner->getTrackerIDs();
+
+                if (ids.empty())
+                {
+                    WARN("No Trackers were found" << std::endl);
+                }
+                else if (!MANUAL_TRACKER_ASSIGNMENT)
+                {
+                    planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
+                    INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
+                }
+                else if (MANUAL_TRACKER_ASSIGNMENT)
+                {
+                    INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
+                    int TrackerID = cinInteger();
+                    planner->setAgentTracker(TrackerID, THIS_ROBOT);
+                }
+
+                planner->resetOdomPosition();
+            }
         }
-
+        else
+            {WARN("SETUP OF ROBOTS SKIPPED AS PLANNING IS DISABLED")}
     }
 
     // ************************************************************
@@ -211,7 +225,7 @@ int main(int argc, char *argv[])
 
     while ( ros::ok() && !SAFETY_STOP )
     {
-        CLEAR();
+        if (CLEAR_SCREEN) {CLEAR();}
         if (LOG_DATA){log << ros::Time::now() - begin;}
 
         //  **** SENSING UPDATE STEP ****
@@ -234,20 +248,22 @@ int main(int argc, char *argv[])
         if (LOG_DATA){log << std::endl;}
         
         //  **** PLANNER STEP ****
-        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+        if (ENABLE_PLANNER)
         {
-            Environment* planner = iter->second;
+            for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
+            {
+                Environment* planner = iter->second;
+                if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
+                    {planner->cycleGoalsCounterClockwise();}
 
-            //  **** PLANNER STEP ****
-            if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
-                {planner->cycleGoalsCounterClockwise();}
-
-            INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
-            if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
-                {planner->stopYoubot();}
-            else
-                {planner->doPlannerStep();}
+                INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
+                if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
+                    {planner->stopYoubot();}
+                else
+                    {planner->doPlannerStep();}
+            }
         }
+        else {WARN("Planner is disabled" << std::endl);}
 
         //  **** MODEL STEP ****
         if (ENABLE_MODELLING)
