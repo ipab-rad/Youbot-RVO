@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
     std::map<std::size_t, Environment *> PlannerMap_;
 
     Environment environment1(YOUBOT_1, START_POS1);
+    Model model1(&environment1);
     PlannerMap_[1] = &environment1;
     // Environment environment2(YOUBOT_2, START_POS2);
     // PlannerMap_[2] = &environment2;
@@ -223,6 +224,8 @@ int main(int argc, char *argv[])
     environment1.setPlannerInitialGoal(1);
     // environment2.setPlannerInitialGoal(3);
 
+
+
     while ( ros::ok() && !SAFETY_STOP )
     {
         if (CLEAR_SCREEN) {CLEAR();}
@@ -278,9 +281,12 @@ int main(int argc, char *argv[])
             possGoals[1] = I_g2;
             possGoals[2] = I_g3;
 
-            simIDs = environment1.setupModel(inferredAgent, possGoals);
+            simIDs = model1.setupModel(inferredAgent, possGoals);
+            // simIDs = environment1.setupModel(inferredAgent, possGoals);
         
-            std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
+            std::size_t maxLikelihoodGoal = model1.inferGoals(inferredAgent, simIDs);
+            // std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
+
             INFO("Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
             INFO(std::endl);
             if (LOG_DATA){

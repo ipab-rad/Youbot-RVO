@@ -74,9 +74,12 @@
  * \details    We present the hybrid reciprocal velocity obstacle for collision-free and oscillation-free navigation of multiple mobile robots or virtual agents. Each robot or virtual agents senses its surroundings and acts independently without central coordination or communication with other robots or virtual agents. Our approach uses both the current position and the velocity of other robots or virtual agents to compute their future trajectories in order to avoid collisions. Moreover, our approach is reciprocal and avoids oscillations by explicitly taking into account that the other robots or virtual agents also sense their surroundings and change their trajectories accordingly.
  */
 
-#ifndef HRVO_SIMULATOR_H_
-#include "Environment.h"
+#ifndef HRVO_MODEL_H_
+#include "Model.h"
 #endif
+// #ifndef HRVO_ENVIRONMENT_H_
+// #include "Environment.h"
+// #endif
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
 #endif

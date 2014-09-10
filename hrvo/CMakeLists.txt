@@ -151,6 +151,7 @@ add_executable(Experiment
   src/Simulator.cpp
   src/Vector2.cpp
   src/Environment.cpp
+  src/Model.cpp
   src/Definitions.cpp
 )
 

@@ -24,7 +24,6 @@ namespace hrvo {
   class Simulator;
   class Agent;
   class Goal;
-  class KdTree;
 
   class Environment
   {
@@ -40,7 +39,7 @@ namespace hrvo {
 
     float getPlannerGlobalTime() {return planner_->getGlobalTime();}
 
-    void setupPlanner();
+    void setupPlanner();  // NOT USED. UNRESOLVED BUG WHERE ODOMETRY IS NOT EXTRACTED PROPERLY
 
     void updateTracker();
 
@@ -101,13 +100,7 @@ namespace hrvo {
 
     std::size_t inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs);
 
-    void setupPlannerModel(std::size_t agentNo);
-
-    std::map<std::size_t, float> inferAllGoals(std::size_t agentNo);
-
     float getGoalRatio (std::size_t goalNo) {return goalRatio_[goalNo];}
-
-    // bool plannerReachedGoals();
 
     std::size_t getNumPlannerAgents() const { return planner_->agents_.size(); }
 
@@ -123,9 +116,6 @@ namespace hrvo {
 
     void stopYoubot();
 
-  /**
-  * \brief    Sends to all agents an emergency stop command.
-  */
     void emergencyStop();
 
     std::pair<float, float> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
@@ -135,7 +125,6 @@ namespace hrvo {
       friend class Simulator;
       friend class Agent;
       friend class Goal;
-      friend class KdTree;
 
       enum Actor nActorID_;
       std::string sActorID_; 

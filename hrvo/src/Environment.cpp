@@ -46,8 +46,6 @@ namespace hrvo {
       delete iter->second;
       iter->second = NULL;
       simvect_.erase(iter);
-    // delete *iter;
-    // *iter = NULL;
     }
   }
 
@@ -58,7 +56,7 @@ namespace hrvo {
     goal3_ = this->addPlannerGoal(I_g3);
   }
 
-  void Environment::setupPlanner()
+  void Environment::setupPlanner()  // NOT USED. UNRESOLVED BUG WHERE ODOMETRY IS NOT EXTRACTED PROPERLY
   {
     currPos_ = this->getPlannerAgentPosition(THIS_ROBOT);
     currVel_ = this->getPlannerAgentVelocity(THIS_ROBOT);
@@ -394,24 +392,6 @@ namespace hrvo {
     return goalNo;
   }
 
-  void Environment::setupPlannerModel(std::size_t agentNo)
-  {    
-    std::map<std::size_t, std::size_t> simIDs;
-    std::size_t numGoals = planner_->getNumGoals();
-
-    for (std::size_t i = 0; i < numGoals; ++i) 
-    {
-      simIDs[i] = this->addSimulation();
-      simvect_[simIDs[i]]->setAgentGoal(agentNo, i);
-      // INFO("simID=" << simIDs[i] << " ");
-      std::size_t simnumGoals = simvect_[simIDs[i]]->getNumGoals();
-      // INFO(" simNumGoals=" << simnumGoals << std::endl);
-      INFO("Assigned GoalPos" << i << "of" << simnumGoals << ": " << simvect_[simIDs[i]]->getGoalPosition(i) << std::endl);
-    }
-
-    simIDs_ = simIDs;
-  }
-
   std::map<std::size_t, std::size_t> Environment::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)
   {    
     std::map<std::size_t, std::size_t> simIDs;
@@ -435,21 +415,15 @@ namespace hrvo {
   std::size_t Environment::inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs)
   {
 
-    const Vector2 currVel = planner_->getAgentVelocity(agentNo);  // TODO: GET FROM TRACKER
+    const Vector2 currVel = planner_->getAgentVelocity(agentNo);
     std::map<std::size_t, float> inferredGoals;
-
-    // DEBUG("simID size " << simIDs.size() << std::endl);
 
     for (std::size_t j = 0; j < simIDs.size(); ++j)
     {
       this->doSimulatorStep(simIDs[j]);
-      // DEBUG("dostep" << std::endl);
       Vector2 simVel = simvect_[simIDs[j]]->getAgentVelocity(agentNo);
-      // DEBUG("getsimvel" << std::endl);
       INFO("currVel=[" << currVel << "] " << "simVel=[" << simVel << "]" << std::endl);
-      // inferredGoals[j] = normaldiff(currVel, simVel);
       inferredGoals[j] = sqrdiff(currVel, simVel);
-      // DEBUG("DifftoGoal" << j << "=" << inferredGoals[j] << std::endl);
     }
 
     bool stopAtGoal = false;
@@ -475,7 +449,6 @@ namespace hrvo {
             inferredAgentGoalsSum_[agentNo][l] = GOAL_SUM_PRIOR;
         }
     }
-
 
     float inferredGoalsTotal(0.0f);
     for (std::size_t j = 0; j < inferredGoals.size(); ++j)
@@ -520,37 +493,6 @@ namespace hrvo {
       { this->deleteSimulation(simIDs[j]); }
 
     return maxLikelihoodGoal;
-
-  }
-
-  std::map<std::size_t, float> Environment::inferAllGoals(std::size_t agentNo)
-  {
-
-    const Vector2 currVel = planner_->getAgentVelocity(agentNo);  // TODO: GET FROM TRACKER
-    std::map<std::size_t, float> inferredGoals;
-
-    // std::cout << "simID size " << simIDs.size() << std::endl;
-
-    for (std::size_t j = 0; j < simIDs_.size(); ++j)
-    {
-      this->doSimulatorStep(simIDs_[j]);
-      // std::cout << "dostep" << std::endl;
-      Vector2 simVel = simvect_[simIDs_[j]]->getAgentVelocity(agentNo);
-      // std::cout << "getsimvel" << std::endl;
-      INFO("currVel=[" << currVel << "] " << "simVel=[" << simVel << "]" << std::endl);
-      inferredGoals[j] = normaldiff(currVel, simVel);
-      INFO("DifftoGoal" << j << "=" << inferredGoals[j] << std::endl);
-      // this->deleteSimulation(simIDs_[j]);
-
-      // this->doSimulatorStep(iter->second);
-      // std::cout << "dostep" << std::endl;
-      // Vector2 simVel = simvect_[iter->second]->getAgentVelocity(agentNo);
-      // std::cout << "getsimvel" << std::endl;
-      // inferredGoals[iter->second] = normaldiff(currVel, simVel);
-      // std::cout << "EGoal" << iter->first << "=" << inferredGoals[iter->second] << std::endl;
-      // this->deleteSimulation(iter->second);
-    }
-    return inferredGoals;
   }
 
   std::size_t Environment::addSimulation()
