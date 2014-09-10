@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
                 planner->setAgentTracker(TrackerID, THIS_ROBOT);
             }
 
+            planner->resetOdomPosition();
             planner->setTrackOtherAgents(true);
         }
 

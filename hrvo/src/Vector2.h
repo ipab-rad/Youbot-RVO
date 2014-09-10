@@ -325,6 +325,8 @@ namespace hrvo {
 	 */
 	float normaldiff(const Vector2 &vector1, const Vector2 &vector2);
 
+	float sqrdiff(const Vector2 &vector1, const Vector2 &vector2);
+
 	/**
 	 * \relates    Vector2
 	 * \brief      Computes the scalar multiplication of the specified vector with the specified scalar value.

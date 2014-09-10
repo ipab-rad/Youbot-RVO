@@ -115,6 +115,8 @@ namespace hrvo {
 
     void deleteSimulation(std::size_t simID);
 
+    void resetOdomPosition()  {planner_->resetOdomPosition();}
+
     void stopYoubot();
 
   /**

@@ -82,4 +82,15 @@ namespace hrvo {
     // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
     return abs(vdiff);
   }
+
+  float sqrdiff(const Vector2 &vector1, const Vector2 &vector2)
+  {
+    Vector2 vdiff = vector1 - vector2;
+    // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+    // return roundf(val * 100) / 100;
+    // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+    // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
+    return absSq(vdiff);
+  }
+
 }
