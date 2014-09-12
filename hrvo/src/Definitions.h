@@ -114,7 +114,7 @@ namespace hrvo {
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "PersonWalk4.csv";
+  const std::string fileName = "NewLog1.csv";
   const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
@@ -185,7 +185,7 @@ namespace hrvo {
   // extern std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;
 
   void logSetup(std::ofstream& logfile, std::map<std::size_t, Environment *> *PlannerMap, std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap);
-  void logData(std::ofstream& logfile, float currTime);
+  void logData(std::ofstream& logfile, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals);
 
   /**
   * \brief      Computes the square of a float.

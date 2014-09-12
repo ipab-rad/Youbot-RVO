@@ -38,43 +38,43 @@ namespace hrvo {
     ;
   }
 
-  std::map<std::size_t, std::size_t> Model::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)
+  void Model::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)
   {    
-    std::map<std::size_t, std::size_t> simIDs;
     std::size_t numGoals = possGoals.size();
 
     for (std::size_t i = 0; i < numGoals; ++i) 
     {
-      simIDs[i] = PlannerPt_->addSimulation();
-      std::size_t goalID = (*simvectPoint_)[simIDs[i]]->addGoal(possGoals[i]);
-      (*simvectPoint_)[simIDs[i]]->setAgentGoal(agentNo, goalID);
+      simIDs_[i] = PlannerPt_->addSimulation();
+      std::size_t goalID = (*simvectPoint_)[simIDs_[i]]->addGoal(possGoals[i]);
+      (*simvectPoint_)[simIDs_[i]]->setAgentGoal(agentNo, goalID);
       if (inferredGoalCount_[agentNo].find(i) == inferredGoalCount_[agentNo].end())
       {inferredGoalCount_[agentNo][i] = 0;}
-      // INFO("simID=" << simIDs[i] << " ");
+      // INFO("simID=" << simIDs_[i] << " ");
       // INFO(simNumGoals=" << simnumGoals << std::endl);
-      // INFO("Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs[i]]->getGoalPosition(goalID) << std::endl);
+      // INFO("Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs_[i]]->getGoalPosition(goalID) << std::endl);
     }
-    return simIDs;
   }
 
-  std::size_t Model::inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs)
+  std::size_t Model::inferGoals(std::size_t agentNo)
   {
+    if (!simVels_.empty())
+      {simVels_.clear();} // Reset Simulated Velocities
 
     const Vector2 currVel = PlannerPt_->getPlannerAgentVelocity(agentNo);
     std::map<std::size_t, float> inferredGoals;
 
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
+    for (std::size_t j = 0; j < simIDs_.size(); ++j)
     {
-      PlannerPt_->doSimulatorStep(simIDs[j]);
-      Vector2 simVel = (*simvectPoint_)[simIDs[j]]->getAgentVelocity(agentNo);
-      if (DISPLAY_INFERENCE_VALUES) {INFO("currVel=[" << currVel << "] " << "simVel=[" << simVel << "]" << std::endl);}
-      inferredGoals[j] = sqrdiff(currVel, simVel);
+      PlannerPt_->doSimulatorStep(simIDs_[j]);
+      simVels_.push_back((*simvectPoint_)[simIDs_[j]]->getAgentVelocity(agentNo));
+      if (DISPLAY_INFERENCE_VALUES) {INFO("currVel=[" << currVel << "] " << "simVel=[" << simVels_.back() << "]" << std::endl);}
+      inferredGoals[j] = sqrdiff(currVel, simVels_.back());
     }
 
     bool stopAtGoal = false;
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
+    for (std::size_t j = 0; j < simIDs_.size(); ++j)
     {
-      if ((*simvectPoint_)[simIDs[j]]->getAgentReachedGoal(agentNo))
+      if ((*simvectPoint_)[simIDs_[j]]->getAgentReachedGoal(agentNo))
       {
         stopAtGoal = true;
         INFO("Agent" << agentNo << " reached Goal"<< j <<std::endl);
@@ -135,8 +135,8 @@ namespace hrvo {
     }
     INFO(std::endl);
 
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
-      { PlannerPt_->deleteSimulation(simIDs[j]); }
+    for (std::size_t j = 0; j < simIDs_.size(); ++j)
+      { PlannerPt_->deleteSimulation(simIDs_[j]); }
 
     INFO("Agent" << agentNo << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
     return maxLikelihoodGoal;

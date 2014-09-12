@@ -8,6 +8,10 @@
 #include "Environment.h"
 #endif
 
+#ifndef HRVO_MODEL_H_
+#include "Model.h"
+#endif
+
 
 namespace hrvo {
 
@@ -68,42 +72,60 @@ namespace hrvo {
     }
   }
 
-  void logData(std::ofstream& logfile, float currTime)
+  void logData(std::ofstream& logfile, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals)
   {
     Environment* planner = (*PlannerMapPointer_).at(LogPlanner);
+    std::map<std::size_t, Model *> ModelMap = (*ModelMapPointer_).at(LogPlanner);
     
     size_t nAgents = planner->getNumPlannerAgents();
 
-    logfile << currTime << ",";
-    logfile << nAgents << ",";
-    logfile << ",";
-    // Modelled
-    // Goals
+    logfile << currTime;
+    logfile << "," << nAgents;
 
-    for(size_t AgentID = 0; AgentID < nAgents; ++AgentID) 
+    // List number of Agents actually modelled and their IDs
+    logfile << "," << modelledAgents.size();
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
     {
-    logfile << "," << planner->getPlannerAgentPosition(AgentID).getX();
-    logfile << "," << planner->getPlannerAgentPosition(AgentID).getY();
+      logfile << "," << *iter;
     }
 
-    for(size_t AgentID = 0; AgentID < nAgents; ++AgentID)
+    // List number of goals and their positions
+    logfile << "," << possGoals.size();
+    for(std::map<std::size_t, Vector2>::iterator iter = possGoals.begin(); iter != possGoals.end(); ++iter) 
     {
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getX(); 
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getY();
+      logfile << "," << iter->second.getX() << "," << iter->second.getY();
     }
 
-    // Simulation Velocity
-    for(size_t AgentID = 0; AgentID < nAgents; ++AgentID)
+    // Position
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
     {
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getX(); 
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getY();
+      logfile << "," << planner->getPlannerAgentPosition(*iter).getX();
+      logfile << "," << planner->getPlannerAgentPosition(*iter).getY();
+    }
+
+    // Velocity
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
+    {
+      logfile << "," << planner->getPlannerAgentVelocity(*iter).getX();
+      logfile << "," << planner->getPlannerAgentVelocity(*iter).getY();
+    }
+
+    // Simulated Velocities
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
+    {
+      std::vector<Vector2> simVels_ = ModelMap[*iter]->getSimVels();
+      for(std::vector<Vector2>::iterator Vel = simVels_.begin(); Vel != simVels_.end(); ++Vel) 
+      {
+        logfile << "," << (*Vel).getX();
+        logfile << "," << (*Vel).getY();
+      }
     }
 
     // Goal Inference
-    for(size_t AgentID = 0; AgentID < nAgents; ++AgentID)
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
     {
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getX(); 
-      logfile << "," << planner->getPlannerAgentVelocity(AgentID).getY();
+      logfile << "," << planner->getPlannerAgentVelocity(*iter).getX(); 
+      logfile << "," << planner->getPlannerAgentVelocity(*iter).getY();
     }
   }
 

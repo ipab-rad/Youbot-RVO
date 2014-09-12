@@ -119,23 +119,22 @@ int main(int argc, char *argv[])
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
 
+  DEBUG("ENV SETUP" << std::endl);
+
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
 
-  // typedef std::map<std::size_t, Environment *> PlannerMap_;
-  // PlannerMapPointer_* PlannerMap_ = new PlannerMap_();
-  std::map<std::size_t, Environment *> *PlannerMap_;
-  std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap_;
-  // PlannerMapPointer_ = &PlannerMap_;
-  // ModelMapPointer_ = &ModelMap_;
+  typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
+  typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer; // EnvID, ModelID, ModelObject
 
+  PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
+  ModelMapPointer* ModelMap_ = new ModelMapPointer();
 
-  Environment environment1(YOUBOT_1, START_POS1);
-  Model model1(&environment1);
-  (*PlannerMap_)[1] = &environment1;
-    // Environment environment2(YOUBOT_2, START_POS2);
-    // PlannerMap_[2] = &environment2;
+  (*PlannerMap_)[1] = new Environment(YOUBOT_1, START_POS1);
+
+  // Environment environment2(YOUBOT_2, START_POS2);
+  // PlannerMap_[2] = &environment2;
 
   if (!ENABLE_PLANNER)
   {
@@ -149,8 +148,11 @@ int main(int argc, char *argv[])
   }
 
   std::signal(SIGINT, interrupt_callback);
+
+
   std::ofstream log;
-  logSetup(log, PlannerMap_, ModelMap_);
+  if (LOG_DATA)
+    { logSetup(log, PlannerMap_, ModelMap_);}
 
   INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumPlanningAgents=" << (*PlannerMap_).size() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 
@@ -230,9 +232,9 @@ int main(int argc, char *argv[])
 
   INFO("Starting Experiment..." << std::endl);
   ros::Time begin = ros::Time::now();
-  environment1.setPlannerInitialGoal(1);
+  (*PlannerMap_)[1]->setPlannerInitialGoal(1);
   // environment2.setPlannerInitialGoal(3);
-  float startTime = environment1.getPlannerGlobalTime();
+  float startTime = (*PlannerMap_)[1]->getPlannerGlobalTime();
 
   while ( ros::ok() && !SAFETY_STOP )
   {
@@ -280,23 +282,29 @@ int main(int argc, char *argv[])
       possGoals[0] = I_g1;
       possGoals[1] = I_g2;
       possGoals[2] = I_g3;
+      std::vector<std::size_t> modelledAgents;
 
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
+        std::size_t EnvID = iter->first;
         Environment* planner = iter->second;
+        // TODO: Start at 0 to model main robot
         for(std::size_t AgentID = 1; AgentID < planner->getNumPlannerAgents(); ++AgentID)
         {
           if (planner->getAgentType(AgentID) != INACTIVE)
           {
-            simIDs = model1.setupModel(AgentID, possGoals);
-            std::size_t maxLikelihoodGoal = model1.inferGoals(AgentID, simIDs);
-            if (LOG_DATA) { logData(log, planner->getPlannerGlobalTime() - startTime);}
+            // TODO: Cycle map key. If not found for agent, generate. If found, use model.
+
+            (*ModelMap_)[EnvID][AgentID] = new Model((*PlannerMap_)[EnvID]);
+            (*ModelMap_)[EnvID][AgentID]->setupModel(AgentID, possGoals);
+            std::size_t maxLikelihoodGoal = (*ModelMap_)[EnvID][AgentID]->inferGoals(AgentID);
+            modelledAgents.push_back(AgentID);
           }
         }
       }
+      if (LOG_DATA) 
+      { logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents, possGoals);}
     }
-
-    if (LOG_DATA){log << std::endl;}
 
     ros::spinOnce();
     update_freq.sleep();
