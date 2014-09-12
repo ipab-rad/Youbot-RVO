@@ -62,32 +62,18 @@
 #ifndef HRVO_AGENT_H_
 #define HRVO_AGENT_H_
 
-#include <cstddef>
-#include <map>
-#include <set>
-#include <utility>
-#include <vector>
-#include <string>
-
-#include <ros/ros.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <nav_msgs/Odometry.h>
-
-#include <tf/tf.h> 
-
-#ifndef HRVO_DEFINITIONS_H_
-#include "Definitions.h"
-#endif
 
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
 #endif
+
 #ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
 #endif
 
-
 namespace hrvo {
+  class Simulator;
   /**
    * \class  Agent
    * \brief  An agent in the simulation.

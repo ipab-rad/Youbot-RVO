@@ -4,27 +4,14 @@
 * \brief  Declares the Model class.
 */
 
+#ifndef HRVO_MODEL_H_
+#define HRVO_MODEL_H_
+
 #include <vector>
 #include <map>
 
-#ifndef HRVO_SIMULATOR_H_
-#include "Simulator.h"
-#endif
-
-#ifndef HRVO_AGENT_H_
-#include "Agent.h"
-#endif
-
 #ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
-
-#ifndef HRVO_DEFINITIONS_H_
-#include "Definitions.h"
-#endif
-
-#ifndef HRVO_ENVIRONMENT_H_
-#include "Environment.h"
 #endif
 
 namespace hrvo {
@@ -50,7 +37,7 @@ namespace hrvo {
       friend class Environment;
 
       Environment* PlannerPt_;
-      std::map<std::size_t, Simulator *> simvect_;
+      std::map<std::size_t, Simulator *>* simvectPoint_;
 
       float goalRatio_[3];                              // TODO: Allocate depending on Goal num
       std::map<std::size_t, float> inferredGoalsSum_;
@@ -61,3 +48,5 @@ namespace hrvo {
   };
 
 }
+
+#endif /* HRVO_MODEL_H_ */

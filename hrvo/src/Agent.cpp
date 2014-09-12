@@ -63,11 +63,27 @@
 #include "Agent.h"
 #endif
 
+#ifndef HRVO_DEFINITIONS_H_
+#include "Definitions.h"
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
+ #include <cstddef>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
+#include <string>
+
+#include <ros/ros.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+
+#include <tf/tf.h> 
 
 #include <geometry_msgs/Twist.h>
+
 
 #ifndef HRVO_GOAL_H_
 #include "Goal.h"

@@ -3,9 +3,9 @@
 * \file   Environment.h
 * \brief  Declares the Environment class.
 */
+#ifndef HRVO_ENVIRONMENT_H_
+#define HRVO_ENVIRONMENT_H_
 
-#include <vector>
-#include <map>
 
 #ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
@@ -19,6 +19,10 @@
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Header.h"
 #include "ros/ros.h"
+
+#ifndef HRVO_DEFINITIONS_H_
+#include "Definitions.h"
+#endif
 
 namespace hrvo {
   class Simulator;
@@ -64,7 +68,7 @@ namespace hrvo {
 
     std::size_t addPlannerGoal(const Vector2 goalPosition);
 
-    std::size_t getAgentType(std::size_t agentNo) const {return planner_->getAgentType(agentNo);}
+    std::size_t getAgentType(std::size_t agentNo) {return planner_->getAgentType(agentNo);}
 
     std::size_t getPlannerGoal() {return planner_->getAgentGoal(THIS_ROBOT);}
 
@@ -75,8 +79,6 @@ namespace hrvo {
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);
 
     std::size_t setSimParam(std::size_t simID);
-
-    float getGlobalPlannerTime() const { return planner_->getGlobalTime(); }
 
     std::size_t getNumPlannerGoals()  { return planner_->getNumGoals(); }
 
@@ -102,7 +104,7 @@ namespace hrvo {
 
     float getGoalRatio (std::size_t goalNo) {return goalRatio_[goalNo];}
 
-    std::size_t getNumPlannerAgents() const { return planner_->agents_.size(); }
+    std::size_t getNumPlannerAgents() { return planner_->agents_.size(); }
 
     Vector2 getPlannerAgentPosition(std::size_t agentNo) { return planner_->getAgentPosition(agentNo); }
 
@@ -111,6 +113,8 @@ namespace hrvo {
     std::size_t addSimulation();
 
     void deleteSimulation(std::size_t simID);
+
+    std::map<std::size_t, Simulator *>* getSimVectPointer() {return simvectPoint_;}
 
     void resetOdomPosition()  {planner_->resetOdomPosition();}
 
@@ -136,7 +140,7 @@ namespace hrvo {
       std::size_t goal1_;
       std::size_t goal2_;
       std::size_t goal3_;
-      float goalRatio_[3];
+      float goalRatio_[3];  // TODO: Store in Model class
       
       bool prevPosInit;
       bool trackOtherAgents_;
@@ -154,14 +158,12 @@ namespace hrvo {
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
+      std::map<std::size_t, Simulator *>* simvectPoint_;
       std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, std::size_t>  agentVelCount_;
-      std::map<std::size_t, float> inferredGoalsSum_;
-      std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
-      std::map<std::size_t, std::map<std::size_t, std::map<std::size_t, float> > > inferredGoalHistory_;
-      std::map<std::size_t, std::map<std::size_t, std::size_t> > inferredGoalCount_;
-
 
   };
 
 }
+
+#endif /* HRVO_ENVIRONMENT_H_ */

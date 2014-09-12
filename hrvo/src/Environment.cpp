@@ -8,14 +8,9 @@
 #include "Environment.h"
 #endif
 
-#ifndef HRVO_VECTOR2_H_
-#include "Vector2.h"
-#endif
-
 #ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
 #endif
-
 
 namespace hrvo {
 
@@ -31,6 +26,7 @@ namespace hrvo {
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
     trackOtherAgents_ = false;
+    simvectPoint_ = &simvect_;
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
     Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
@@ -392,109 +388,6 @@ namespace hrvo {
     return goalNo;
   }
 
-  std::map<std::size_t, std::size_t> Environment::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)
-  {    
-    std::map<std::size_t, std::size_t> simIDs;
-    std::size_t numGoals = possGoals.size();
-
-    for (std::size_t i = 0; i < numGoals; ++i) 
-    {
-      simIDs[i] = this->addSimulation();
-      std::size_t goalID = simvect_[simIDs[i]]->addGoal(possGoals[i]);
-      simvect_[simIDs[i]]->setAgentGoal(agentNo, goalID);
-      if (inferredGoalCount_[agentNo].find(i) == inferredGoalCount_[agentNo].end())
-      {inferredGoalCount_[agentNo][i] = 0;}
-      // INFO("simID=" << simIDs[i] << " ");
-      // INFO(simNumGoals=" << simnumGoals << std::endl);
-      // INFO("Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs[i]]->getGoalPosition(goalID) << std::endl);
-    }
-
-    return simIDs;
-  }
-
-  std::size_t Environment::inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs)
-  {
-
-    const Vector2 currVel = planner_->getAgentVelocity(agentNo);
-    std::map<std::size_t, float> inferredGoals;
-
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
-    {
-      this->doSimulatorStep(simIDs[j]);
-      Vector2 simVel = simvect_[simIDs[j]]->getAgentVelocity(agentNo);
-      INFO("currVel=[" << currVel << "] " << "simVel=[" << simVel << "]" << std::endl);
-      inferredGoals[j] = sqrdiff(currVel, simVel);
-    }
-
-    bool stopAtGoal = false;
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
-    {
-      if (simvect_[simIDs[j]]->getAgentReachedGoal(agentNo))
-      {
-        stopAtGoal = true;
-        INFO("Agent reached Goal"<< j <<std::endl);
-        for (std::size_t l = 0; l < inferredGoals.size(); ++l)
-        {
-            inferredAgentGoalsSum_[agentNo][l] = GOAL_SUM_PRIOR;
-        }
-      }
-    }
-    if (!stopAtGoal)
-      {INFO("Agent is travelling..."<<std::endl);}
-
-    if (inferredAgentGoalsSum_[agentNo].empty())
-    {
-        for (std::size_t l = 0; l < inferredGoals.size(); ++l)
-        {
-            inferredAgentGoalsSum_[agentNo][l] = GOAL_SUM_PRIOR;
-        }
-    }
-
-    float inferredGoalsTotal(0.0f);
-    for (std::size_t j = 0; j < inferredGoals.size(); ++j)
-    {
-        INFO("Goal" << j << "=" << inferredGoals[j] << " ");
-        
-        inferredGoalHistory_[agentNo][j][inferredGoalCount_[agentNo][j]] = inferredGoals[j];
-
-        // inferredGoalHistory_[agentNo][j][0] = inferredGoals[j];
-
-        inferredGoalCount_[agentNo][j] += 1;
-        if (inferredGoalCount_[agentNo][j] == GOAL_INFERENCE_HISTORY) 
-          {inferredGoalCount_[agentNo][j] = 0;}
-
-        inferredAgentGoalsSum_[agentNo][j] = GOAL_SUM_PRIOR;
-        for (int i = 0; i < inferredGoalHistory_[agentNo][j].size(); ++i)
-        {
-          inferredAgentGoalsSum_[agentNo][j] += inferredGoalHistory_[agentNo][j][i];
-        }
-        
-        // inferredAgentGoalsSum_[agentNo][j] += inferredGoals[j]; // TODO: Add moving average
-        inferredGoalsTotal += 1 / inferredAgentGoalsSum_[agentNo][j];
-        INFO("GoalSum" << j << "=" << inferredAgentGoalsSum_[agentNo][j] << " " << std::endl);
-    }
-    INFO(std::endl);
-
-    INFO("Goal ratio=");
-    float goalRatio[inferredGoals.size()];
-    float maxLikelihoodRatio = 0.0f;
-    std::size_t maxLikelihoodGoal = 0;
-    for (std::size_t k = 0; k < inferredGoals.size(); ++k)
-    {
-    goalRatio[k] = ((1 / inferredAgentGoalsSum_[agentNo][k]) / inferredGoalsTotal);
-    if (k != 0) {INFO(":"); }
-    INFO(goalRatio[k]);
-    goalRatio_[k] = goalRatio[k];
-    if (goalRatio[k] > maxLikelihoodRatio) {maxLikelihoodRatio = goalRatio[k]; maxLikelihoodGoal = k;}
-    }
-    INFO(std::endl);
-
-    for (std::size_t j = 0; j < simIDs.size(); ++j)
-      { this->deleteSimulation(simIDs[j]); }
-
-    return maxLikelihoodGoal;
-  }
-
   std::size_t Environment::addSimulation()
   {
     std::size_t simID;
@@ -536,7 +429,6 @@ namespace hrvo {
   {
     delete simvect_[simID];
     simvect_.erase(simID);
-    DEBUG("Erased")
   }
 
 
@@ -560,8 +452,6 @@ namespace hrvo {
         simvect_[simID]->setAgentVelocity(i, STOP);
       }
     }
-
-
   }
 
   std::pair<float, float> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)

@@ -67,10 +67,15 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
+#include <map>
+#include <vector>
 
 namespace hrvo {
+  class Environment;
+  class Model;
   //A sufficiently small positive float.
   const float HRVO_EPSILON = 0.00001f;
   const float HRVO_PI = 3.141592653589793f;
@@ -94,8 +99,8 @@ namespace hrvo {
   // Experimental setup parameters
   const bool ENABLE_PLANNER = false;             // Enables robot planner, disable when only inferring / tracking
   const bool CYCLE_GOALS = true;                  // Make Planning robot cycle between goals
-  const bool PERFORM_ROBOT_SETUP = false;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup will assign last TrackerID
+  const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
+  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = true;            // Enable inference model
   const bool LOG_DATA = false;                    // Log data into a file
@@ -103,7 +108,14 @@ namespace hrvo {
   const int MAX_TRACKER_REASSIGN_ITERATIONS = 10;      // How many iterations after tracker of another agent is reassigned to robot
   const int ROS_FREQ = 10;
   const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
-  const std::size_t MAX_NO_TRACKED_AGENTS = 2;    // TODO: Not working as intended
+  const bool DISPLAY_INFERENCE_VALUES = true;     // Displays curr vs sim Vels and goal inference vs sum values 
+  const std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
+
+  // Logging setup
+  // const char *path="PersonWalk5.csv";
+
+  const std::string fileName = "PersonWalk4.csv";
+  const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
   const bool LIMIT_WORKSPACE_VEL = true;
@@ -140,10 +152,8 @@ namespace hrvo {
 
   const Vector2 trackerOffset = kinect1Offset;
 
- 
   const std::size_t VELOCITY_AVERAGE_WINDOW = 10;
   const std::size_t GOAL_INFERENCE_HISTORY = 10;
-
 
   const float NEIGHBOR_DIST = 5.0f;
   const std::size_t MAX_NEIGHBORS = 10;
@@ -170,6 +180,12 @@ namespace hrvo {
   std::string intToString(int i);
 
   int cinInteger();
+
+  // extern std::map<std::size_t, Environment *> *PlannerMapPointer_;
+  // extern std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;
+
+  void logSetup(std::ofstream& logfile, std::map<std::size_t, Environment *> *PlannerMap, std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap);
+  void logData(std::ofstream& logfile, float currTime);
 
   /**
   * \brief      Computes the square of a float.

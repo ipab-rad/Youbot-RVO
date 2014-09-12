@@ -71,11 +71,17 @@
 #ifndef HRVO_AGENT_H_
 #include "Agent.h"
 #endif
+ 
 #ifndef HRVO_GOAL_H
 #include "Goal.h"
 #endif
+
 #ifndef HRVO_KD_TREE_H_
 #include "KdTree.h"
+#endif
+
+#ifndef HRVO_DEFINITIONS_H_
+#include "Definitions.h"
 #endif
 
 namespace hrvo {

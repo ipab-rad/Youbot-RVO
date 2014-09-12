@@ -59,14 +59,21 @@
 * <http://gamma.cs.unc.edu/HRVO/>
 */
 
-#ifndef HRVO_HRVO_H_
-#include "HRVO.h"
-#endif
+// #ifndef HRVO_HRVO_H_
+// #include "HRVO.h"
+// #endif
 
-#ifndef HRVO_DEFINITIONS_H_
-#include "Definitions.h"
-#endif
+// #ifndef HRVO_DEFINITIONS_H_
+// #include "Definitions.h"
+// #endif
 
+// #ifndef HRVO_ENVIRONMENT_H_
+// #include "Environment.h"
+// #endif
+
+// #ifndef HRVO_MODEL_H_
+// #include "Model.h"
+// #endif
 
 #include <cmath>
 
@@ -78,6 +85,18 @@
 // #include <ros/ros.h>
 // #endif
 
+#ifndef HRVO_ENVIRONMENT_H_
+#include "Environment.h"
+#endif
+
+#ifndef HRVO_MODEL_H_
+#include "Model.h"
+#endif
+
+// #ifndef HRVO_DEFINITIONS_H_
+// #include "Definitions.h"
+// #endif
+
 
 using namespace hrvo;
 
@@ -87,249 +106,225 @@ bool STARTED = false;
 
 void interrupt_callback(int s)
 {
-    if ( !STARTED )
-    {
-        WARN("Aborted!" << std::endl);
-        exit(1);
-    }
-    SAFETY_STOP = true;
+  if ( !STARTED )
+  {
+    WARN("Aborted!" << std::endl);
+    exit(1);
+  }
+  SAFETY_STOP = true;
 }
 
 int main(int argc, char *argv[])
 {
-    if (CLEAR_SCREEN) {CLEAR();}
-    ros::init(argc, argv, "hrvo_planner");
+  if (CLEAR_SCREEN) {CLEAR();}
+  ros::init(argc, argv, "hrvo_planner");
 
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
 
-    std::map<std::size_t, Environment *> PlannerMap_;
+  // typedef std::map<std::size_t, Environment *> PlannerMap_;
+  // PlannerMapPointer_* PlannerMap_ = new PlannerMap_();
+  std::map<std::size_t, Environment *> *PlannerMap_;
+  std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap_;
+  // PlannerMapPointer_ = &PlannerMap_;
+  // ModelMapPointer_ = &ModelMap_;
 
-    Environment environment1(YOUBOT_1, START_POS1);
-    Model model1(&environment1);
-    PlannerMap_[1] = &environment1;
+
+  Environment environment1(YOUBOT_1, START_POS1);
+  Model model1(&environment1);
+  (*PlannerMap_)[1] = &environment1;
     // Environment environment2(YOUBOT_2, START_POS2);
     // PlannerMap_[2] = &environment2;
 
-    if (!ENABLE_PLANNER)
+  if (!ENABLE_PLANNER)
+  {
+    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
     {
-        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-        {
-            Environment* planner = iter->second;
-            planner->setPlannerPosition(STOP);
-            planner->disablePlannerAgent();
-            planner->setTrackOtherAgents(true);
-        }
+      Environment* planner = iter->second;
+      planner->setPlannerPosition(STOP);
+      planner->disablePlannerAgent();
+      planner->setTrackOtherAgents(true);
     }
+  }
 
-    std::size_t LogPlanner = 1;
+  std::signal(SIGINT, interrupt_callback);
+  std::ofstream log;
+  logSetup(log, PlannerMap_, ModelMap_);
 
-    std::signal(SIGINT, interrupt_callback);
+  INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumPlanningAgents=" << (*PlannerMap_).size() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 
-    std::ofstream log;
-    if(LOG_DATA)
-    {   
-        const char *path="PersonWalk4.csv";
-        log.open(path);
-        if (log.fail())
-            {ERR("Writing to log failed!" << std::endl);}
-        else
-            {DEBUG("Saving log on " << path << std::endl);}
+  std::map<std::size_t, std::size_t> simIDs;
 
-        log << SIM_TIME_STEP <<","<< PlannerMap_.size() <<","<< AGENT_RADIUS << std::endl;
-    }
-    
-    INFO("Parameters: TimeStep=" << SIM_TIME_STEP << ", NumPlanningAgents=" << PlannerMap_.size() << ", AgentRadius=" << AGENT_RADIUS << std::endl);
+  ros::Rate update_freq(ROS_FREQ);
 
+  // ************************************************************
+  //                      ROBOT SETUP
+  // ************************************************************
 
-
-    bool inferFlag = false; // KEEP FALSE, disables model inference when planning agent is alone
-    std::size_t inferredAgent = 1;
-    std::map<std::size_t, std::size_t> simIDs;
-
-    ros::Rate update_freq(ROS_FREQ);
-
-    // ************************************************************
-    //                      ROBOT SETUP
-    // ************************************************************
-
-    if (PERFORM_ROBOT_SETUP){
-
-        if (ENABLE_PLANNER)
-        {
-            for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-            {
-                Environment* planner = iter->second;
-                INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
-                while( std::cin.get() != '\n') {;}
-
-                Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
-                planner->addAndSetPlannerGoal(ForwVec);
-
-                //  **** MOVE YOUBOT INTO AREA ****
-                STARTED = true;
-                while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-                {   
-                    if (CLEAR_SCREEN) {CLEAR();}
-                    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
-                    
-                    planner->doPlannerStep();
-
-                    ros::spinOnce();
-                    update_freq.sleep();
-                }
-
-                planner->stopYoubot();
-                STARTED = false;
-
-                //  **** ASSIGN TRACKER ****
-                planner->updateTracker();
-                std::map<int, std::size_t> ids = planner->getTrackerIDs();
-
-                if (ids.empty())
-                {
-                    WARN("No Trackers were found" << std::endl);
-                }
-                else if (!MANUAL_TRACKER_ASSIGNMENT)
-                {
-                    planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-                    INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
-                }
-                else if (MANUAL_TRACKER_ASSIGNMENT)
-                {
-                    INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
-                    int TrackerID = cinInteger();
-                    planner->setAgentTracker(TrackerID, THIS_ROBOT);
-                }
-
-                planner->resetOdomPosition();
-            }
-        }
-        else
-            {WARN("SETUP OF ROBOTS SKIPPED AS PLANNING IS DISABLED")}
-    }
-
-    // ************************************************************
-    //                      EXPERIMENT START
-    // ************************************************************
-
-    INFO("Press enter to start Experiment");
-    while( std::cin.get() != '\n') {;}
-
-    STARTED = true;
-
-    INFO("Starting Experiment..." << std::endl);
-    ros::Time begin = ros::Time::now();
-    environment1.setPlannerInitialGoal(1);
-    // environment2.setPlannerInitialGoal(3);
-
-
-
-    while ( ros::ok() && !SAFETY_STOP )
+  if (PERFORM_ROBOT_SETUP)
+  {
+    if (ENABLE_PLANNER)
     {
-        if (CLEAR_SCREEN) {CLEAR();}
-        if (LOG_DATA){log << ros::Time::now() - begin;}
-
-        //  **** SENSING UPDATE STEP ****
-        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-        {
-            Environment* planner = iter->second;
-            planner->updateTracker();
-        }
-
-        for (std::size_t i = 0; i < PlannerMap_[LogPlanner]->getNumPlannerAgents(); ++i)
-        {
-            if (PlannerMap_[LogPlanner]->getAgentType(i) == INACTIVE)
-                {INFO("Agent" << i << " Inactive"<< std::endl);}
-            else
-            {
-                INFO("Agent" << i << " Pos: [" << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
-                if (LOG_DATA){log << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getX() << "," << PlannerMap_[LogPlanner]->getPlannerAgentPosition(i).getY();}
-            }
-        }
-        if (LOG_DATA){log << std::endl;}
-        
-        //  **** PLANNER STEP ****
-        if (ENABLE_PLANNER)
-        {
-            for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-            {
-                Environment* planner = iter->second;
-                if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
-                    {planner->cycleGoalsCounterClockwise();}
-
-                INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
-                if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
-                    {planner->stopYoubot();}
-                else
-                    {planner->doPlannerStep();}
-            }
-        }
-        else {WARN("Planner is disabled" << std::endl);}
-
-        //  **** MODEL STEP ****
-        if (ENABLE_MODELLING)
-        {
-            // TODO: REPLACE WITH SPECIFIC INFERRING AGENT CHECK
-            if (environment1.getNumPlannerAgents() > 1) {inferFlag = true;} else {inferFlag = false;}
-        }
-        if (inferFlag)
-        {
-            std::map<std::size_t, Vector2> possGoals;
-            possGoals[0] = I_g1;
-            possGoals[1] = I_g2;
-            possGoals[2] = I_g3;
-
-            simIDs = model1.setupModel(inferredAgent, possGoals);
-            // simIDs = environment1.setupModel(inferredAgent, possGoals);
-        
-            std::size_t maxLikelihoodGoal = model1.inferGoals(inferredAgent, simIDs);
-            // std::size_t maxLikelihoodGoal = environment1.inferGoals(inferredAgent, simIDs);
-
-            INFO("Agent" << inferredAgent << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
-            INFO(std::endl);
-            if (LOG_DATA){
-                log << "," << environment1.getPlannerAgentPosition(inferredAgent).getX() << "," << environment1.getPlannerAgentPosition(inferredAgent).getY();
-                log << "," << environment1.getPlannerAgentVelocity(inferredAgent).getX() << "," << environment1.getPlannerAgentVelocity(inferredAgent).getY();
-                log << "," << environment1.getGoalRatio(0) << "," << environment1.getGoalRatio(1) << "," << environment1.getGoalRatio(2);
-            
-                for (std::size_t i = 1; i < environment1.getNumPlannerAgents(); ++i)
-                {
-                    log << "," << environment1.getPlannerAgentPosition(i).getX() << "," << environment1.getPlannerAgentPosition(i).getY();
-                    log << "," << environment1.getPlannerAgentVelocity(i).getX() << "," << environment1.getPlannerAgentVelocity(i).getY();
-                }
-            }
-        }
-        if (LOG_DATA){log << std::endl;}
-
-        ros::spinOnce();
-        update_freq.sleep();
-
-    }
-    // while ( !environment1.getReachedPlannerGoal() &&  ros::ok() && !SAFETY_STOP );
-    // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
-
-    
-    for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-    {
+      for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+      {
         Environment* planner = iter->second;
-        WARN("Agent " << planner->getStringActorID() << " Stopping" << std::endl);
-        planner->stopYoubot();
-    }
+        INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
+        while( std::cin.get() != '\n') {;}
 
-    if (LOG_DATA){log.close();}
+        Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
+        planner->addAndSetPlannerGoal(ForwVec);
 
-    if ( SAFETY_STOP )
-    {
-        for(std::map<std::size_t, Environment *>::iterator iter = PlannerMap_.begin(); iter != PlannerMap_.end(); ++iter)
-        {
-            Environment* planner = iter->second;
-            planner->emergencyStop();
+              //  **** MOVE YOUBOT INTO AREA ****
+        STARTED = true;
+        while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
+        {   
+          if (CLEAR_SCREEN) {CLEAR();}
+          INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+
+          planner->doPlannerStep();
+
+          ros::spinOnce();
+          update_freq.sleep();
         }
-        ERR("EMERGENCY STOP!" << std::endl);
-        exit(1);
+
+        planner->stopYoubot();
+        STARTED = false;
+
+              //  **** ASSIGN TRACKER ****
+        planner->updateTracker();
+        std::map<int, std::size_t> ids = planner->getTrackerIDs();
+
+        if (ids.empty())
+        {
+          WARN("No Trackers were found" << std::endl);
+        }
+        else if (!MANUAL_TRACKER_ASSIGNMENT)
+        {
+          planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
+          INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
+        }
+        else if (MANUAL_TRACKER_ASSIGNMENT)
+        {
+          INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
+          int TrackerID = cinInteger();
+          planner->setAgentTracker(TrackerID, THIS_ROBOT);
+        }
+
+        planner->setTrackOtherAgents(true);
+        planner->resetOdomPosition();
+      }
+    }
+    else
+      {WARN("Setup of robots skipped as planner is disabled" << std::endl);}
+  }
+
+  // ************************************************************
+  //                      EXPERIMENT START
+  // ************************************************************
+
+  INFO("Press enter to start Experiment");
+  while( std::cin.get() != '\n') {;}
+
+  STARTED = true;
+
+  INFO("Starting Experiment..." << std::endl);
+  ros::Time begin = ros::Time::now();
+  environment1.setPlannerInitialGoal(1);
+  // environment2.setPlannerInitialGoal(3);
+  float startTime = environment1.getPlannerGlobalTime();
+
+  while ( ros::ok() && !SAFETY_STOP )
+  {
+    if (CLEAR_SCREEN) {CLEAR();}
+
+    //  **** SENSING UPDATE STEP ****
+    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+    {
+      Environment* planner = iter->second;
+      planner->updateTracker();
     }
 
-    return 0;
+    for (std::size_t i = 0; i < (*PlannerMap_)[LogPlanner]->getNumPlannerAgents(); ++i)
+    {
+      if ((*PlannerMap_)[LogPlanner]->getAgentType(i) == INACTIVE)
+        {INFO("Agent" << i << " Inactive"<< std::endl);}
+      else
+      {
+        INFO("Agent" << i << " Pos: [" << (*PlannerMap_)[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
+      }
+    }
+
+    //  **** PLANNER STEP ****
+    if (ENABLE_PLANNER)
+    {
+      for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+      {
+        Environment* planner = iter->second;
+        if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
+          {planner->cycleGoalsCounterClockwise();}
+
+        INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
+        if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
+          {planner->stopYoubot();}
+        else
+          {planner->doPlannerStep();}
+      }
+    }
+    else {WARN("Planner is disabled" << std::endl);}
+
+    //  **** MODEL STEP ****
+    if (ENABLE_MODELLING)
+    {
+      std::map<std::size_t, Vector2> possGoals;
+      possGoals[0] = I_g1;
+      possGoals[1] = I_g2;
+      possGoals[2] = I_g3;
+
+      for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+      {
+        Environment* planner = iter->second;
+        for(std::size_t AgentID = 1; AgentID < planner->getNumPlannerAgents(); ++AgentID)
+        {
+          if (planner->getAgentType(AgentID) != INACTIVE)
+          {
+            simIDs = model1.setupModel(AgentID, possGoals);
+            std::size_t maxLikelihoodGoal = model1.inferGoals(AgentID, simIDs);
+            if (LOG_DATA) { logData(log, planner->getPlannerGlobalTime() - startTime);}
+          }
+        }
+      }
+    }
+
+    if (LOG_DATA){log << std::endl;}
+
+    ros::spinOnce();
+    update_freq.sleep();
+
+  }
+  // while ( !environment1.getReachedPlannerGoal() &&  ros::ok() && !SAFETY_STOP );
+  // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
+
+  
+  for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+  {
+    Environment* planner = iter->second;
+    WARN("Agent " << planner->getStringActorID() << " Stopping" << std::endl);
+    planner->stopYoubot();
+  }
+
+  if (LOG_DATA){log.close();}
+
+  if ( SAFETY_STOP )
+  {
+    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+    {
+      Environment* planner = iter->second;
+      planner->emergencyStop();
+    }
+    ERR("EMERGENCY STOP!" << std::endl);
+    exit(1);
+  }
+
+  return 0;
 }

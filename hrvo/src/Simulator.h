@@ -63,7 +63,6 @@
 #define HRVO_SIMULATOR_H_
 
 #include <limits>
-#include <vector>
 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
@@ -74,9 +73,6 @@
 #include "Vector2.h"
 #endif
 
-#ifndef HRVO_DEFINITIONS_H_
-#include "Definitions.h"
-#endif
 
 /**
  * \brief  Set to 0 for a holonomic agent; set to 1 for a differential-drive agent.
@@ -87,6 +83,7 @@ namespace hrvo {
   class Agent;
   class Goal;
   class KdTree;
+  class Environment;
 
   /**
    * \class  Simulator
