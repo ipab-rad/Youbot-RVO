@@ -149,7 +149,20 @@ namespace hrvo {
         int TrackerID = msg_.identities[i];
         std::string sid = intToString(TrackerID);
         Vector2 agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
-        Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
+        Vector2 agentVel = STOP;
+        if (prevPos.find(TrackerID) != prevPos.end())
+        {
+          agentVel = (agentPos - prevPos[TrackerID]) * ROS_FREQ;
+          prevPos[TrackerID] = agentPos;
+          DEBUG("DEBUG Vel=" << agentVel);
+        }
+        else
+        {
+          prevPos[TrackerID] = agentPos;
+        }
+        // Vector2 agentVel = Vector2(-1 * msg_.velocities[i].x, msg_.velocities[i].y);
+        // Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
+
 
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
         { 
@@ -183,12 +196,14 @@ namespace hrvo {
         }
         else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
         {
-        planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
-        planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
+          planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
+          planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
-        std::pair<float, float> s = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
-        planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], s.first);
-        planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], s.second);
+          float avgVel = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
+          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], avgVel);
+          // planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], 1.2);
+          planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], maxSpeed_[trackedAgents_[TrackerID]]);
+          // planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], 2.0);
         // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
         }
 
@@ -415,11 +430,15 @@ namespace hrvo {
     {
       Vector2 plannerPos = planner_->getAgentPosition(i);
       Vector2 plannerVel = planner_->getAgentVelocity(i);
+      float prefSpeed = planner_->getAgentPrefSpeed(i);
+      float maxSpeed = planner_->getAgentMaxSpeed(i);
       // Vector2 vplannerGoal = planner_->getGoalPosition(planner_->getAgentGoal(i));
       // std::size_t nplannerGoal = simvect_[simID]->addGoal(vplannerGoal);
       std::size_t nplannerGoal = planner_->getAgentGoal(i);
       simvect_[simID]->addAgent(sActorID_ + "_s" + boost::lexical_cast<std::string>(simID) + "Agent_" + boost::lexical_cast<std::string>(i), SIMAGENT, plannerPos, nplannerGoal);
       simvect_[simID]->setAgentVelocity(i, plannerVel);
+      simvect_[simID]->setAgentPrefSpeed(i, prefSpeed);
+      simvect_[simID]->setAgentMaxSpeed(i, maxSpeed);
     }
     // std::cout << "HRVO Simulation for " << getActorName(nActorID_) << " with " << nAgents << " Agents with SimID_" << simID << " constructed" << std::endl;
     return simID;
@@ -454,26 +473,27 @@ namespace hrvo {
     }
   }
 
-  std::pair<float, float> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
+  float Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
   {
     agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = abs(AgentVel);
     agentVelCount_[trackedAgents_[AgentID]] += 1;
     if (agentVelCount_[trackedAgents_[AgentID]] == VELOCITY_AVERAGE_WINDOW)
       {agentVelCount_[trackedAgents_[AgentID]] = 0;}
+    // TODO: Make into vector, insert velocity at the beginning, eliminate last element if larger than window
+    // TODO: Implement discounted sum over past Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
 
     float avgVel_ = 0.0f;
-    float maxVel_ = 0.0f;
     for (int j = 0; j < agentVelHistory_[trackedAgents_[AgentID]].size(); ++j)
     {
       avgVel_ += agentVelHistory_[trackedAgents_[AgentID]][j];
-      if (agentVelHistory_[trackedAgents_[AgentID]][j] > maxVel_)
-        {maxVel_ = agentVelHistory_[trackedAgents_[AgentID]][j];}
+      if (agentVelHistory_[trackedAgents_[AgentID]][j] > maxSpeed_[AgentID])
+        {maxSpeed_[AgentID] = agentVelHistory_[trackedAgents_[AgentID]][j];}
     }
     avgVel_ = avgVel_ / agentVelHistory_[trackedAgents_[AgentID]].size();
 
-    DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxVel_<<std::endl);
+    DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
 
-    return std::make_pair(avgVel_, maxVel_);
+    return avgVel_;
   }
 
 

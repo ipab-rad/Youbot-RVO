@@ -119,8 +119,6 @@ int main(int argc, char *argv[])
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
 
-  DEBUG("ENV SETUP" << std::endl);
-
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
@@ -234,7 +232,7 @@ int main(int argc, char *argv[])
   ros::Time begin = ros::Time::now();
   (*PlannerMap_)[1]->setPlannerInitialGoal(1);
   // environment2.setPlannerInitialGoal(3);
-  float startTime = (*PlannerMap_)[1]->getPlannerGlobalTime();
+  float startTime = (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime();
 
   while ( ros::ok() && !SAFETY_STOP )
   {
@@ -275,9 +273,12 @@ int main(int argc, char *argv[])
     }
     else {WARN("Planner is disabled" << std::endl);}
 
+
+
     //  **** MODEL STEP ****
     if (ENABLE_MODELLING)
     {
+      bool Logged = false;
       std::map<std::size_t, Vector2> possGoals;
       possGoals[0] = I_g1;
       possGoals[1] = I_g2;
@@ -295,15 +296,18 @@ int main(int argc, char *argv[])
           {
             // TODO: Cycle map key. If not found for agent, generate. If found, use model.
 
-            (*ModelMap_)[EnvID][AgentID] = new Model((*PlannerMap_)[EnvID]);
+            Logged = true;
+            if ( (*ModelMap_)[EnvID].find(AgentID) == (*ModelMap_)[EnvID].end() )
+            {(*ModelMap_)[EnvID][AgentID] = new Model((*PlannerMap_)[EnvID]);}  // TODO: Check if object is destroyed
             (*ModelMap_)[EnvID][AgentID]->setupModel(AgentID, possGoals);
             std::size_t maxLikelihoodGoal = (*ModelMap_)[EnvID][AgentID]->inferGoals(AgentID);
             modelledAgents.push_back(AgentID);
           }
         }
       }
-      if (LOG_DATA) 
-      { logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents, possGoals);}
+      if (LOG_DATA && Logged) 
+      { (*PlannerMap_)[LogPlanner]->doPlannerStep();
+        logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents, possGoals);}
     }
 
     ros::spinOnce();

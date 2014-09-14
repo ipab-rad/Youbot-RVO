@@ -102,14 +102,16 @@ namespace hrvo {
 
     std::size_t inferGoals(std::size_t agentNo, std::map<std::size_t, std::size_t> simIDs);
 
-    float getGoalRatio (std::size_t goalNo) {return goalRatio_[goalNo];}
-
     std::size_t getNumPlannerAgents() { return planner_->agents_.size(); }
 
     Vector2 getPlannerAgentPosition(std::size_t agentNo) { return planner_->getAgentPosition(agentNo); }
 
     Vector2 getPlannerAgentVelocity(std::size_t agentNo) { return planner_->getAgentVelocity(agentNo); }
     
+    float getPlannerAgentAvgSpeed(std::size_t agentNo) { return planner_->getAgentPrefSpeed(agentNo); }
+    
+    float getPlannerAgentMaxSpeed(std::size_t agentNo) { return planner_->getAgentMaxSpeed(agentNo); }
+
     std::size_t addSimulation();
 
     void deleteSimulation(std::size_t simID);
@@ -122,7 +124,7 @@ namespace hrvo {
 
     void emergencyStop();
 
-    std::pair<float, float> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
+    float calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
 
     private:
@@ -140,9 +142,8 @@ namespace hrvo {
       std::size_t goal1_;
       std::size_t goal2_;
       std::size_t goal3_;
-      float goalRatio_[3];  // TODO: Store in Model class
       
-      bool prevPosInit;
+      std::map<size_t, Vector2> prevPos;
       bool trackOtherAgents_;
 
       ros::NodeHandle nh_;
@@ -161,6 +162,7 @@ namespace hrvo {
       std::map<std::size_t, Simulator *>* simvectPoint_;
       std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, std::size_t>  agentVelCount_;
+      std::map<std::size_t, float>  maxSpeed_;
 
   };
 

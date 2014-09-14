@@ -110,6 +110,13 @@ namespace hrvo {
       logfile << "," << planner->getPlannerAgentVelocity(*iter).getY();
     }
 
+    // Average / Maximum Speeds
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
+    {
+      logfile << "," << planner->getPlannerAgentAvgSpeed(*iter);
+      logfile << "," << planner->getPlannerAgentMaxSpeed(*iter);
+    }
+
     // Simulated Velocities
     for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
     {
@@ -121,12 +128,28 @@ namespace hrvo {
       }
     }
 
-    // Goal Inference
+    // Goal Likelihood
     for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
     {
-      logfile << "," << planner->getPlannerAgentVelocity(*iter).getX(); 
-      logfile << "," << planner->getPlannerAgentVelocity(*iter).getY();
+      std::map<std::size_t, float> inferredGoalsSum_ = ModelMap[*iter]->getGoalLikelihoods();
+      for(std::map<std::size_t, float>::iterator Lik = inferredGoalsSum_.begin(); Lik != inferredGoalsSum_.end(); ++Lik) 
+      {
+        logfile << "," << (*Lik).second;
+      }
     }
+
+    // Goal Ratio
+    for(std::vector<size_t>::iterator iter = modelledAgents.begin(); iter != modelledAgents.end(); ++iter) 
+    {
+      std::vector<float> goalRatios_ = ModelMap[*iter]->getGoalRatios();
+      for(std::vector<float>::iterator Rat = goalRatios_.begin(); Rat != goalRatios_.end(); ++Rat) 
+      {
+        logfile << "," << *Rat;
+      }
+    }
+
+    logfile << std::endl;
+
   }
 
 }

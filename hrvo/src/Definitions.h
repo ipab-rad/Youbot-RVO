@@ -103,10 +103,10 @@ namespace hrvo {
   const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = true;            // Enable inference model
-  const bool LOG_DATA = false;                    // Log data into a file
+  const bool LOG_DATA = true;                    // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
   const int MAX_TRACKER_REASSIGN_ITERATIONS = 10;      // How many iterations after tracker of another agent is reassigned to robot
-  const int ROS_FREQ = 10;
+  const int ROS_FREQ = 10;                        // Planner frequency Hz
   const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
   const bool DISPLAY_INFERENCE_VALUES = true;     // Displays curr vs sim Vels and goal inference vs sum values 
   const std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
@@ -114,7 +114,7 @@ namespace hrvo {
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "NewLog1.csv";
+  const std::string fileName = "NewLog5.csv";
   const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
@@ -129,7 +129,7 @@ namespace hrvo {
   const float SIM_TIME_STEP = 0.1f;
 
   // Model setup parameters
-  const float GOAL_SUM_PRIOR = 0.1f;             // Goal inference initial prior
+  const float GOAL_SUM_PRIOR = 0.001f;             // Goal inference initial prior
 
   // Goal positions for InSpace Setup
   const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
@@ -150,15 +150,15 @@ namespace hrvo {
   const Vector2 kinect2Offset = Vector2(0.25f, 0.0f);
   const Vector2 noOffset = Vector2(0.0f, 0.0f);
 
-  const Vector2 trackerOffset = kinect1Offset;
+  const Vector2 trackerOffset = noOffset;
 
-  const std::size_t VELOCITY_AVERAGE_WINDOW = 10;
-  const std::size_t GOAL_INFERENCE_HISTORY = 10;
+  const std::size_t VELOCITY_AVERAGE_WINDOW = 0.2 * ROS_FREQ; // 1/5 second window
+  const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
 
   const float NEIGHBOR_DIST = 5.0f;
   const std::size_t MAX_NEIGHBORS = 10;
   const float AGENT_RADIUS = 0.5f;
-  const float GOAL_RADIUS = 0.25f;
+  const float GOAL_RADIUS = 0.3f;
   const float PREF_SPEED = 0.3f;
   const float PREF_PEOPLE_SPEED = 0.3f;
   const float MAX_SPEED = 0.6f;
