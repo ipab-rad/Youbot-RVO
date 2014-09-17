@@ -134,7 +134,7 @@ namespace hrvo {
   const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
   const std::size_t VELOCITY_AVERAGE_WINDOW = 0.5 * ROS_FREQ; // 1/2 second window
   const bool USE_PROB_MODEL = true;
-  const bool USE_TRACKER_VELOCITIES = false;
+  const bool USE_TRACKER_VELOCITIES = true;
 
 
   // Goal positions for InSpace Setup
