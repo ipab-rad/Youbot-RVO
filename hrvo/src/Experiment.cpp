@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
       }
     }
     else {WARN("Planner is disabled" << std::endl);}
-
+    INFO(std::endl);
 
 
     //  **** MODEL STEP ****
@@ -294,8 +294,6 @@ int main(int argc, char *argv[])
         {
           if (planner->getAgentType(AgentID) != INACTIVE)
           {
-            // TODO: Cycle map key. If not found for agent, generate. If found, use model.
-
             Logged = true;
             if ( (*ModelMap_)[EnvID].find(AgentID) == (*ModelMap_)[EnvID].end() )
             {(*ModelMap_)[EnvID][AgentID] = new Model((*PlannerMap_)[EnvID]);}  // TODO: Check if object is destroyed

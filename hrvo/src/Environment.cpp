@@ -150,18 +150,23 @@ namespace hrvo {
         std::string sid = intToString(TrackerID);
         Vector2 agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
         Vector2 agentVel = STOP;
-        if (prevPos.find(TrackerID) != prevPos.end())
+        if (!USE_TRACKER_VELOCITIES)
         {
-          agentVel = (agentPos - prevPos[TrackerID]) * ROS_FREQ;
-          prevPos[TrackerID] = agentPos;
-          DEBUG("DEBUG Vel=" << agentVel);
+          if (prevPos.find(TrackerID) != prevPos.end())
+          {
+            agentVel = (agentPos - prevPos[TrackerID]) * ROS_FREQ;
+            prevPos[TrackerID] = agentPos;
+          }
+          else
+          {
+            prevPos[TrackerID] = agentPos;
+          }
         }
         else
         {
-          prevPos[TrackerID] = agentPos;
+          // agentVel = Vector2(-1 * msg_.velocities[i].x, msg_.velocities[i].y);
+          agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
         }
-        // Vector2 agentVel = Vector2(-1 * msg_.velocities[i].x, msg_.velocities[i].y);
-        // Vector2 agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
 
 
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
@@ -196,18 +201,20 @@ namespace hrvo {
         }
         else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
         {
-          planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
-          planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
 
-          float avgVel = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
-          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], avgVel);
-          // planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], 1.2);
+          // float avgVel = this->calculateAvgMaxSpeeds(TrackerID, agentVel);
+          std::pair<float, Vector2> avgSpeedVel = this->calculateAvgMaxSpeeds(trackedAgents_[TrackerID], agentVel);
+          float avgSpeed = avgSpeedVel.first;
+          Vector2 avgVel = avgSpeedVel.second;
+
+          planner_->setAgentPosition(trackedAgents_[TrackerID], agentPos + trackerOffset);
+          // planner_->setAgentVelocity(trackedAgents_[TrackerID], agentVel);
+          planner_->setAgentVelocity(trackedAgents_[TrackerID], avgVel);
+          planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], avgSpeed);
           planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], maxSpeed_[trackedAgents_[TrackerID]]);
-          // planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], 2.0);
         // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
         }
 
-        // TODO: Add method to assign most-likely tracker if runing with odometry for a while
         // if (planner_->getOdomNeeded())
         // {
 
@@ -218,6 +225,7 @@ namespace hrvo {
         {
           if (trackerComparisonCounter_ < MAX_TRACKER_REASSIGN_ITERATIONS)
           {
+            // TODO: MOVING AVERAGE!!
             trackerCompOdom_[TrackerID] += sqrdiff(planner_->getOdomPosition(), agentPos);
             DEBUG("Tracker " << TrackerID << " Pos " << agentPos << " CompOdom " << trackerCompOdom_[TrackerID] << std::endl);
           }
@@ -386,7 +394,7 @@ namespace hrvo {
 
   void Environment::doPlannerStep()
   {
-    if (planner_->odomNeeded_) {WARN(sActorID_<< " using odometry for navigation" << std::endl);}
+    if (planner_->odomNeeded_ && planner_->getAgentType(THIS_ROBOT) != INACTIVE) {WARN(sActorID_<< " using odometry for navigation" << std::endl);}
     planner_->doStep();
     planner_->setOdomNeeded(true);
   }
@@ -473,27 +481,36 @@ namespace hrvo {
     }
   }
 
-  float Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
+  std::pair<float, Vector2> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
   {
-    agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = abs(AgentVel);
-    agentVelCount_[trackedAgents_[AgentID]] += 1;
-    if (agentVelCount_[trackedAgents_[AgentID]] == VELOCITY_AVERAGE_WINDOW)
-      {agentVelCount_[trackedAgents_[AgentID]] = 0;}
+    // agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = AgentVel;
+    // agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = abs(AgentVel);
+    // agentVelCount_[trackedAgents_[AgentID]] += 1;
+    // if (agentVelCount_[trackedAgents_[AgentID]] == VELOCITY_AVERAGE_WINDOW)
+    //   {agentVelCount_[trackedAgents_[AgentID]] = 0;}
     // TODO: Make into vector, insert velocity at the beginning, eliminate last element if larger than window
     // TODO: Implement discounted sum over past Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
+    agentVelHistory_[AgentID].insert(agentVelHistory_[AgentID].begin(), AgentVel);
+    agentVelHistory_[AgentID].resize(VELOCITY_AVERAGE_WINDOW);
+    std::size_t VelHist = agentVelHistory_[AgentID].size();
 
-    float avgVel_ = 0.0f;
-    for (int j = 0; j < agentVelHistory_[trackedAgents_[AgentID]].size(); ++j)
+    float avgSpeed = 0.0f;
+    float avgVelx = 0.0f;
+    float avgVely = 0.0f;
+    for(std::vector<Vector2>::iterator vel = agentVelHistory_[AgentID].begin(); vel != agentVelHistory_[AgentID].end(); ++vel)
     {
-      avgVel_ += agentVelHistory_[trackedAgents_[AgentID]][j];
-      if (agentVelHistory_[trackedAgents_[AgentID]][j] > maxSpeed_[AgentID])
-        {maxSpeed_[AgentID] = agentVelHistory_[trackedAgents_[AgentID]][j];}
+      avgSpeed += abs(*vel);
+      avgVelx += (*vel).getX();
+      avgVely += (*vel).getY();
     }
-    avgVel_ = avgVel_ / agentVelHistory_[trackedAgents_[AgentID]].size();
+    avgSpeed = avgSpeed / agentVelHistory_[AgentID].size();
+    Vector2 avgVel = Vector2(avgVelx / VelHist, avgVely / VelHist);
+    if (avgSpeed > maxSpeed_[AgentID])
+    {maxSpeed_[AgentID] = avgSpeed;}
 
-    DEBUG("AvgVel="<<avgVel_<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
+    DEBUG("Agent" << AgentID << " AvgVel="<<avgSpeed<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
 
-    return avgVel_;
+    return std::make_pair(avgSpeed, avgVel);
   }
 
 

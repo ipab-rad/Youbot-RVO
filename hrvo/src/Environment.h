@@ -112,6 +112,8 @@ namespace hrvo {
     
     float getPlannerAgentMaxSpeed(std::size_t agentNo) { return planner_->getAgentMaxSpeed(agentNo); }
 
+    float getPlannerAgentPrefSpeed(std::size_t agentNo) { return planner_->getAgentPrefSpeed(agentNo); }
+
     std::size_t addSimulation();
 
     void deleteSimulation(std::size_t simID);
@@ -124,7 +126,8 @@ namespace hrvo {
 
     void emergencyStop();
 
-    float calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
+    // float calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
+    std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
 
     private:
@@ -160,7 +163,7 @@ namespace hrvo {
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
       std::map<std::size_t, Simulator *>* simvectPoint_;
-      std::map<std::size_t, std::map<std::size_t, float> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
+      std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, std::size_t>  agentVelCount_;
       std::map<std::size_t, float>  maxSpeed_;
 

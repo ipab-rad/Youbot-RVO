@@ -114,7 +114,7 @@ namespace hrvo {
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "NewLog5.csv";
+  const std::string fileName = "NewLog8.csv";
   const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
@@ -129,7 +129,13 @@ namespace hrvo {
   const float SIM_TIME_STEP = 0.1f;
 
   // Model setup parameters
-  const float GOAL_SUM_PRIOR = 0.001f;             // Goal inference initial prior
+  const float GOAL_SUM_PRIOR = 0.001f;            // Goal inference initial prior
+  const float GOAL_HISTORY_DISCOUNT = 0.5f;       // Discount of previous likelihood history
+  const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
+  const std::size_t VELOCITY_AVERAGE_WINDOW = 0.5 * ROS_FREQ; // 1/2 second window
+  const bool USE_PROB_MODEL = true;
+  const bool USE_TRACKER_VELOCITIES = false;
+
 
   // Goal positions for InSpace Setup
   const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
@@ -151,9 +157,6 @@ namespace hrvo {
   const Vector2 noOffset = Vector2(0.0f, 0.0f);
 
   const Vector2 trackerOffset = noOffset;
-
-  const std::size_t VELOCITY_AVERAGE_WINDOW = 0.2 * ROS_FREQ; // 1/5 second window
-  const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
 
   const float NEIGHBOR_DIST = 5.0f;
   const std::size_t MAX_NEIGHBORS = 10;

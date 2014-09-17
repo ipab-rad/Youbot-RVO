@@ -32,7 +32,7 @@ namespace hrvo {
 
     std::vector<Vector2> getSimVels() {return simVels_;}
 
-    std::map<std::size_t, float> getGoalLikelihoods() {return inferredGoalsSum_;}
+    std::map<std::size_t, float> getGoalLikelihoods() {return goalLikelihood_;}
 
     // float* getgoalRatio() {return goalRatio_;}
 
@@ -50,6 +50,9 @@ namespace hrvo {
 
       // float goalRatio_[3];  // TODO: Allocate depending on Goal num
       std::vector<float> goalRatios_;
+      std::vector<bool> reachedGoal_;
+      std::vector<bool> leftGoal_;
+
 
       bool prevPosInit;
       std::vector<Vector2> currSimVels_;
@@ -58,9 +61,11 @@ namespace hrvo {
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, float> inferredGoalsSum_;
       // std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
-      std::map<std::size_t, std::map<std::size_t, float> > inferredGoalHistory_;  // Goal, Count
+      // std::map<std::size_t, std::map<std::size_t, float> > inferredGoalHistory_;  // Goal, Count
       std::map<std::size_t, std::vector<float> > inferredGoalsHistory_;
       std::map<std::size_t, std::size_t> inferredGoalCount_;
+      std::map<std::size_t, float> goalLikelihood_;
+      std::map<std::size_t, float> prevPrior_;
 
   };
 

@@ -58,6 +58,16 @@ namespace hrvo {
             inferredGoalsSum_[l] = GOAL_SUM_PRIOR;
         }
       }
+
+
+      if (reachedGoal_.empty() || leftGoal_.empty())
+      {
+        for (std::size_t l = 0; l < possGoals.size(); ++l)
+        {
+        reachedGoal_.push_back(false);
+        leftGoal_.push_back(false);
+        }
+      }
       // INFO("simID=" << simIDs_[i] << " ");
       // INFO(simNumGoals=" << simnumGoals << std::endl);
       // INFO("Assigned GoalPos" << i << "of" << numGoals << ": " << simvect_[simIDs_[i]]->getGoalPosition(goalID) << std::endl);
@@ -69,18 +79,28 @@ namespace hrvo {
     if (!simVels_.empty())
       {simVels_.clear();} // Reset Simulated Velocities
 
-    if (!goalRatios_.empty())
-      {goalRatios_.clear();} // Reset Goal Ratios
-
-    const Vector2 currVel = PlannerPt_->getPlannerAgentVelocity(agentNo);
+    Vector2 currVel = PlannerPt_->getPlannerAgentVelocity(agentNo);
     // const Vector2 currVel = PlannerPt_->getPlannerAgentPosition(agentNo);
     std::map<std::size_t, float> inferredGoals;
 
-    for (std::size_t j = 0; j < simIDs_.size(); ++j)
+    // If agents have not moved at all yet, initialise simVels_ to avoid NaNs
+    if (currVel == STOP && PlannerPt_->getPlannerAgentPrefSpeed(agentNo) == 0.0f)
     {
-      PlannerPt_->doSimulatorStep(simIDs_[j]);
-      simVels_.push_back((*simvectPoint_)[simIDs_[j]]->getAgentVelocity(agentNo));
-      // simVels_.push_back((*simvectPoint_)[simIDs_[j]]->getAgentPosition(agentNo));
+      Vector2 VelInit = Vector2(0.001f, 0.001f);
+      for (std::size_t j = 0; j < simIDs_.size(); ++j)
+      {
+        simVels_.push_back(VelInit);
+      }
+      currVel = VelInit;
+    }
+    else
+    {
+      for (std::size_t j = 0; j < simIDs_.size(); ++j)
+      {
+        PlannerPt_->doSimulatorStep(simIDs_[j]);
+        simVels_.push_back((*simvectPoint_)[simIDs_[j]]->getAgentVelocity(agentNo));
+        // simVels_.push_back((*simvectPoint_)[simIDs_[j]]->getAgentPosition(agentNo));
+      }
     }
 
     if (!prevPosInit)
@@ -95,39 +115,85 @@ namespace hrvo {
       pastSimVels_ = simVels_;
     }
 
+    
     for (std::size_t j = 0; j < simIDs_.size(); ++j)
     {
       if (DISPLAY_INFERENCE_VALUES) {INFO("currVel=[" << currVel << "] " << "simVel=[" << currSimVels_[j] << "]" << std::endl);}
-      inferredGoals[j] = sqrdiff(currVel, currSimVels_[j]);
-    }
-
-
-    bool stopAtGoal = false;
-    for (std::size_t j = 0; j < simIDs_.size(); ++j)
-    {
-      if ((*simvectPoint_)[simIDs_[j]]->getAgentReachedGoal(agentNo))
+      // TODO: Replace with Gaussian pdf and posterior inference
+      if (USE_PROB_MODEL)
       {
-        stopAtGoal = true;
-        INFO("Agent" << agentNo << " reached Goal"<< j <<std::endl);
-        for (std::size_t l = 0; l < inferredGoals.size(); ++l)
-        {
-          // Reset goal belief when goal is reached, to be removed with moving average
-          inferredGoalsSum_[l] = GOAL_SUM_PRIOR;
-        }
+        float var = sqrtf(0.25);
+        float var2 = (MAX_PEOPLE_ACCELERATION / 10) / ROS_FREQ;  // Max accel, divided equally between x,y comp, for 1/10Sec
+        float xval = currVel.getX();
+        float xmean = currSimVels_[j].getX();
+        float yval = currVel.getY();
+        float ymean = currSimVels_[j].getY();
+        float probx = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((xval - xmean), 2) / (2 * var2) ) );
+        float proby = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((yval - ymean), 2) / (2 * var2) ) );
+        // inferredGoals[j] = probx * proby;
+        inferredGoals[j] = ((probx + proby) / 2); // TODO: Check result
+        // * inferredGoalsHistory_[j].back()
+      }
+      else
+      {
+        inferredGoals[j] = sqrdiff(currVel, currSimVels_[j]);
       }
     }
-    if (!stopAtGoal)
-      {INFO("Agent" << agentNo << " is travelling..."<<std::endl);}
 
+    // NORMALISING SIM PRIORS
+    if (USE_PROB_MODEL)
+    {
+      float likelihoodSum = 0.0f;
+      for (std::size_t j = 0; j < inferredGoals.size(); ++j)
+      {
+        likelihoodSum += inferredGoals[j];
+      }
+      for (std::size_t j = 0; j < inferredGoals.size(); ++j)
+      {
+        inferredGoals[j] = inferredGoals[j] / likelihoodSum;
+      }
+    }
+
+    bool travelling = false;
+    bool resetPriors = false;
+    for (std::size_t j = 0; j < simIDs_.size(); ++j)
+    {
+      bool stopAtGoal = (*simvectPoint_)[simIDs_[j]]->getAgentReachedGoal(agentNo);
+      if (stopAtGoal)
+      {
+        reachedGoal_[j] = true;
+        INFO("Agent" << agentNo << " reached Goal"<< j <<std::endl);
+        // for (std::size_t l = 0; l < inferredGoals.size(); ++l)
+        // {
+        //   // Reset goal belief when goal is reached, to be replaced with moving average
+        //   inferredGoalsSum_[l] = GOAL_SUM_PRIOR;
+        // }
+      }
+      else if (!stopAtGoal && reachedGoal_[j] == false)
+      {
+        travelling = true;
+        leftGoal_[j] = false;
+      }
+      else if (!stopAtGoal && reachedGoal_[j] == true)
+      {
+        INFO("Agent" << agentNo << " left Goal"<< j <<std::endl);
+        reachedGoal_[j] = false;
+        leftGoal_[j] = true;
+        resetPriors = true;
+      }
+    }
+
+    if (travelling)
+    {INFO("Agent" << agentNo << " is travelling..."<<std::endl);}
 
     float inferredGoalsTotal(0.0f);
     for (std::size_t j = 0; j < inferredGoals.size(); ++j)
     {
-      if (DISPLAY_INFERENCE_VALUES) {INFO("Goal" << j << "=" << inferredGoals[j] << " ");}
-      
+      if (DISPLAY_INFERENCE_VALUES) {INFO("Goal" << j << "=" << inferredGoals[j] << std::endl);}
+
       // inferredGoalHistory_[j][inferredGoalCount_[j]] = inferredGoals[j];
       inferredGoalsHistory_[j].insert(inferredGoalsHistory_[j].begin(), inferredGoals[j]);
-      inferredGoalsHistory_[j].resize(GOAL_INFERENCE_HISTORY);  // TODO: Add moving average
+      inferredGoalsHistory_[j].resize(GOAL_INFERENCE_HISTORY);
 
       // inferredGoalHistory_[j][0] = inferredGoals[j];
 
@@ -135,37 +201,107 @@ namespace hrvo {
       // if (inferredGoalCount_[j] == GOAL_INFERENCE_HISTORY) 
       //   {inferredGoalCount_[j] = 0;}
 
-      // inferredGoalsSum_[j] = GOAL_SUM_PRIOR;
-      for (int i = 0; i < inferredGoalsHistory_[j].size(); ++i)
-      {
-        // TODO: Implement discounted sum over past Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
-        inferredGoalsSum_[j] += inferredGoalsHistory_[j][i];
-      }
       
-      inferredGoalsTotal += 1 / inferredGoalsSum_[j];
-      if (DISPLAY_INFERENCE_VALUES) 
-        {INFO("GoalSum" << j << "=" << inferredGoalsSum_[j] << " " << std::endl);}
+      if (USE_PROB_MODEL)
+      {
+        // inferredGoalsSum_[j] = inferredGoals[j];
+        goalLikelihood_[j] = inferredGoalsHistory_[j].front();
+        float uniformPrior = 1.0f / inferredGoals.size();
+        float norm = 1.0f / inferredGoals.size();
+        if (inferredGoalsHistory_[j].size() == 1)
+        {
+          prevPrior_[j] = uniformPrior;
+        }
+        else if (inferredGoalsHistory_[j].size() > 1)
+        {
+          prevPrior_[j] = inferredGoalsHistory_[j][1];
+        }
+        if (!resetPriors)
+        {
+          goalLikelihood_[j] = goalLikelihood_[j] * prevPrior_[j];
+        }
+        else
+        {
+          goalLikelihood_[j] = uniformPrior;
+        }
+
+        for (int i = 1; i < inferredGoalsHistory_[j].size(); ++i)
+        {
+          DEBUG(inferredGoalsHistory_[j][i] << " ");
+          // inferredGoalsSum_[j] = inferredGoalsSum_[j] * inferredGoalsHistory_[j][i];
+          // inferredGoalsSum_[j] += (inferredGoalsHistory_[j][i] * uniformPrior) / norm ;  // Not Discounted Summation
+          // goalLikelihood_[j] = inferredGoalsSum_[j] * inferredGoalsHistory_[j][i];
+          // inferredGoalsSum_[j] += (inferredGoalsHistory_[j][i] * uniformPrior) / norm ;
+        }
+        DEBUG(std::endl);
+        // goalLikelihood_[j] = inferredGoalsSum_[j] / inferredGoalsHistory_[j].size();
+        inferredGoalsTotal += goalLikelihood_[j];
+        if (DISPLAY_INFERENCE_VALUES) 
+          {INFO("GoalLikelihood" << j << "=" << goalLikelihood_[j] << " " << std::endl);}
+      }
+      else
+      {
+        inferredGoalsSum_[j] = GOAL_SUM_PRIOR;
+        for (int i = 0; i < inferredGoalsHistory_[j].size(); ++i)
+        {
+          DEBUG(inferredGoalsHistory_[j][i] << " ");
+          // inferredGoalsSum_[j] += inferredGoalsHistory_[j][i];
+          // Discounted sum over history. Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
+          
+          // Normal Discount
+          // inferredGoalsSum_[j] += pow((1 - GOAL_HISTORY_DISCOUNT), ((i + 1) - 1)) * inferredGoalsHistory_[j][i];
+
+          // Inverted Discount
+          inferredGoalsSum_[j] += pow((1 - GOAL_HISTORY_DISCOUNT), ((GOAL_INFERENCE_HISTORY - i) - 1)) * inferredGoalsHistory_[j][i];
+        }
+        DEBUG(std::endl);
+        inferredGoalsTotal += 1 / inferredGoalsSum_[j];
+        goalLikelihood_[j] = inferredGoalsSum_[j];
+        if (DISPLAY_INFERENCE_VALUES) 
+          {INFO("GoalSum" << j << "=" << inferredGoalsSum_[j] << " " << std::endl);}
+      }
     }
     INFO(std::endl);
+    // TODO: Finish Probabilistic summation / prior multiplication
 
-    INFO("Goal ratio=");
-    float goalRatio[inferredGoals.size()];
+    if (!goalRatios_.empty())
+      {goalRatios_.clear();} // Reset Goal Ratios
+
     float maxLikelihoodRatio = 0.0f;
     std::size_t maxLikelihoodGoal = 0;
+    INFO("Goal ratio=");
+    float goalRatio = 0.0f;
+
     for (std::size_t k = 0; k < inferredGoals.size(); ++k)
     {
-      goalRatio[k] = ((1 / inferredGoalsSum_[k]) / inferredGoalsTotal);
+      if (inferredGoalsTotal == 0)
+      {
+        goalRatio = 1.0f / inferredGoals.size();  // Avoid NaNs when likelihoods are all 0
+      }
+      else  
+      {
+        if (USE_PROB_MODEL)
+        {
+          goalRatio = goalLikelihood_[k] / inferredGoalsTotal;
+          inferredGoalsHistory_[k][0] = goalRatio;
+        }
+        else
+        {
+          goalRatio = ((1 / inferredGoalsSum_[k]) / inferredGoalsTotal);
+        }
+      }
       if (k != 0) {INFO(":"); }
-      INFO(goalRatio[k]);
-      goalRatios_.push_back(goalRatio[k]);
-      if (goalRatio[k] > maxLikelihoodRatio) {maxLikelihoodRatio = goalRatio[k]; maxLikelihoodGoal = k;}
+      INFO(goalRatio);
+      goalRatios_.push_back(goalRatio);
+      if (goalRatio > maxLikelihoodRatio) {maxLikelihoodRatio = goalRatio; maxLikelihoodGoal = k;}
     }
-    INFO(std::endl);
 
     for (std::size_t j = 0; j < simIDs_.size(); ++j)
       { PlannerPt_->deleteSimulation(simIDs_[j]); }
 
+    INFO(std::endl);
     INFO("Agent" << agentNo << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
+    INFO(std::endl);
     return maxLikelihoodGoal;
   }
 
