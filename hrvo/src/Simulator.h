@@ -142,6 +142,8 @@ namespace hrvo {
      */
     std::size_t addGoal(const Vector2 &position);
 
+    void editGoal(std::size_t goalNo, Vector2 position);
+
     /**
      * \brief  Performs a simulation step; updates the orientation, position, and velocity of each agent, and the progress of each towards its goal.
      */

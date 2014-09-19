@@ -231,6 +231,7 @@ int main(int argc, char *argv[])
   INFO("Starting Experiment..." << std::endl);
   ros::Time begin = ros::Time::now();
   (*PlannerMap_)[1]->setPlannerInitialGoal(1);
+  (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_1_2);
   // environment2.setPlannerInitialGoal(3);
   float startTime = (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime();
 
@@ -261,14 +262,16 @@ int main(int argc, char *argv[])
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
-          {planner->cycleGoalsCounterClockwise();}
+        // Change so that when reached goals, check planner goal plan, and change goals elsewhere
+        if (planner->getReachedPlannerGoal())
+          {planner->setNextGoal();}
+        // if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
+        //   {planner->cycleGoalsCounterClockwise();}
 
         INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
-        if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
-          {planner->stopYoubot();}
-        else
-          {planner->doPlannerStep();}
+        // if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
+        //   {planner->stopYoubot();}
+        planner->doPlannerStep();
       }
     }
     else {WARN("Planner is disabled" << std::endl);}
@@ -290,7 +293,7 @@ int main(int argc, char *argv[])
         std::size_t EnvID = iter->first;
         Environment* planner = iter->second;
         // TODO: Start at 0 to model main robot
-        for(std::size_t AgentID = 1; AgentID < planner->getNumPlannerAgents(); ++AgentID)
+        for(std::size_t AgentID = 0; AgentID < planner->getNumPlannerAgents(); ++AgentID)
         {
           if (planner->getAgentType(AgentID) != INACTIVE)
           {
@@ -304,7 +307,8 @@ int main(int argc, char *argv[])
         }
       }
       if (LOG_DATA && Logged) 
-      { (*PlannerMap_)[LogPlanner]->doPlannerStep();
+      { 
+        if (!ENABLE_PLANNER) {(*PlannerMap_)[LogPlanner]->doPlannerStep();}
         logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents, possGoals);}
     }
 

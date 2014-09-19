@@ -74,6 +74,8 @@ namespace hrvo {
 	 * \brief  A goal in the simulation.
 	 */
 	class Goal {
+	public:
+		void editPos(Vector2 position)	{position_ = position;}
 	private:
 		/**
 		 * \brief      Constructor.

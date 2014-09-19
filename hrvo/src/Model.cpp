@@ -119,20 +119,43 @@ namespace hrvo {
     for (std::size_t j = 0; j < simIDs_.size(); ++j)
     {
       if (DISPLAY_INFERENCE_VALUES) {INFO("currVel=[" << currVel << "] " << "simVel=[" << currSimVels_[j] << "]" << std::endl);}
-      // TODO: Replace with Gaussian pdf and posterior inference
       if (USE_PROB_MODEL)
       {
-        float var = sqrtf(0.25);
-        float var2 = (MAX_PEOPLE_ACCELERATION / 10) / ROS_FREQ;  // Max accel, divided equally between x,y comp, for 1/10Sec
-        float xval = currVel.getX();
-        float xmean = currSimVels_[j].getX();
-        float yval = currVel.getY();
-        float ymean = currSimVels_[j].getY();
-        float probx = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((xval - xmean), 2) / (2 * var2) ) );
-        float proby = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((yval - ymean), 2) / (2 * var2) ) );
-        // inferredGoals[j] = probx * proby;
-        inferredGoals[j] = ((probx + proby) / 2); // TODO: Check result
-        // * inferredGoalsHistory_[j].back()
+        if (!BIVARIATE)
+        {
+          float var = sqrtf(0.25);
+          float var2 = (MAX_PEOPLE_ACCELERATION / 2) / ROS_FREQ;  // Max accel, divided equally between x,y comp, for 1/10Sec
+          float xval = currVel.getX();
+          float xmean = currSimVels_[j].getX();
+          float yval = currVel.getY();
+          float ymean = currSimVels_[j].getY();
+          float probx = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((xval - xmean), 2) / (2 * var2) ) );
+          float proby = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((yval - ymean), 2) / (2 * var2) ) );
+          // inferredGoals[j] = probx * proby;
+          inferredGoals[j] = ((probx + proby) / 2); // TODO: Bivariate Gaussian
+          // * inferredGoalsHistory_[j].back()
+        }
+        else
+        {
+          // BIVARIATE
+          float x = currVel.getX();
+          float y = currVel.getY();
+          float ux = currSimVels_[j].getX();
+          float uy = currSimVels_[j].getY();
+          float v2x = (MAX_PEOPLE_ACCELERATION / 2) / ROS_FREQ;
+          float v2y = (MAX_PEOPLE_ACCELERATION / 2) / ROS_FREQ;
+          float vx = sqrtf(v2x);
+          float vy = sqrtf(v2y);
+          float corr = 0.0f;
+          float corr2 = pow(corr,2.0f);
+          float t1 = pow(x-ux, 2.0f)/v2x;
+          float t2 = pow(y-uy, 2.0f)/v2y;
+          float t3 = (2*corr*(x-ux)*(y-uy))/(vx*vy);
+          float p = (1 / (2 * HRVO_PI * vx * vy * sqrtf(1-corr2)));
+          float e = exp(-(1/(2*(1-corr2))) * (t1 + t2 - t3));
+          inferredGoals[j] = p * e;
+        }
+
       }
       else
       {
@@ -148,10 +171,19 @@ namespace hrvo {
       {
         likelihoodSum += inferredGoals[j];
       }
-      for (std::size_t j = 0; j < inferredGoals.size(); ++j)
-      {
-        inferredGoals[j] = inferredGoals[j] / likelihoodSum;
-      }
+      // if (LIMIT_LIKELIHOOD)
+      // {
+      //   float likelihoodLimit = 0.9f;
+      //   for (std::size_t j = 0; j < inferredGoals.size(); ++j)
+      //   {
+          
+      //   }
+      // }
+
+      // for (std::size_t j = 0; j < inferredGoals.size(); ++j)
+      // {
+      //   inferredGoals[j] = inferredGoals[j] / likelihoodSum;
+      // }
     }
 
     bool travelling = false;
@@ -219,6 +251,7 @@ namespace hrvo {
         if (!resetPriors)
         {
           goalLikelihood_[j] = goalLikelihood_[j] * prevPrior_[j];
+          // goalLikelihood_[j] = goalLikelihood_[j] * (uniformPrior + (PRIOR_LAMBDA * prevPrior_[j]));
         }
         else
         {
@@ -283,6 +316,7 @@ namespace hrvo {
         if (USE_PROB_MODEL)
         {
           goalRatio = goalLikelihood_[k] / inferredGoalsTotal;
+          // goalRatio = goalLikelihood_[k];
           inferredGoalsHistory_[k][0] = goalRatio;
         }
         else

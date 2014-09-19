@@ -74,6 +74,8 @@ namespace hrvo {
 
     void setPlannerGoal(std::size_t goalNo);
 
+    void editPlannerGoal(std::size_t goalNo, Vector2 goalPosition);
+
     void setPlannerInitialGoal(int goalIndex);
 
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);
@@ -82,15 +84,25 @@ namespace hrvo {
 
     std::size_t getNumPlannerGoals()  { return planner_->getNumGoals(); }
 
-    Vector2 getGoalPlannerPosition(std::size_t goalNo) const { return planner_->getGoalPosition(goalNo); }
+    Vector2 getPlannerGoalPosition(std::size_t goalNo) const { return planner_->getGoalPosition(goalNo); }
 
     bool getReachedPlannerGoal() const { return planner_->agents_[THIS_ROBOT]->reachedGoal_;}
 
     bool getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo);
 
+    void setPlannerGoalPlan(size_t goalPlan)  {goalPlan_ = goalPlan;}
+
+    void setNextGoal();
+
     void cycleGoalsClockwise();
 
     void cycleGoalsCounterClockwise();
+
+    void cycleGoals1_2();
+
+    void cycleGoals2_3();
+
+    void cycleGoals3_1();
 
     void doPlannerStep();
 
@@ -145,6 +157,7 @@ namespace hrvo {
       std::size_t goal1_;
       std::size_t goal2_;
       std::size_t goal3_;
+      std::size_t goalPlan_;
       
       std::map<size_t, Vector2> prevPos;
       bool trackOtherAgents_;

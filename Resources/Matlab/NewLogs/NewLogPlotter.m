@@ -1,28 +1,41 @@
+close all
 clear all
 
-file='NewLog8.csv';
+file='2Youbots.csv';
 
 X = 1;
 Y = 2;
+
+nMaxAgents = 4;
 
 minX = -8;
 maxX = -2;
 minY = 0;
 maxY = 6;
+% 
+% minX = 0;
+% maxX = 13;
+% minY = 0;
+% maxY = 11;
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
 dt = Param(1,1) * 0.5;
 nPlannerAgents = Param(1,2);
-ARadius = Param(1,3) * 500;
+ARadius = Param(1,3) * 300;
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
+% aviobj = avifile('sample.avi','compression','None');
+vidObj = VideoWriter('2Youbots.avi','Motion JPEG AVI');
+vidObj.Quality = 80;
+open(vidObj);
 % Reading file and extracting values
 for i=1:Ml
   time = M(i,1);
   nAgents = M(i,2);
   nModelled = M(i,3);
+  cmap = hsv(nMaxAgents);
   ModelledAgents = M(i,4:4-1+nModelled);
   nGoals = M(i,4+nModelled);
 
@@ -52,8 +65,8 @@ for i=1:Ml
     
       Posterior(a,:) = M(i, ((a-1)*3)+(6*nModelled)+4+X+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2):((a-1)*3)+(6*nModelled)+4+nGoals+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2));
   end
-  
-  subplot(1,2,1);
+%   subplot(2,nModelled,1);
+  subplot(2,nModelled,nModelled+1:nModelled+nModelled);
   plot(NaN);      % Clear subplot
   hold on
 
@@ -64,26 +77,43 @@ for i=1:Ml
 
 %     Plotting Agent Positions and Velocities
   for a=1:nModelled
-    h=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,'blue');
+    h=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(ModelledAgents(a)+1,:));
     x=[AgentPos(a,X),AgentPos(a,X)+AgentVel(a,X)];
     y=[AgentPos(a,Y),AgentPos(a,Y)+AgentVel(a,Y)];
-    plot(x, y);
-
+    plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
   end
 % 
+  
   axis([minX maxX minY maxY]);
   axis square;
+ 
 % 
-  % Plotting Goal Ratios
-  hold off
-  subplot(1,2,2);
-  goalRat(1:3)=Posterior(a,:);
-  p = bar(goalRat);
-  ylim([0 1]);
-
-  pause(dt);
+  % Plotting Goal Likelihoods
+  
+  for a=1:nModelled
+    hold off
+    subplot(2,nModelled,a);
+    goalRat(1:3)=Posterior(a,:);
+    p = bar(goalRat,'FaceColor',cmap(ModelledAgents(a)+1,:));
+    ylim([0 1]);
+    title(sprintf('Agent %d', ModelledAgents(a)));
+  end
+  currFrame = getframe(gcf);
+  
+%   for fr=1:5
+%     writeVideo(vidObj,currFrame);
+%   end
+writeVideo(vidObj,currFrame);
+writeVideo(vidObj,currFrame);
+writeVideo(vidObj,currFrame);
+writeVideo(vidObj,currFrame);
+writeVideo(vidObj,currFrame);
+  
+%   pause(dt);
   
 end
+
+close(vidObj);
 
 % 
 % fig2 = subplot(1,2,2);

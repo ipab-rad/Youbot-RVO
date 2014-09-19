@@ -184,6 +184,11 @@ std::size_t Simulator::addGoal(const Vector2 &position)
   return goals_.size() - 1;
 }
 
+void Simulator::editGoal(std::size_t goalNo, Vector2 position)
+{
+  goals_[goalNo]->editPos(position);
+}
+
 void Simulator::doStep()
 {
   if (kdTree_ == NULL) {
