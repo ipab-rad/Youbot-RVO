@@ -130,6 +130,7 @@ int main(int argc, char *argv[])
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
 
   (*PlannerMap_)[1] = new Environment(YOUBOT_1, START_POS1);
+  // (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
 
   // Environment environment2(YOUBOT_2, START_POS2);
   // PlannerMap_[2] = &environment2;
@@ -230,8 +231,10 @@ int main(int argc, char *argv[])
 
   INFO("Starting Experiment..." << std::endl);
   ros::Time begin = ros::Time::now();
-  (*PlannerMap_)[1]->setPlannerInitialGoal(1);
-  (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_1_2);
+  (*PlannerMap_)[1]->setPlannerInitialGoal(3);
+  // (*PlannerMap_)[2]->setPlannerInitialGoal(2);
+  (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_STOP);
+  // (*PlannerMap_)[2]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
   // environment2.setPlannerInitialGoal(3);
   float startTime = (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime();
 
@@ -256,12 +259,16 @@ int main(int argc, char *argv[])
       }
     }
 
+    Vector2 DynGoalPos = STOP;
     //  **** PLANNER STEP ****
     if (ENABLE_PLANNER)
     {
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
+        planner->editPlannerGoal(3, planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1));
+        DynGoalPos = planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1);
+        
         // Change so that when reached goals, check planner goal plan, and change goals elsewhere
         if (planner->getReachedPlannerGoal())
           {planner->setNextGoal();}
@@ -285,7 +292,8 @@ int main(int argc, char *argv[])
       std::map<std::size_t, Vector2> possGoals;
       possGoals[0] = I_g1;
       possGoals[1] = I_g2;
-      possGoals[2] = I_g3;
+      // possGoals[2] = I_g3;
+      possGoals[2] = DynGoalPos;
       std::vector<std::size_t> modelledAgents;
 
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)

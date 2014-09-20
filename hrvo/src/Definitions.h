@@ -108,12 +108,12 @@ namespace hrvo {
   // Experimental setup parameters
   const bool ENABLE_PLANNER = true;             // Enables robot planner, disable when only inferring / tracking
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = false;   // False = Automatic setup will assign last TrackerID
+  const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = true;            // Enable inference model
   const bool LOG_DATA = true;                    // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
-  const int MAX_TRACKER_REASSIGN_ITERATIONS = 10;  // How many iterations after tracker of another agent is reassigned to robot
+  const int TRACKER_ODOM_COMPARISONS = 10;        // How many iterations after tracker of another agent is reassigned to robot
   const int ROS_FREQ = 10;                        // Planner frequency Hz
   const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
   const bool DISPLAY_INFERENCE_VALUES = true;     // Displays curr vs sim Vels and goal inference vs sum values 
@@ -123,7 +123,7 @@ namespace hrvo {
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "2Youbots.csv";
+  const std::string fileName = "Test.csv";
   const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
@@ -165,8 +165,8 @@ namespace hrvo {
   const Vector2 START_POS2 = Vector2(-7.4f, 2.5f);
 
   // Set velocities for the Youbot to advance 2 tiles Backwards/Forwards
-  const Vector2 goBackVec = Vector2(-1.2f, 0.0f);
-  const Vector2 goForwVec = Vector2(1.2f, 0.0f);
+  const Vector2 goBackVec = Vector2(-2.4f, 0.0f);
+  const Vector2 goForwVec = Vector2(2.4f, 0.0f);
 
   // Youbot Tracking Offsets (Tracker gives feet position which is innacurate for robots when using 1 kinect)
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);

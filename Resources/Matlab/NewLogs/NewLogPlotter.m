@@ -1,7 +1,8 @@
 close all
 clear all
 
-file='2Youbots.csv';
+file='1P2Youbots-F5.csv';
+record = false;
 
 X = 1;
 Y = 2;
@@ -19,7 +20,7 @@ maxY = 6;
 % maxY = 11;
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
-dt = Param(1,1) * 0.5;
+dt = Param(1,1) * 0.1;
 nPlannerAgents = Param(1,2);
 ARadius = Param(1,3) * 300;
 
@@ -27,7 +28,7 @@ M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
 % aviobj = avifile('sample.avi','compression','None');
-vidObj = VideoWriter('2Youbots.avi','Motion JPEG AVI');
+vidObj = VideoWriter('sample.avi','Motion JPEG AVI');
 vidObj.Quality = 80;
 open(vidObj);
 % Reading file and extracting values
@@ -35,7 +36,7 @@ for i=1:Ml
   time = M(i,1);
   nAgents = M(i,2);
   nModelled = M(i,3);
-  cmap = hsv(nMaxAgents);
+  cmap = hsv(6);
   ModelledAgents = M(i,4:4-1+nModelled);
   nGoals = M(i,4+nModelled);
 
@@ -103,13 +104,15 @@ for i=1:Ml
 %   for fr=1:5
 %     writeVideo(vidObj,currFrame);
 %   end
-writeVideo(vidObj,currFrame);
-writeVideo(vidObj,currFrame);
-writeVideo(vidObj,currFrame);
-writeVideo(vidObj,currFrame);
-writeVideo(vidObj,currFrame);
-  
-%   pause(dt);
+if record
+  writeVideo(vidObj,currFrame);
+  writeVideo(vidObj,currFrame);
+  writeVideo(vidObj,currFrame);
+  writeVideo(vidObj,currFrame);
+  writeVideo(vidObj,currFrame);
+else
+  pause(dt);
+end
   
 end
 

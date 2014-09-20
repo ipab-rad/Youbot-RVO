@@ -169,9 +169,9 @@ namespace hrvo {
       Simulator *planner_;
 
       int robotTrackerID_;
-      int trackerComparisonCounter_;
+      // int trackerComparisonCounter_;
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
-      std::map<int, float> trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
+      std::map<int, std::vector<float> > trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
