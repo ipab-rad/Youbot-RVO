@@ -1,7 +1,7 @@
 close all
 clear all
 
-file='1P2Youbots-F5.csv';
+file='1p1PYoubot-C1.csv';
 record = false;
 
 X = 1;
@@ -20,23 +20,26 @@ maxY = 6;
 % maxY = 11;
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
-dt = Param(1,1) * 0.1;
+% dt = Param(1,1) * 0.2;
+dt = 0.025;
 nPlannerAgents = Param(1,2);
 ARadius = Param(1,3) * 300;
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
-% aviobj = avifile('sample.avi','compression','None');
-vidObj = VideoWriter('sample.avi','Motion JPEG AVI');
-vidObj.Quality = 80;
-open(vidObj);
+if record
+  % aviobj = avifile('sample.avi','compression','None');
+  vidObj = VideoWriter('1p1PYoubot-C1v2.avi','Motion JPEG AVI');
+  vidObj.Quality = 80;
+  open(vidObj);
+end
 % Reading file and extracting values
 for i=1:Ml
   time = M(i,1);
   nAgents = M(i,2);
   nModelled = M(i,3);
-  cmap = hsv(6);
+  cmap = hsv(10);
   ModelledAgents = M(i,4:4-1+nModelled);
   nGoals = M(i,4+nModelled);
 
@@ -66,11 +69,16 @@ for i=1:Ml
     
       Posterior(a,:) = M(i, ((a-1)*3)+(6*nModelled)+4+X+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2):((a-1)*3)+(6*nModelled)+4+nGoals+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2));
   end
+
+      
 %   subplot(2,nModelled,1);
-  subplot(2,nModelled,nModelled+1:nModelled+nModelled);
+%   subplot(2,2,3); % Left bottom
+%   subplot(2,nModelled,nModelled+1:nModelled+nModelled); % Center
+  subplot(1,2,1);
   plot(NaN);      % Clear subplot
   hold on
 
+  
 %     Plotting Goals
   for g=1:nGoals
     f=scatter(Goals(g,X),Goals(g,Y),ARadius,'red','+');
@@ -87,18 +95,20 @@ for i=1:Ml
   
   axis([minX maxX minY maxY]);
   axis square;
+%   axis fill;
+  
  
 % 
   % Plotting Goal Likelihoods
-  
   for a=1:nModelled
     hold off
-    subplot(2,nModelled,a);
+    subplot(nModelled,2,2*a);
     goalRat(1:3)=Posterior(a,:);
     p = bar(goalRat,'FaceColor',cmap(ModelledAgents(a)+1,:));
     ylim([0 1]);
     title(sprintf('Agent %d', ModelledAgents(a)));
-  end
+  end  
+  
   currFrame = getframe(gcf);
   
 %   for fr=1:5
@@ -109,14 +119,16 @@ if record
   writeVideo(vidObj,currFrame);
   writeVideo(vidObj,currFrame);
   writeVideo(vidObj,currFrame);
-  writeVideo(vidObj,currFrame);
+%   writeVideo(vidObj,currFrame);
 else
   pause(dt);
 end
   
 end
 
-close(vidObj);
+if record
+  close(vidObj);
+end
 
 % 
 % fig2 = subplot(1,2,2);
