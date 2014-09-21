@@ -289,17 +289,20 @@ int main(int argc, char *argv[])
     if (ENABLE_MODELLING)
     {
       bool Logged = false;
-      std::map<std::size_t, Vector2> possGoals;
-      possGoals[0] = I_g1;
-      possGoals[1] = I_g2;
-      // possGoals[2] = I_g3;
-      possGoals[2] = DynGoalPos;
-      std::vector<std::size_t> modelledAgents;
+      std::map<std::size_t, std::map<std::size_t, Vector2> > possGoals;
+      // std::map<std::size_t, Vector2> possGoals;
+      std::map<std::size_t, std::vector <std::size_t> > modelledAgents;
 
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         std::size_t EnvID = iter->first;
         Environment* planner = iter->second;
+
+        possGoals[EnvID][0] = I_g1;
+        possGoals[EnvID][1] = I_g2;
+        possGoals[EnvID][2] = I_g3;
+        // possGoals[EnvID][2] = DynGoalPos;
+
         // TODO: Start at 0 to model main robot
         for(std::size_t AgentID = 0; AgentID < planner->getNumPlannerAgents(); ++AgentID)
         {
@@ -308,16 +311,17 @@ int main(int argc, char *argv[])
             Logged = true;
             if ( (*ModelMap_)[EnvID].find(AgentID) == (*ModelMap_)[EnvID].end() )
             {(*ModelMap_)[EnvID][AgentID] = new Model((*PlannerMap_)[EnvID]);}  // TODO: Check if object is destroyed
-            (*ModelMap_)[EnvID][AgentID]->setupModel(AgentID, possGoals);
-            std::size_t maxLikelihoodGoal = (*ModelMap_)[EnvID][AgentID]->inferGoals(AgentID);
-            modelledAgents.push_back(AgentID);
+            (*ModelMap_)[EnvID][AgentID]->setupModel(AgentID, possGoals[EnvID]);
+            (*ModelMap_)[EnvID][AgentID]->inferGoals(AgentID);
+            modelledAgents[EnvID].push_back(AgentID);
           }
         }
       }
       if (LOG_DATA && Logged) 
       { 
         if (!ENABLE_PLANNER) {(*PlannerMap_)[LogPlanner]->doPlannerStep();}
-        logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents, possGoals);}
+        logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents[LogPlanner], possGoals[LogPlanner]);
+      }
     }
 
     ros::spinOnce();
