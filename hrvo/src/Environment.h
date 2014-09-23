@@ -132,6 +132,8 @@ namespace hrvo {
 
     std::map<std::size_t, Simulator *>* getSimVectPointer() {return simvectPoint_;}
 
+    int getRobotTrackerID()  {return robotTrackerID_;}
+
     void resetOdomPosition()  {planner_->resetOdomPosition();}
 
     void stopYoubot();

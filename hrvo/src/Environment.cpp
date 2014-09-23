@@ -26,6 +26,7 @@ namespace hrvo {
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
     trackOtherAgents_ = false;
+    robotTrackerID_ = -1;
     simvectPoint_ = &simvect_;
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
     Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Environment::receiveTrackerData, this);
@@ -85,7 +86,8 @@ namespace hrvo {
       std::size_t numAgents = msg_.identities.size();
 
       std::map<int, std::size_t> ids = this->getTrackerIDs();
-      
+      DEBUG(this->getStringActorID()<<":"<<std::endl);
+
       // Check if trackers for existing agents are still active
       for(std::map<int, std::size_t>::iterator iter = trackedAgents_.begin(); iter != trackedAgents_.end(); ++iter)
       {
@@ -93,6 +95,7 @@ namespace hrvo {
         std::size_t AgentID = iter->second;
         bool found = false;
 
+          
           DEBUG("Tracker" << TrackID << " for Agent" << AgentID);
           for (int i = 0; i < ids.size(); ++i)
           {
@@ -101,6 +104,12 @@ namespace hrvo {
               DEBUG(" active" << std::endl);
               found = true;
             }
+          }
+
+          if (TrackID != robotTrackerID_ && AgentID == THIS_ROBOT)
+          {
+            ERR(this->getStringActorID() << " already has tracker " << robotTrackerID_ << " instead of " << TrackID << std::endl);
+            trackedAgents_.erase(iter);
           }
 
           if (!found || ids.size() == 0)
@@ -246,8 +255,8 @@ namespace hrvo {
             // {
               trackerCompOdom_[TrackerID].insert(trackerCompOdom_[TrackerID].begin(), odomdiff);
               trackerCompOdom_[TrackerID].resize(TRACKER_ODOM_COMPARISONS);
-              // trackerCompOdom_[TrackerID] += sqrdiff(planner_->getOdomPosition(), agentPos);
-              DEBUG("Tracker " << TrackerID << " Pos " << agentPos << " CompOdom " << odomdiff << std::endl);
+              DEBUG("Tracker " << TrackerID << " Pos " << agentPos << std::endl);
+              // DEBUG("CompOdom " << odomdiff << std::endl);
             // }
           // }
         }
@@ -293,8 +302,8 @@ namespace hrvo {
 
 
           if (TargetTrackerID == -1)
-          { ERR("ERROR: NO TRACKER CAN BE ASSIGNED TO YOUBOT")}
-          else if (trackedAgents_[TargetTrackerID] != THIS_ROBOT)
+          { ERR("ERROR: NO TRACKER CAN BE ASSIGNED TO " << this->getStringActorID() << std::endl);}
+          else if (trackedAgents_[TargetTrackerID] != THIS_ROBOT && trackerCompOdom_[TargetTrackerID].size() >= TRACKER_ODOM_COMPARISONS)
           {
             ERR("Tracker " << TargetTrackerID << "belongs to " << sActorID_ << " instead of " << trackedAgents_[TargetTrackerID] << std::endl);
             // If smallest is not the one assigned to robot, then substitute and delete extra tracked agent
@@ -310,6 +319,7 @@ namespace hrvo {
 
         // }
       }
+      DEBUG(std::endl);
 
     }
 
@@ -319,14 +329,14 @@ namespace hrvo {
   {
     std::size_t numAgents = msg_.identities.size();
 
-    DEBUG("Identities:");
+    // DEBUG("Identities:");
     std::map<int, std::size_t> ids;     // First = Index, Second = Tracker ID
     for (int i = 0; i < numAgents; ++i)
     {
       ids[i] = msg_.identities[i];
-      DEBUG(ids[i] <<",");
+      // DEBUG(ids[i] <<",");
     }
-    INFO(std::endl);
+    // INFO(std::endl);
     return ids;
   }
 
@@ -566,14 +576,14 @@ namespace hrvo {
         planner_->setAgentVelocity(i, STOP);
     }
 
-    for(std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
-    {
-      std::size_t simID = iter->first;
-      for (std::size_t i = 0; i < simvect_[simID]->getNumAgents(); ++i)
-      {
-        simvect_[simID]->setAgentVelocity(i, STOP);
-      }
-    }
+    // for(std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
+    // {
+    //   std::size_t simID = iter->first;
+    //   for (std::size_t i = 0; i < simvect_[simID]->getNumAgents(); ++i)
+    //   {
+    //     simvect_[simID]->setAgentVelocity(i, STOP);
+    //   }
+    // }
   }
 
   std::pair<float, Vector2> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
@@ -603,7 +613,7 @@ namespace hrvo {
     if (avgSpeed > maxSpeed_[AgentID])
     {maxSpeed_[AgentID] = avgSpeed;}
 
-    DEBUG("Agent" << AgentID << " AvgVel="<<avgSpeed<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
+    // DEBUG("Agent" << AgentID << " AvgVel="<<avgSpeed<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
 
     return std::make_pair(avgSpeed, avgVel);
   }

@@ -116,9 +116,10 @@
  		updated_ = false;
  		odomPosition_ = position_;
  		id_ = id;
- 		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+ 		
  		if ( agent_type_ == ROBOT )
  		{
+      pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
  			std::string robot_prefix("");
  			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			odomFlag_ = true;
@@ -142,9 +143,10 @@
  		updated_ = false;
  		odomPosition_ = position_;
  		id_ = id;
- 		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+ 		
  		if ( agent_type_ == ROBOT )
  		{
+      pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
  			std::string robot_prefix(""); 
  			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			odomFlag_ = true;
@@ -174,9 +176,10 @@
  		computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
  		id_ = id;
- 		pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+ 		
  		if ( agent_type_ == ROBOT )
  		{
+      pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
  			std::string robot_prefix(""); 
  			// ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
  			odomFlag_ = true;

@@ -116,14 +116,16 @@ namespace hrvo {
   const int TRACKER_ODOM_COMPARISONS = 10;        // How many iterations after tracker of another agent is reassigned to robot
   const int ROS_FREQ = 10;                        // Planner frequency Hz
   const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
-  const bool DISPLAY_INFERENCE_VALUES = true;     // Displays curr vs sim Vels and goal inference vs sum values 
+  const bool DISPLAY_INFERENCE_VALUES = false;     // Displays curr vs sim Vels and goal inference vs sum values 
   const std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
+  const int nWifiAttempts = 5;
+  const bool STOPPED_INIT = false;
 
 
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "Test.csv";
+  const std::string fileName = "PTest.csv";
   const std::size_t LogPlanner = 1;
 
   // Inspace Workspace limits
@@ -161,12 +163,14 @@ namespace hrvo {
 
   // Start positions for InSpace Setup
   const Vector2 STOP = Vector2(0.0f, 0.0f);
-  const Vector2 START_POS1 = Vector2(-7.4f, 1.5f);
-  const Vector2 START_POS2 = Vector2(-7.4f, 2.5f);
+  const Vector2 START_POS1 = Vector2(-9.4f, 2.5f);
+  const Vector2 START_POS2 = Vector2(-9.4f, 1.5f);
+  const Vector2 START_POS3 = Vector2(-9.4f, 0.0f);
+  const Vector2 START_POS4 = Vector2(-9.4f, 0.5f);
 
   // Set velocities for the Youbot to advance 2 tiles Backwards/Forwards
-  const Vector2 goBackVec = Vector2(-2.4f, 0.0f);
-  const Vector2 goForwVec = Vector2(2.4f, 0.0f);
+  const Vector2 goBackVec = Vector2(-2.0f, 0.0f);
+  const Vector2 goForwVec = Vector2(2.0f, 0.0f);
 
   // Youbot Tracking Offsets (Tracker gives feet position which is innacurate for robots when using 1 kinect)
   const Vector2 kinect1Offset = Vector2(-0.25f, 0.0f);
