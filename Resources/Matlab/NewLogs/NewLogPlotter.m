@@ -2,7 +2,7 @@ close all
 clear all
 
 file='2p3PYoubots-C4-RERUN2.csv';
-record = true;
+record = false;
 
 cmap = hsv(15);
 
@@ -30,7 +30,8 @@ ARadius = Param(1,3) * 300;
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
-  figure, set(gcf, 'Color','white', 'Position', [680 678 800 600])
+figure, set(gcf, 'Color','white', 'Position', [680 678 800 600]);
+
 
 if record
   % aviobj = avifile('sample.avi','compression','None');
@@ -82,15 +83,14 @@ for i=1:Ml
     
       Posterior(a,:) = M(i, ((a-1)*3)+(6*nModelled)+4+X+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2):((a-1)*3)+(6*nModelled)+4+nGoals+nModelled+(nGoals*4)+(nModelled*nGoals)+((nModelled-1)*nGoals*2));
   end
-
-      
+   
 %   subplot(2,nModelled,1);
 %   subplot(2,2,3); % Left bottom
 %   subplot(2,nModelled,nModelled+1:nModelled+nModelled); % Center
-  subplot(1,2,1);
+  subplot(2,2,1);
   plot(NaN);      % Clear subplot
   hold on
-
+  title('Tracked Data');  
   
 %     Plotting Goals
   for g=1:nGoals
@@ -105,10 +105,52 @@ for i=1:Ml
     plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
   end
 % 
-  
   axis([minX maxX minY maxY]);
   axis square;
 %   axis fill;
+hold off
+
+% Plot counterfactual simulated velocities for each agent
+  for g=1:nGoals
+    h2 = subplot(2,3+nGoals,(3+nGoals)+g);
+    plot(NaN); 
+    %     Plotting Goals
+    hold on
+    j=scatter(Goals(g,X),Goals(g,Y),ARadius,'red','+');
+    for a=1:nModelled
+      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(ModelledAgents(a)+1,:));
+      x=[AgentPos(a,X),AgentPos(a,X)+SimVels(a,g,X)];
+      y=[AgentPos(a,Y),AgentPos(a,Y)+SimVels(a,g,Y)];
+      plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
+    end
+    title('Sim:%d', g);  
+    axis([minX maxX minY maxY]);
+    axis square;
+    xl=xlim(h2);
+    yl=ylim(h2);
+    for a=1:nModelled
+      LikxPos = xl(1)+2;
+      LikyPos = yl(1)-(1+a); 
+      t = text(LikxPos, LikyPos, sprintf('A%d:%f', a, Likelihoods(a, g)), 'Parent', h2);
+      set(t, 'HorizontalAlignment', 'center');
+    end
+      hold off
+  end
+%   
+%   for g=1:nGoals
+%     
+% %     hold on
+% %     ax = subplot(3,3+nGoals,(3+nGoals)+g+2*nModelled);
+%       for a=1:nModelled
+%         ax = subplot(4,3+nGoals,3*(3+nGoals)+g);
+%         text(-0.1,-0.1,'Hi');
+%         set ( ax, 'visible', 'off')
+%       end
+%     hold off
+%   end
+
+  
+
   
  
 % 
@@ -122,7 +164,7 @@ for i=1:Ml
     title(sprintf('Agent %d', ModelledAgents(a)));
   end  
   
-  
+
   
 %   for fr=1:5
 %     writeVideo(vidObj,currFrame);
