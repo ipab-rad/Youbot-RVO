@@ -2,7 +2,7 @@ close all
 clear all
 
 file='2p3PYoubots-C4-RERUN2.csv';
-record = false;
+record = true;
 
 cmap = hsv(15);
 
@@ -26,11 +26,12 @@ Param = csvread(file, 0, 0, [0 0 0 2]);
 dt = 0.025;
 nPlannerAgents = Param(1,2);
 ARadius = Param(1,3) * 300;
+vMag = 2;   % Magnitude scalar for representing velocity vectors
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
-figure, set(gcf, 'Color','white', 'Position', [680 678 800 600]);
+figure, set(gcf, 'Color', 'White', 'Position', [680 678 800 600]);
 
 
 if record
@@ -100,8 +101,8 @@ for i=1:Ml
 %     Plotting Agent Positions and Velocities
   for a=1:nModelled
     h=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(ModelledAgents(a)+1,:));
-    x=[AgentPos(a,X),AgentPos(a,X)+AgentVel(a,X)];
-    y=[AgentPos(a,Y),AgentPos(a,Y)+AgentVel(a,Y)];
+    x=[AgentPos(a,X),AgentPos(a,X)+vMag*(AgentVel(a,X))];
+    y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(AgentVel(a,Y))];
     plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
   end
 % 
@@ -116,23 +117,23 @@ hold off
     plot(NaN); 
     %     Plotting Goals
     hold on
-    j=scatter(Goals(g,X),Goals(g,Y),ARadius,'red','+');
+    j=scatter(Goals(g,X),Goals(g,Y),ARadius/2,'red','+');
     for a=1:nModelled
-      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(ModelledAgents(a)+1,:));
-      x=[AgentPos(a,X),AgentPos(a,X)+SimVels(a,g,X)];
-      y=[AgentPos(a,Y),AgentPos(a,Y)+SimVels(a,g,Y)];
+      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/2,cmap(ModelledAgents(a)+1,:));
+      x=[AgentPos(a,X),AgentPos(a,X)+vMag*(SimVels(a,g,X))];
+      y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(SimVels(a,g,Y))];
       plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
     end
-    title('Sim:%d', g);  
+    title(sprintf('Sim:%d', g));  
     axis([minX maxX minY maxY]);
     axis square;
     xl=xlim(h2);
     yl=ylim(h2);
     for a=1:nModelled
-      LikxPos = xl(1)+2;
+      LikxPos = xl(1);
       LikyPos = yl(1)-(1+a); 
       t = text(LikxPos, LikyPos, sprintf('A%d:%f', a, Likelihoods(a, g)), 'Parent', h2);
-      set(t, 'HorizontalAlignment', 'center');
+%       set(t, 'HorizontalAlignment', 'center');
     end
       hold off
   end
