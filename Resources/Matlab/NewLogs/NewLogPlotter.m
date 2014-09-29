@@ -1,48 +1,52 @@
 close all
 clear all
 
-file='2p3PYoubots-C4-RERUN2.csv';
+file='Atrium2.csv';
 record = true;
-
-cmap = hsv(15);
+ExpTitle = 'Exp: People navigating in unconstrained environment';
+VidName = 'Atrium2.avi';
 
 X = 1;
 Y = 2;
 
-nMaxAgents = 4;
-
-minX = -8;
-maxX = -2;
-minY = 0;
-maxY = 6;
-% 
-% minX = 0;
-% maxX = 13;
+% % InSpace Environment
+% minX = -8;
+% maxX = -2;
 % minY = 0;
-% maxY = 11;
+% maxY = 6;
+% 
+% Atrium Environment 
+minX = 0;
+maxX = 13;
+minY = 0;
+maxY = 11;
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
 % dt = Param(1,1) * 0.2;
 dt = 0.025;
 nPlannerAgents = Param(1,2);
 ARadius = Param(1,3) * 300;
-vMag = 2;   % Magnitude scalar for representing velocity vectors
+vMag = 1;   % Magnitude scalar for representing velocity vectors
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
-figure, set(gcf, 'Color', 'White', 'Position', [680 678 800 600]);
+ColorNum = M(Ml,2);
+cmap = hsv(ColorNum);
+% cmap = lines(ColorNum);
+% cmap = jet(ColorNum);
+
+figure, set(gcf, 'Color', 'White', 'Position', [300 100 900 800]);
 
 
 if record
   % aviobj = avifile('sample.avi','compression','None');
 %   nFrames = 10;
-  vidObj = VideoWriter('Test5.avi','Motion JPEG AVI');
-  vidObj.Quality = 80;
+  vidObj = VideoWriter(VidName,'Motion JPEG AVI');
+  vidObj.Quality = 100;
   vidObj.FrameRate = 10;
   open(vidObj);
 
-  
   %# preallocate
 %   nFrames = 10;
 %   mov(1:Ml) = struct('cdata',[], 'colormap',[]);
@@ -50,6 +54,7 @@ if record
 %   
 %   set(gca, 'nextplot','replacechildren', 'Visible','off');
 end
+
 % Reading file and extracting values
 for i=1:Ml
   time = M(i,1);
@@ -88,26 +93,37 @@ for i=1:Ml
 %   subplot(2,nModelled,1);
 %   subplot(2,2,3); % Left bottom
 %   subplot(2,nModelled,nModelled+1:nModelled+nModelled); % Center
-  subplot(2,2,1);
+  h1 = subplot(2,2,1);
   plot(NaN);      % Clear subplot
   hold on
-  title('Tracked Data');  
+  title('Distributed Tracker Data');  
   
 %     Plotting Goals
   for g=1:nGoals
-    f=scatter(Goals(g,X),Goals(g,Y),ARadius,'red','+');
+    f=scatter(Goals(g,X),Goals(g,Y),ARadius,'black','+','LineWidth',1);
   end
 
 %     Plotting Agent Positions and Velocities
   for a=1:nModelled
-    h=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(ModelledAgents(a)+1,:));
-    x=[AgentPos(a,X),AgentPos(a,X)+vMag*(AgentVel(a,X))];
-    y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(AgentVel(a,Y))];
-    plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
+    s=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
+    x=[AgentPos(a,X),AgentPos(a,X)+(vMag/2)*(AgentVel(a,X))];
+    y=[AgentPos(a,Y),AgentPos(a,Y)+(vMag/2)*(AgentVel(a,Y))];
+    plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
   end
 % 
   axis([minX maxX minY maxY]);
   axis square;
+  
+  xl=xlim(h1);
+  yl=ylim(h1);
+  xPos = xl(1);
+%   ExpyPos = yl(1)-(1);
+%   TyPos = yl(1)-(2);
+  ExpyPos = yl(1)-(2);
+  TyPos = yl(1)-(3);
+  t1 = text(xPos, ExpyPos, sprintf('%s', ExpTitle), 'Parent', h1);
+  t2 = text(xPos, TyPos, sprintf('Time:%0.1f seconds', time), 'Parent', h1);
+  set(h1,'LineWidth',2)
 %   axis fill;
 hold off
 
@@ -117,25 +133,27 @@ hold off
     plot(NaN); 
     %     Plotting Goals
     hold on
-    j=scatter(Goals(g,X),Goals(g,Y),ARadius/2,'red','+');
+    j=scatter(Goals(g,X),Goals(g,Y),ARadius/2,'black','+','LineWidth',1);
     for a=1:nModelled
-      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/2,cmap(ModelledAgents(a)+1,:));
+      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/2,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1);
       x=[AgentPos(a,X),AgentPos(a,X)+vMag*(SimVels(a,g,X))];
       y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(SimVels(a,g,Y))];
-      plot(x, y, 'color', cmap(ModelledAgents(a)+1,:));
+      plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
     end
-    title(sprintf('Sim:%d', g));  
+    title(sprintf('\\bfGoal:%d', g));  
     axis([minX maxX minY maxY]);
     axis square;
     xl=xlim(h2);
     yl=ylim(h2);
     for a=1:nModelled
       LikxPos = xl(1);
-      LikyPos = yl(1)-(1+a); 
-      t = text(LikxPos, LikyPos, sprintf('A%d:%f', a, Likelihoods(a, g)), 'Parent', h2);
+      LikyPos = yl(1)-(1+(2.5)*a);
+%       LikyPos = yl(1)-(1+(1.5)*a);
+      t = text(LikxPos, LikyPos, sprintf('{\\itL}(a%d,g%d): %0.3f', a, g, Likelihoods(a, g)), 'Parent', h2);
 %       set(t, 'HorizontalAlignment', 'center');
     end
-      hold off
+    set(h2,'LineWidth',1.5)
+    hold off
   end
 %   
 %   for g=1:nGoals
@@ -150,19 +168,56 @@ hold off
 %     hold off
 %   end
 
-  
-
-  
- 
-% 
   % Plotting Goal Likelihoods
   for a=1:nModelled
     hold off
     subplot(nModelled,2,2*a);
+    %   y = randn(3,4);         % random y values (3 groups of 4 parameters)
+    %   errY = zeros(3,4,2);
+    %   errY(:,:,1) = 0.1.*y;   % 10% lower error
+    %   errY(:,:,2) = 0.2.*y;   % 20% upper error
+    %   barwitherr(errY, y);    % Plot with errorbars
+%     goalRat(1:3)=Posterior(a,:);
+%     p = bar(goalRat,'FaceColor',cmap(rem(ModelledAgents(a),ColorNum)+1,:));
+    goalRat=zeros(3,1);
     goalRat(1:3)=Posterior(a,:);
-    p = bar(goalRat,'FaceColor',cmap(ModelledAgents(a)+1,:));
+    goalRatErr = zeros(3,2);
+%     goalRatErr(:,1) = Likelihoods(a,:);
+    
+    goalLikAvg = sum(Likelihoods(a,:))/nGoals;
+    for g=1:nGoals
+        if (Likelihoods(a,g)>goalLikAvg)
+                goalRatErr(g,1) = 0;
+                goalRatErr(g,2) = ((goalLikAvg-Likelihoods(a,g))/goalLikAvg)*Posterior(a,g);
+        else
+                goalRatErr(g,1) = ((Likelihoods(a,g)-goalLikAvg)/goalLikAvg)*Posterior(a,g);
+                goalRatErr(g,2) = 0; 
+        end
+    end
+
+%   Real Likelihoods
+%     for g=1:nGoals
+%         if (Likelihoods(a,g)>Posterior(a,g))
+%                 goalRatErr(g,1) = 0;
+%                 goalRatErr(g,2) = ((Posterior(a,g)-Likelihoods(a,g))/Likelihoods(a,g))*Posterior(a,g);
+%         else
+%                 goalRatErr(g,1) = ((Likelihoods(a,g)-Posterior(a,g))/Posterior(a,g))*Posterior(a,g);
+%                 goalRatErr(g,2) = 0; 
+%         end
+%     end
+    
+    p = barwitherr(goalRatErr,goalRat);
+    set(p,'FaceColor',cmap(rem(ModelledAgents(a),ColorNum)+1,:));
+    title(sprintf('Agent %d Goal Posteriors', ModelledAgents(a)));
     ylim([0 1]);
-    title(sprintf('Agent %d', ModelledAgents(a)));
+    hold on
+    plot(xlim,[0.5 0.5],'--','Color','k','LineWidth',0.2);
+    hold off
+    %   y = randn(3,4);         % random y values (3 groups of 4 parameters)
+%   errY = zeros(3,4,2);
+%   errY(:,:,1) = 0.1.*y;   % 10% lower error
+%   errY(:,:,2) = 0.2.*y;   % 20% upper error
+%   barwitherr(errY, y);    % Plot with errorbars
   end  
   
 
