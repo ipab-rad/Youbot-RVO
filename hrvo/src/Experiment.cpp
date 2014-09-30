@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
     {
       Environment* planner = iter->second;
-      planner->setPlannerPosition(STOP);
+      planner->setPlannerPosition(EXIT);
       planner->disablePlannerAgent();
       planner->setTrackOtherAgents(true);
     }

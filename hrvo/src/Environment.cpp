@@ -117,7 +117,7 @@ namespace hrvo {
             DEBUG(" inactive" << std::endl);
             if (AgentID != THIS_ROBOT)
             {
-              planner_->setAgentPosition(AgentID, STOP);
+              planner_->setAgentPosition(AgentID, EXIT);
               planner_->setAgentVelocity(AgentID, STOP);
               planner_->setAgentType(AgentID, INACTIVE);
               
@@ -144,7 +144,7 @@ namespace hrvo {
         }
         if (!AgentTracked && planner_->getAgentType(AgentNo) == PERSON )
         {
-            planner_->setAgentPosition(AgentNo, STOP);
+            planner_->setAgentPosition(AgentNo, EXIT);
             planner_->setAgentVelocity(AgentNo, STOP);
             planner_->setAgentType(AgentNo, INACTIVE);
         }
@@ -157,7 +157,7 @@ namespace hrvo {
       {
         int TrackerID = msg_.identities[i];
         std::string sid = intToString(TrackerID);
-        Vector2 agentPos = STOP;
+        Vector2 agentPos = EXIT;
         if (INVERT_X)
         {
           agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
