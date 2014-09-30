@@ -1,10 +1,10 @@
 close all
 clear all
 
-file='Atrium2.csv';
+file='AtriumExperimentFinal2.csv';
 record = true;
-ExpTitle = 'Exp: People navigating in unconstrained environment';
-VidName = 'Atrium2.avi';
+ExpTitle = 'Dense navigation in Atrium';
+VidName = 'AtriumExperimentFinal2.avi';
 
 X = 1;
 Y = 2;
@@ -14,18 +14,18 @@ Y = 2;
 % maxX = -2;
 % minY = 0;
 % maxY = 6;
-% 
+
 % Atrium Environment 
-minX = 0;
+minX = -2;
 maxX = 13;
-minY = 0;
+minY = -2;
 maxY = 11;
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
 % dt = Param(1,1) * 0.2;
 dt = 0.025;
 nPlannerAgents = Param(1,2);
-ARadius = Param(1,3) * 300;
+ARadius = Param(1,3) * 200;
 vMag = 1;   % Magnitude scalar for representing velocity vectors
 
 M = csvread(file, 1);
@@ -93,7 +93,8 @@ for i=1:Ml
 %   subplot(2,nModelled,1);
 %   subplot(2,2,3); % Left bottom
 %   subplot(2,nModelled,nModelled+1:nModelled+nModelled); % Center
-  h1 = subplot(2,2,1);
+  h1 = subplot(2,4,1);
+%   h1 = subplot(2,2,1);
   plot(NaN);      % Clear subplot
   hold on
   title('Distributed Tracker Data');  
@@ -105,12 +106,13 @@ for i=1:Ml
 
 %     Plotting Agent Positions and Velocities
   for a=1:nModelled
-    s=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
-    x=[AgentPos(a,X),AgentPos(a,X)+(vMag/2)*(AgentVel(a,X))];
-    y=[AgentPos(a,Y),AgentPos(a,Y)+(vMag/2)*(AgentVel(a,Y))];
-    plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
+    s=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
+    x=[AgentPos(a,X),AgentPos(a,X)+vMag*(AgentVel(a,X))];
+    y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(AgentVel(a,Y))];
+    plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
   end
 % 
+  set(gca,'YDir','reverse');
   axis([minX maxX minY maxY]);
   axis square;
   
@@ -119,8 +121,8 @@ for i=1:Ml
   xPos = xl(1);
 %   ExpyPos = yl(1)-(1);
 %   TyPos = yl(1)-(2);
-  ExpyPos = yl(1)-(2);
-  TyPos = yl(1)-(3);
+  ExpyPos = yl(2)+(3);
+  TyPos = yl(2)+(5);
   t1 = text(xPos, ExpyPos, sprintf('%s', ExpTitle), 'Parent', h1);
   t2 = text(xPos, TyPos, sprintf('Time:%0.1f seconds', time), 'Parent', h1);
   set(h1,'LineWidth',2)
@@ -129,28 +131,29 @@ hold off
 
 % Plot counterfactual simulated velocities for each agent
   for g=1:nGoals
-    h2 = subplot(2,3+nGoals,(3+nGoals)+g);
+    h2 = subplot(6,4,(1+((g+2)*4)));
+%     h2 = subplot(2,3+nGoals,(3+nGoals)+g);
     plot(NaN); 
     %     Plotting Goals
     hold on
-    j=scatter(Goals(g,X),Goals(g,Y),ARadius/2,'black','+','LineWidth',1);
+    j=scatter(Goals(g,X),Goals(g,Y),ARadius/4,'black','+','LineWidth',1);
     for a=1:nModelled
-      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/2,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1);
+      m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/4,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
       x=[AgentPos(a,X),AgentPos(a,X)+vMag*(SimVels(a,g,X))];
       y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(SimVels(a,g,Y))];
-      plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
+      plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
     end
     title(sprintf('\\bfGoal:%d', g));  
+    set(gca,'YDir','reverse');
     axis([minX maxX minY maxY]);
     axis square;
     xl=xlim(h2);
     yl=ylim(h2);
     for a=1:nModelled
       LikxPos = xl(1);
-      LikyPos = yl(1)-(1+(2.5)*a);
-%       LikyPos = yl(1)-(1+(1.5)*a);
-      t = text(LikxPos, LikyPos, sprintf('{\\itL}(a%d,g%d): %0.3f', a, g, Likelihoods(a, g)), 'Parent', h2);
-%       set(t, 'HorizontalAlignment', 'center');
+%       LikyPos = yl(1)-(1+(2.5)*a);
+      LikyPos = yl(1)-(1+(1.5)*a);
+%       t = text(LikxPos, LikyPos, sprintf('{\\itL}(a%d,g%d): %0.3f', a, g, Likelihoods(a, g)), 'Parent', h2);
     end
     set(h2,'LineWidth',1.5)
     hold off
@@ -169,9 +172,13 @@ hold off
 %   end
 
   % Plotting Goal Likelihoods
+  col = 1;
   for a=1:nModelled
     hold off
-    subplot(nModelled,2,2*a);
+    id = a+floor(col);
+    subplot(ceil(nModelled/3),4,id);
+    col = col + 0.34;
+%     subplot(nModelled,2,2*a);
     %   y = randn(3,4);         % random y values (3 groups of 4 parameters)
     %   errY = zeros(3,4,2);
     %   errY(:,:,1) = 0.1.*y;   % 10% lower error
