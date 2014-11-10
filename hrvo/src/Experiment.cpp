@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
 
   (*PlannerMap_)[1] = new Environment(YOUBOT_1, START_POS1);
-  // (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
+  (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
   // (*PlannerMap_)[3] = new Environment(YOUBOT_3, START_POS3);
   // (*PlannerMap_)[4] = new Environment(YOUBOT_4, START_POS4);
 
@@ -245,12 +245,12 @@ int main(int argc, char *argv[])
     INFO("Starting Experiment..." << std::endl);
     ros::Time begin = ros::Time::now();
     (*PlannerMap_)[1]->setPlannerInitialGoal(2);
-    // (*PlannerMap_)[2]->setPlannerInitialGoal(3);
+    (*PlannerMap_)[2]->setPlannerInitialGoal(3);
     // (*PlannerMap_)[3]->setPlannerInitialGoal(3);
     // (*PlannerMap_)[4]->setPlannerInitialGoal(3);
 
     (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
-    // (*PlannerMap_)[2]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
+    (*PlannerMap_)[2]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
     // (*PlannerMap_)[3]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
     // (*PlannerMap_)[4]->setPlannerGoalPlan(GOAL_3_1);
   }

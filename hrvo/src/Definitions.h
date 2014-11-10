@@ -106,18 +106,18 @@ namespace hrvo {
   //                SETUP EXPERIMENT BEFORE START
   // ************************************************************
   // Experimental setup parameters
-  const bool ENABLE_PLANNER = false;             // Enables robot planner, disable when only inferring / tracking
+  const bool ENABLE_PLANNER = true;             // Enables robot planner, disable when only inferring / tracking
   const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
   const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup will assign last TrackerID
   const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
   const bool ENABLE_MODELLING = true;            // Enable inference model
   const bool LOG_DATA = true;                    // Log data into a file
   const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
-  const int TRACKER_ODOM_COMPARISONS = 100;        // How many iterations after tracker of another agent is reassigned to robot
+  const int TRACKER_ODOM_COMPARISONS = 10;        // How many iterations after tracker of another agent is reassigned to robot
   const int ROS_FREQ = 10;                        // Planner frequency Hz
   const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
   const bool DISPLAY_INFERENCE_VALUES = false;     // Displays curr vs sim Vels and goal inference vs sum values 
-  const std::size_t MAX_NO_TRACKED_AGENTS = 30;    // TODO: Not working as intended
+  const std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
   const int nWifiAttempts = 5;
   const bool STOPPED_INIT = false;
 
@@ -125,7 +125,7 @@ namespace hrvo {
   // Logging setup
   // const char *path="PersonWalk5.csv";
 
-  const std::string fileName = "AtriumExperiment.csv";
+  const std::string fileName = "InspaceDemo.csv";
   const std::size_t LogPlanner = 1;
 
 
@@ -145,40 +145,41 @@ namespace hrvo {
   const float PRIOR_LAMBDA = 0.5;
 
   // Atrium Goal Positions
-  const bool INVERT_X = false;
+  // const bool INVERT_X = false;
   // const Vector2 I_g1 = Vector2(0.0f, 5.0f);
   // const Vector2 I_g2 = Vector2(8.0f, 10.0f);
   // const Vector2 I_g3 = Vector2(12.0f, 8.0f);
 
   //   // Atrium Goal Positions
-  const Vector2 STOP = Vector2(0.0f, 0.0f);
-  const Vector2 EXIT = Vector2(15.0f, 15.0f);
+  // const Vector2 STOP = Vector2(0.0f, 0.0f);
+  // const Vector2 EXIT = Vector2(15.0f, 15.0f);
   // const bool INVERT_X = false;
-  const Vector2 I_g1 = Vector2(0.0f, 0.0f);
-  const Vector2 I_g2 = Vector2(4.5f, 8.0f);
-  const Vector2 I_g3 = Vector2(10.0f, -1.0f);
+  // const Vector2 I_g1 = Vector2(0.0f, 0.0f);
+  // const Vector2 I_g2 = Vector2(4.5f, 8.0f);
+  // const Vector2 I_g3 = Vector2(10.0f, -1.0f);
   // const Vector2 I_g1 = Vector2(5.0f, 5.0f);
   // const Vector2 I_g2 = Vector2(6.0f, 6.0f);
   // const Vector2 I_g3 = Vector2(7.0f, 7.0f);
 
   // Inspace Workspace limits
-  const bool LIMIT_WORKSPACE_VEL = false;
+  const bool LIMIT_WORKSPACE_VEL = true;
   const float MAX_Y = 3.5f;
   const float MIN_Y = -0.0f;
   const float MAX_X = -2.0f;
   const float MIN_X = -8.0f;
 
   // InSpace Goal positions
-  // const bool INVERT_X = true;
-  // const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
-  // const Vector2 I_g2 = Vector2(-3.07f, 1.5f);
-  // const Vector2 I_g3 = Vector2(-4.45f, 3.3f);
+  const bool INVERT_X = true;
+  const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
+  const Vector2 I_g2 = Vector2(-3.07f, 1.5f);
+  const Vector2 I_g3 = Vector2(-4.45f, 3.3f);
 
 
   // Start positions for InSpace Setup
-  // const Vector2 STOP = Vector2(0.0f, 0.0f);
-  const Vector2 START_POS1 = Vector2(-9.4f, 2.5f);
-  const Vector2 START_POS2 = Vector2(-9.4f, 1.5f);
+  const Vector2 STOP = Vector2(0.0f, 0.0f);
+  const Vector2 EXIT = Vector2(0.0f, 0.0f);
+  const Vector2 START_POS1 = Vector2(-9.4f, 3.0f);
+  const Vector2 START_POS2 = Vector2(-9.4f, 1.0f);
   const Vector2 START_POS3 = Vector2(-9.4f, 0.0f);
   const Vector2 START_POS4 = Vector2(-9.4f, 0.5f);
 
