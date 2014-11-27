@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<!--
+
+This launch file starts a node from the Youbot-RVO package.
+This initialises a real experiment, controlling multiple Youbots with hrvo/inference.
+
+
+If you receive an error message that contains "Excecute as root"
+then go to the bin folder and execute: sudo setcap cap_net_raw+ep
+or enable the USE_SETCAP flag in the cmake file and recompile again.
+-->
+
+<launch>
+
+        <!-- Set relevant parameters. -->
+	<!-- <param name="testValue" type="double" value="4.2"/> -->
+        <param name="enablePlanner" type="bool" value="true"/>
+        <param name="clearScreen" type="bool" value="true"/>
+
+
+	<!--
+	<param name="youBotHasBase" type="bool" value="true"/>
+        <param name="youBotHasArms" type="bool" value="true"/> 
+        <param name="youBotDriverCycleFrequencyInHz" type="double" value="50.0"/>
+        <param name="trajectoryActionServerEnable" type="bool" value="true"/>
+        <param name="trajectoryPositionGain" type="double" value="5.0"/>
+        <param name="trajectoryVelocityGain" type="double" value="0.0"/>
+        <param name="youBotConfigurationFilePath" type="string" value="$(find youbot_driver)/config"/>
+	-->
+
+
+        <!-- Default name values --> 
+        <!-- <param name="youBotBaseName" type="str" value="youbot-base"/> -->
+        <!-- <param name="youBotArmName1" type="str" value="youbot-manipulator"/> -->
+
+
+        <!-- Start the experiment node -->
+        <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
+			<param name="testValue" type="double" value="5.0"/>
+                        <!--<remap from="base/joint_states" to="joint_states"/> 
+                        <remap from="arm_1/joint_states" to="joint_states" />--> 
+                        <!--<remap from="arm_2/joint_states" to="joint_states" />-->
+        </node>
+
+</launch>
+
