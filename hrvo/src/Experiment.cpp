@@ -75,9 +75,12 @@
 // #include "Model.h"
 // #endif
 
+#ifndef HRVO_EXPERIMENT_H_
+#include "Experiment.h"
+#endif
+
 #include <cmath>
 
-#include <iostream>
 #include <fstream>
 #include <csignal>
 
@@ -93,13 +96,12 @@
 #include "Model.h"
 #endif
 
-// #ifndef HRVO_DEFINITIONS_H_
-// #include "Definitions.h"
-// #endif
+#ifndef HRVO_DEFINITIONS_H_
+#include "Definitions.h"
+#endif
 
 
 using namespace hrvo;
-
 
 bool SAFETY_STOP = false;
 bool STARTED = false;
@@ -116,12 +118,19 @@ void interrupt_callback(int s)
 
 int main(int argc, char *argv[])
 {
+  loadConf();
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
 
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
+  if (ros::param::has("clearScreen"))
+  {
+    INFO("I GOT IT!" << std::endl);
+    INFO("ParamValue=" << CLEAR_SCREEN << std::endl);
+    // ros::param::get("/testValue", testValue);
+  }
 
   typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
   typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer; // EnvID, ModelID, ModelObject
@@ -170,7 +179,7 @@ int main(int argc, char *argv[])
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        for(int i = 0; i < nWifiAttempts; ++i) 
+        for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
         {
           planner->stopYoubot();
         }
@@ -179,6 +188,7 @@ int main(int argc, char *argv[])
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
+        // INFO("TESTPARAM=" << testValue << std::endl);
         INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
         while( std::cin.get() != '\n') {;}
 
@@ -355,7 +365,7 @@ int main(int argc, char *argv[])
   for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
   {
     Environment* planner = iter->second;
-    for(int i = 0; i < nWifiAttempts; ++i) 
+    for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
     {
       planner->stopYoubot();
     }
@@ -368,7 +378,7 @@ int main(int argc, char *argv[])
   {
     for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
     {
-      for(int i = 0; i < nWifiAttempts; ++i) {
+      for(int i = 0; i < WIFI_ATTEMPTS; ++i) {
         Environment* planner = iter->second;
         planner->emergencyStop();
       }

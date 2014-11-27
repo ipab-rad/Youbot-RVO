@@ -106,29 +106,25 @@ namespace hrvo {
   //                SETUP EXPERIMENT BEFORE START
   // ************************************************************
   // Experimental setup parameters
-  const bool ENABLE_PLANNER = true;             // Enables robot planner, disable when only inferring / tracking
-  const bool PERFORM_ROBOT_SETUP = true;          // Robots move into initial positions
-  const bool MANUAL_TRACKER_ASSIGNMENT = true;   // False = Automatic setup will assign last TrackerID
-  const bool ONLY_ODOMETRY = false;               // Use only odometry for robots, no tracker feedback
-  const bool ENABLE_MODELLING = true;            // Enable inference model
-  const bool LOG_DATA = true;                    // Log data into a file
-  const bool ASSIGN_TRACKER_WHEN_ALONE = false;   // When only one agent is tracked, assign tracker to robot
-  const int TRACKER_ODOM_COMPARISONS = 10;        // How many iterations after tracker of another agent is reassigned to robot
-  const int ROS_FREQ = 10;                        // Planner frequency Hz
-  const bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
-  const bool DISPLAY_INFERENCE_VALUES = false;     // Displays curr vs sim Vels and goal inference vs sum values 
-  const std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
-  const int nWifiAttempts = 5;
-  const bool STOPPED_INIT = false;
 
+  // const bool ENABLE_PLANNER = enablePlanner;
+  // extern const bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
+  // static bool PERFORM_ROBOT_SETUP;          // Robots move into initial positions
+  // static bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
+  // static bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
+  // static bool ENABLE_MODELLING;            // Enable inference model
+  // static bool LOG_DATA;                    // Log data into a file
+  // static bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
+  // static int TRACKER_ODOM_COMPARISONS = 10;        // How many iterations after tracker of another agent is reassigned to robot
+  // static int ROS_FREQ = 10;                        // Planner frequency Hz
+  // static bool CLEAR_SCREEN = true;                 // Clearing makes it prettier but fits less on the screen
+  // static bool DISPLAY_INFERENCE_VALUES = false;     // Displays curr vs sim Vels and goal inference vs sum values 
+  // static std::size_t MAX_NO_TRACKED_AGENTS = 5;    // TODO: Not working as intended
+  // static int nWifiAttempts = 5;
 
   // Logging setup
-  // const char *path="PersonWalk5.csv";
-
   const std::string fileName = "InspaceDemo.csv";
   const std::size_t LogPlanner = 1;
-
-
 
   // Simulation setup parameters
   const std::size_t THIS_ROBOT = 0;
@@ -138,8 +134,8 @@ namespace hrvo {
   const bool BIVARIATE = true;
   const float GOAL_SUM_PRIOR = 0.001f;            // Goal inference initial prior
   const float GOAL_HISTORY_DISCOUNT = 0.5f;       // Discount of previous likelihood history
-  const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
-  const std::size_t VELOCITY_AVERAGE_WINDOW = 1 * ROS_FREQ; // 1/2 second window
+  // const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
+  // const std::size_t VELOCITY_AVERAGE_WINDOW = 1 * ROS_FREQ; // 1 second window
   const bool USE_PROB_MODEL = true;
   const bool USE_TRACKER_VELOCITIES = true;
   const float PRIOR_LAMBDA = 0.5;

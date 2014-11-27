@@ -14,9 +14,10 @@
 
 namespace hrvo {
 
-
   Environment::Environment(enum Actor actorID, const Vector2 startPos)
   { 
+    this->loadConfig();   // Load configuration parameters from ROS launch file
+    INFO("FROM_ENV=" << ENABLE_PLANNER << std::endl);
     nActorID_ = actorID;
     startPos_ = startPos;
     planner_ = new Simulator(nh_, "planner", nActorID_);
@@ -44,6 +45,17 @@ namespace hrvo {
       iter->second = NULL;
       simvect_.erase(iter);
     }
+  }
+
+  void Environment::loadConfig()
+  {
+    ros::param::get("enablePlanner", ENABLE_PLANNER);
+    ros::param::get("onlyOdometry", ONLY_ODOMETRY);
+    ros::param::get("assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE);
+    ros::param::param("rosFreq", ROS_FREQ, 10);
+    ros::param::param("trackerOdomComparisons", TRACKER_ODOM_COMPARISONS, 10);
+    ros::param::param("velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
+    ros::param::param("maxNoTrackedAgents", MAX_NO_TRACKED_AGENTS, 5);
   }
 
   void Environment::goalSetup()

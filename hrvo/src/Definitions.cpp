@@ -3,7 +3,6 @@
 #include "Definitions.h"
 #endif
 
-
 #ifndef HRVO_ENVIRONMENT_H_
 #include "Environment.h"
 #endif
@@ -14,6 +13,10 @@
 
 
 namespace hrvo {
+
+  // const bool ENABLE_PLANNER=true;
+  // hrvo::ros::param::get("enablePlanner", ENABLE_PLANNER);
+  // bool ros::param::get("enablePlanner", ENABLE_PLANNER) const;
 
   const char* getActorName(enum Actor actorID)
     {
@@ -51,6 +54,16 @@ namespace hrvo {
         }
     return myNumber;
   }
+
+  // void loadConfig()
+  // { 
+  //   // bool enablePlanner;
+  //   // ros::param::get("enablePlanner", enablePlanner);
+  //   // ENABLE_PLANNER = enablePlanner;
+  //   // bool ENABLE_PLANNER;
+  //   // ros::param::get("enablePlanner", ENABLE_PLANNER);
+  //   INFO("LOADED" << ENABLE_PLANNER <<std::endl);
+  // }
 
   std::map<std::size_t, Environment *> *PlannerMapPointer_;
   std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;

@@ -18,7 +18,6 @@
 #include "PTrackingBridge/TargetEstimations.h"
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Header.h"
-#include "ros/ros.h"
 
 #ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
@@ -34,6 +33,8 @@ namespace hrvo {
   public:
     Environment(enum Actor actorID, const Vector2 startPos);
     ~Environment();
+
+    void loadConfig();
 
     void goalSetup();
 
@@ -149,6 +150,16 @@ namespace hrvo {
       friend class Agent;
       friend class Goal;
 
+      // PARAMETERS
+      bool ENABLE_PLANNER;
+      bool ONLY_ODOMETRY;
+      bool ASSIGN_TRACKER_WHEN_ALONE;
+      int ROS_FREQ;
+      int TRACKER_ODOM_COMPARISONS;
+      int VELOCITY_AVERAGE_WINDOW;
+      int MAX_NO_TRACKED_AGENTS; 
+
+      // Private members
       enum Actor nActorID_;
       std::string sActorID_; 
       Vector2 startPos_;
@@ -160,6 +171,8 @@ namespace hrvo {
       std::size_t goal2_;
       std::size_t goal3_;
       std::size_t goalPlan_;
+
+
       
       std::map<size_t, Vector2> prevPos;
       bool trackOtherAgents_;
