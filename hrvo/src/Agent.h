@@ -72,6 +72,8 @@
 #include "Vector2.h"
 #endif
 
+#include "Parameter.h"
+
 namespace hrvo {
   class Simulator;
   /**
@@ -209,6 +211,11 @@ namespace hrvo {
     void odomPosUpdate();
 
     void odomUpdate();
+
+    // AGENT PARAMETERS
+    // bool limit_workspace_vel;
+    // float x_limits[2];       // Min-Max X workspace limits
+    // float y_limits[2];        // Min-Max X workspace limits
 
     Simulator *const simulator_;
     Vector2 newVelocity_;

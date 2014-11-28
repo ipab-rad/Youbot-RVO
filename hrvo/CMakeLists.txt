@@ -106,6 +106,7 @@ add_library(KdTree src/KdTree.cpp)
 add_library(Simulator src/Simulator.cpp)
 add_library(Vector2 src/Vector2.cpp)
 
+
 #set(HRVO_HEADERS
 #	src/HRVO.h
 #	src/Simulator.h
@@ -153,6 +154,7 @@ add_executable(Experiment
   src/Environment.cpp
   src/Model.cpp
   src/Definitions.cpp
+  src/Parameter.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library

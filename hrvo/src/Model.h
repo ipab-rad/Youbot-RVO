@@ -26,8 +26,6 @@ namespace hrvo {
     Model(Environment* PlannerPt);
     ~Model();
 
-    void loadConfig();
-
     void setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals);
 
     std::size_t inferGoals(std::size_t agentNo);
@@ -45,11 +43,6 @@ namespace hrvo {
       friend class Agent;
       friend class Goal;
       friend class Environment;
-
-      // PARAMETERS
-      int ROS_FREQ;
-      int GOAL_INFERENCE_HISTORY;
-      bool DISPLAY_INFERENCE_VALUES;
 
       // Private Members
       Environment* PlannerPt_;

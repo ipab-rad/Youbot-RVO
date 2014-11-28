@@ -19,9 +19,11 @@
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Header.h"
 
-#ifndef HRVO_DEFINITIONS_H_
+#include "Parameter.h"
+
 #include "Definitions.h"
-#endif
+
+
 
 namespace hrvo {
   class Simulator;
@@ -33,8 +35,6 @@ namespace hrvo {
   public:
     Environment(enum Actor actorID, const Vector2 startPos);
     ~Environment();
-
-    void loadConfig();
 
     void goalSetup();
 
@@ -149,15 +149,6 @@ namespace hrvo {
       friend class Simulator;
       friend class Agent;
       friend class Goal;
-
-      // PARAMETERS
-      bool ENABLE_PLANNER;
-      bool ONLY_ODOMETRY;
-      bool ASSIGN_TRACKER_WHEN_ALONE;
-      int ROS_FREQ;
-      int TRACKER_ODOM_COMPARISONS;
-      int VELOCITY_AVERAGE_WINDOW;
-      int MAX_NO_TRACKED_AGENTS; 
 
       // Private members
       enum Actor nActorID_;

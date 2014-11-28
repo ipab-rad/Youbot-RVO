@@ -67,10 +67,11 @@ namespace hrvo {
 
   std::map<std::size_t, Environment *> *PlannerMapPointer_;
   std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;
+  // std::string LOG_NAME;
 
   void logSetup(std::ofstream& logfile, std::map<std::size_t, Environment *> *PlannerMap, std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap)
   {
-    const char *path = fileName.c_str();
+    const char *path = LOG_NAME.c_str();
     PlannerMapPointer_ = PlannerMap;
     ModelMapPointer_ = ModelMap;
     if (!logfile.is_open())
@@ -85,10 +86,10 @@ namespace hrvo {
     }
   }
 
-  void logData(std::ofstream& logfile, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals)
+  void logData(std::ofstream& logfile, int LOG_PLANNER, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals)
   {
-    Environment* planner = (*PlannerMapPointer_).at(LogPlanner);
-    std::map<std::size_t, Model *> ModelMap = (*ModelMapPointer_).at(LogPlanner);
+    Environment* planner = (*PlannerMapPointer_).at(LOG_PLANNER);
+    std::map<std::size_t, Model *> ModelMap = (*ModelMapPointer_).at(LOG_PLANNER);
     
     size_t nAgents = planner->getNumPlannerAgents();
 

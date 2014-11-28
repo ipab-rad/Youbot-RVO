@@ -29,7 +29,6 @@ namespace hrvo {
 
   Model::Model(Environment* PlannerPt)
   { 
-    this->loadConfig();   // Load configuration parameters from ROS launch file
     PlannerPt_ = PlannerPt;
     simvectPoint_ = PlannerPt_->getSimVectPointer();
     prevPosInit = false;
@@ -38,13 +37,6 @@ namespace hrvo {
   Model::~Model()
   {
     ;
-  }
-
-  void Model::loadConfig()
-  {
-    ros::param::param("rosFreq", ROS_FREQ, 10);
-    ros::param::param("goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
-    ros::param::param("displayInferenceValues", DISPLAY_INFERENCE_VALUES, false);
   }
 
   void Model::setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals)

@@ -123,22 +123,22 @@ namespace hrvo {
   // static int nWifiAttempts = 5;
 
   // Logging setup
-  const std::string fileName = "InspaceDemo.csv";
-  const std::size_t LogPlanner = 1;
+  // const std::string logName = "InspaceDemo.csv";
+  // const std::size_t LogPlanner = 1;
 
   // Simulation setup parameters
-  const std::size_t THIS_ROBOT = 0;
-  const float SIM_TIME_STEP = 0.1f;
+  // const std::size_t THIS_ROBOT = 0;
+  // const float SIM_TIME_STEP = 0.1f;
 
   // Model setup parameters
-  const bool BIVARIATE = true;
-  const float GOAL_SUM_PRIOR = 0.001f;            // Goal inference initial prior
-  const float GOAL_HISTORY_DISCOUNT = 0.5f;       // Discount of previous likelihood history
+  // const bool BIVARIATE = true;
+  // const float GOAL_SUM_PRIOR = 0.001f;            // Goal inference initial prior
+  // const float GOAL_HISTORY_DISCOUNT = 0.5f;       // Discount of previous likelihood history
   // const std::size_t GOAL_INFERENCE_HISTORY = 1 * ROS_FREQ;  // 1 second window
   // const std::size_t VELOCITY_AVERAGE_WINDOW = 1 * ROS_FREQ; // 1 second window
-  const bool USE_PROB_MODEL = true;
-  const bool USE_TRACKER_VELOCITIES = true;
-  const float PRIOR_LAMBDA = 0.5;
+  // const bool USE_PROB_MODEL = true;
+  // const bool USE_TRACKER_VELOCITIES = true;
+  // const float PRIOR_LAMBDA = 0.5;
 
   // Atrium Goal Positions
   // const bool INVERT_X = false;
@@ -158,11 +158,11 @@ namespace hrvo {
   // const Vector2 I_g3 = Vector2(7.0f, 7.0f);
 
   // Inspace Workspace limits
-  const bool LIMIT_WORKSPACE_VEL = true;
-  const float MAX_Y = 3.5f;
-  const float MIN_Y = -0.0f;
-  const float MAX_X = -2.0f;
-  const float MIN_X = -8.0f;
+  // const bool LIMIT_WORKSPACE_VEL = true;
+  // const float MAX_Y = 3.5f;
+  // const float MIN_Y = -0.0f;
+  // const float MAX_X = -2.0f;
+  // const float MIN_X = -8.0f;
 
   // InSpace Goal positions
   const bool INVERT_X = true;
@@ -220,7 +220,7 @@ namespace hrvo {
   // extern std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;
 
   void logSetup(std::ofstream& logfile, std::map<std::size_t, Environment *> *PlannerMap, std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap);
-  void logData(std::ofstream& logfile, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals);
+  void logData(std::ofstream& logfile, int LOG_PLANNER, float currTime, std::vector<size_t> modelledAgents, std::map<std::size_t, Vector2> possGoals);
 
   /**
   * \brief      Computes the square of a float.

@@ -527,7 +527,6 @@
  			previous_odometry_offset_ = current_odometry_offset_;
  	}
 
-
  	void Agent::update()
  	{
 		#if HRVO_DIFFERENTIAL_DRIVE
@@ -552,22 +551,22 @@
  		// Limit velocity if robot attempts to leave the workspace
  		if (agent_type_ == ROBOT && LIMIT_WORKSPACE_VEL)
  		{
- 			if ((velocity_.getY() + position_.getY()) > MAX_Y)
+ 			if ((velocity_.getY() + position_.getY()) > Y_LIMITS[1])
  			{
- 				velocity_.setY(MAX_Y - position_.getY());
+ 				velocity_.setY(Y_LIMITS[1] - position_.getY());
  			}
- 			if ((velocity_.getY() + position_.getY()) < MIN_Y)
+ 			if ((velocity_.getY() + position_.getY()) < Y_LIMITS[0])
  			{
- 				velocity_.setY(MIN_Y - position_.getY());
+ 				velocity_.setY(Y_LIMITS[0] - position_.getY());
  			}
 
- 			if ((velocity_.getX() + position_.getX()) > MAX_X)
+ 			if ((velocity_.getX() + position_.getX()) > X_LIMITS[1])
  			{
- 				velocity_.setX(MAX_X - position_.getX());
+ 				velocity_.setX(X_LIMITS[1] - position_.getX());
  			}
- 			if ((velocity_.getX() + position_.getX()) < MIN_X)
+ 			if ((velocity_.getX() + position_.getX()) < X_LIMITS[0])
  			{
- 				velocity_.setX(MIN_X - position_.getX());
+ 				velocity_.setX(X_LIMITS[0] - position_.getX());
  			}
  		}
 

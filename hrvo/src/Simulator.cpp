@@ -84,6 +84,8 @@
 #include "Definitions.h"
 #endif
 
+#include "Parameter.h"
+
 namespace hrvo {
 
 Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
@@ -155,6 +157,7 @@ std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &p
   }
   std::cout << " with Pos [" << position << "] and Goal [" << this->getGoalPosition(goalNo) << "]" << std::endl;
   */
+
   agents_.push_back(agent);
 
   return agents_.size() - 1;

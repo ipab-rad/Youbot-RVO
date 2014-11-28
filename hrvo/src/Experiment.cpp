@@ -100,6 +100,9 @@
 #include "Definitions.h"
 #endif
 
+#include "Parameter.h"
+
+
 
 using namespace hrvo;
 
@@ -116,19 +119,21 @@ void interrupt_callback(int s)
   SAFETY_STOP = true;
 }
 
+
 int main(int argc, char *argv[])
 {
-  loadConf();
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
+
+  ParamInitialise();
 
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
-  if (ros::param::has("clearScreen"))
+  if (ros::param::has("thisRobot"))
   {
     INFO("I GOT IT!" << std::endl);
-    INFO("ParamValue=" << CLEAR_SCREEN << std::endl);
+    INFO("ParamValue=" << THIS_ROBOT << std::endl);
     // ros::param::get("/testValue", testValue);
   }
 
@@ -265,7 +270,7 @@ int main(int argc, char *argv[])
     // (*PlannerMap_)[4]->setPlannerGoalPlan(GOAL_3_1);
   }
 
-  float startTime = (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime();
+  float startTime = (*PlannerMap_)[LOG_PLANNER]->getPlannerGlobalTime();
 
   while ( ros::ok() && !SAFETY_STOP )
   {
@@ -279,13 +284,13 @@ int main(int argc, char *argv[])
       planner->updateTracker();
     }
 
-    for (std::size_t i = 0; i < (*PlannerMap_)[LogPlanner]->getNumPlannerAgents(); ++i)
+    for (std::size_t i = 0; i < (*PlannerMap_)[LOG_PLANNER]->getNumPlannerAgents(); ++i)
     {
-      if ((*PlannerMap_)[LogPlanner]->getAgentType(i) == INACTIVE)
+      if ((*PlannerMap_)[LOG_PLANNER]->getAgentType(i) == INACTIVE)
         {INFO("Agent" << i << " Inactive"<< std::endl);}
       else
       {
-        INFO("Agent" << i << " Pos: [" << (*PlannerMap_)[LogPlanner]->getPlannerAgentPosition(i) << "]" << std::endl);
+        INFO("Agent" << i << " Pos: [" << (*PlannerMap_)[LOG_PLANNER]->getPlannerAgentPosition(i) << "]" << std::endl);
       }
     }
 
@@ -349,8 +354,8 @@ int main(int argc, char *argv[])
       }
       if (LOG_DATA && Logged) 
       { 
-        if (!ENABLE_PLANNER) {(*PlannerMap_)[LogPlanner]->doPlannerStep();}
-        logData(log, (*PlannerMap_)[LogPlanner]->getPlannerGlobalTime() - startTime, modelledAgents[LogPlanner], possGoals[LogPlanner]);
+        if (!ENABLE_PLANNER) {(*PlannerMap_)[LOG_PLANNER]->doPlannerStep();}
+        logData(log, LOG_PLANNER, (*PlannerMap_)[LOG_PLANNER]->getPlannerGlobalTime() - startTime, modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);
       }
     }
 
