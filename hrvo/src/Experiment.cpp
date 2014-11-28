@@ -122,20 +122,13 @@ void interrupt_callback(int s)
 
 int main(int argc, char *argv[])
 {
+  ParamInitialise();
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
-
-  ParamInitialise();
 
     // ************************************************************
     //                      ENVIRONMENT SETUP
     // ************************************************************
-  if (ros::param::has("thisRobot"))
-  {
-    INFO("I GOT IT!" << std::endl);
-    INFO("ParamValue=" << THIS_ROBOT << std::endl);
-    // ros::param::get("/testValue", testValue);
-  }
 
   typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
   typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer; // EnvID, ModelID, ModelObject

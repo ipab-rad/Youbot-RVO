@@ -7,60 +7,82 @@
 
 #include "Parameter.h"  
 
-  // Experiment Parameters
-  bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
-  bool PERFORM_ROBOT_SETUP;          // Robots move into initial positions
+  // Experiment Setup
+  bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
+  bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
   bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
   bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
   bool ENABLE_MODELLING;            // Enable inference model
   bool LOG_DATA;                    // Log data into a file
   bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
-  int TRACKER_ODOM_COMPARISONS;        // How many iterations after tracker of another agent is reassigned to robot
-  int ROS_FREQ;                        // Planner frequency Hz
-  bool CLEAR_SCREEN;                 // Clearing makes it prettier but fits less on the screen
-  bool DISPLAY_INFERENCE_VALUES;     // Displays curr vs sim Vels and goal inference vs sum values 
-  int MAX_NO_TRACKED_AGENTS;    // TODO: Not working as intended
+  int TRACKER_ODOM_COMPARISONS;     // How many iterations after tracker of another agent is reassigned to robot
+  int ROS_FREQ;                     // Planner frequency Hz
+  bool CLEAR_SCREEN;                // Clearing makes it prettier but fits less on the screen
+  bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values 
+  int MAX_NO_TRACKED_AGENTS;        // TODO: Not working as intended
   int WIFI_ATTEMPTS;
 
   // Logger Parameters
   std::string LOG_NAME;
   int LOG_PLANNER;
 
-  // Simulation Parameters
+  // Simulation Constants (DO NOT CHANGE)
   int THIS_ROBOT;
   float SIM_TIME_STEP;
 
   // Model Parameters
   bool BIVARIATE;
-  float GOAL_SUM_PRIOR;            // Goal inference initial prior
-  float GOAL_HISTORY_DISCOUNT;       // Discount of previous likelihood history
-  int GOAL_INFERENCE_HISTORY;  // 1 second window
-  int VELOCITY_AVERAGE_WINDOW; // 1 second window
+  float GOAL_SUM_PRIOR;             // Goal inference initial prior
+  float GOAL_HISTORY_DISCOUNT;      // Discount of previous likelihood history
+  int GOAL_INFERENCE_HISTORY;       // 1 second window
+  int VELOCITY_AVERAGE_WINDOW;      // 1 second window
   bool USE_PROB_MODEL;
   bool USE_TRACKER_VELOCITIES;
   float PRIOR_LAMBDA;
 
-  // Agent Parameters
+  // Workspace limits
   bool LIMIT_WORKSPACE_VEL;
   float X_LIMITS[2];         // Min-Max X workspace limits
   float Y_LIMITS[2];         // Min-Max X workspace limits
+
+  // Experiment Parameters
+  bool INVERT_X;
+  // Vector2 I_g1;
+  // Vector2 I_g2;
+  // Vector2 I_g3;
+
+  float NEIGHBOR_DIST;
+  int MAX_NEIGHBORS;
+  float AGENT_RADIUS;
+  float GOAL_RADIUS;
+  float PREF_SPEED;
+  float PREF_PEOPLE_SPEED;
+  float MAX_SPEED;
+  float MAX_PEOPLE_SPEED;
+  float MAX_ACCELERATION;
+  float MAX_PEOPLE_ACCELERATION;
+
 
 void ParamInitialise()
 {
   ros::param::param("enablePlanner", ENABLE_PLANNER, true);
   ros::param::param("performRobotSetup", PERFORM_ROBOT_SETUP, true);
   ros::param::param("manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
+  ros::param::param("onlyOdometry", ONLY_ODOMETRY, false);
   ros::param::param("enableModelling", ENABLE_MODELLING, true);
   ros::param::param("logData", LOG_DATA, true);
+  ros::param::param("assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);
+  ros::param::param("trackerOdomComparisons", TRACKER_ODOM_COMPARISONS, 10);
   ros::param::param("rosFreq", ROS_FREQ, 10);
   ros::param::param("clearScreen", CLEAR_SCREEN, true);
   ros::param::param("displayInferenceValues", DISPLAY_INFERENCE_VALUES, false);
-
+  ros::param::param("maxNoTrackedAgents", MAX_NO_TRACKED_AGENTS, 10);
   ros::param::param("wifiAttempts", WIFI_ATTEMPTS, 5);
 
   ros::param::param<std::string>("logName", LOG_NAME, "InSpaceDemo.csv");
   ros::param::param("logPlanner", LOG_PLANNER, 1);
 
+  // Simulation Constants (DO NOT CHANGE)
   ros::param::param("thisRobot", THIS_ROBOT, 0);
   ros::param::param("simTimeStep", SIM_TIME_STEP, 0.1f);
 
@@ -68,12 +90,12 @@ void ParamInitialise()
   ros::param::param("goalSumPrior", GOAL_SUM_PRIOR, 0.001f);
   ros::param::param("goalHistoryDiscount", GOAL_HISTORY_DISCOUNT, 0.5f);
   ros::param::param("goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
+  ros::param::param("velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
   ros::param::param("useProbModel", USE_PROB_MODEL, true);
   ros::param::param("priorLambda", PRIOR_LAMBDA, 0.5f);
 
   ros::param::param("limitWorkspaceVel", LIMIT_WORKSPACE_VEL, true);
   // Ros param get only works with vectors/maps, not arrays :(
-
   if (ros::param::has("xLimits") && ros::param::has("yLimits"))
   {
     std::vector<float> x_lim;
@@ -88,5 +110,16 @@ void ParamInitialise()
     X_LIMITS[0]=-8.0f;   X_LIMITS[1]=-2.0f;
     Y_LIMITS[0]=0.0f;   Y_LIMITS[1]=3.5f;
   }
+
+  ros::param::param("neighborDist", NEIGHBOR_DIST, 5.0f);
+  ros::param::param("maxNeighbors", MAX_NEIGHBORS, 10);
+  ros::param::param("agentRadius", AGENT_RADIUS, 0.5f);
+  ros::param::param("goalRadius", GOAL_RADIUS, 0.3f);
+  ros::param::param("prefSpeed", PREF_SPEED, 0.3f);
+  ros::param::param("prefPeopleSpeed", PREF_PEOPLE_SPEED, 0.3f);
+  ros::param::param("maxSpeed", MAX_SPEED, 0.6f);
+  ros::param::param("maxPeopleSpeed", MAX_PEOPLE_SPEED, 2.0f);
+  ros::param::param("maxAcceleration", MAX_ACCELERATION, 1.2f);
+  ros::param::param("maxPeopleAcceleration", MAX_PEOPLE_ACCELERATION, 5.0f);
 
 }

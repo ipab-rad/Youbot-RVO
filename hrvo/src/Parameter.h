@@ -10,8 +10,9 @@
 
   #include <iostream>
   #include <ros/ros.h>
+  #include "Vector2.h"
 
-  // Experiment Parameters
+  // Experiment Setup
   extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
   extern bool PERFORM_ROBOT_SETUP;        // Robots move into initial positions
   extern bool MANUAL_TRACKER_ASSIGNMENT;  // False = Automatic setup will assign last TrackerID
@@ -30,7 +31,7 @@
   extern std::string LOG_NAME;            // The name given to the log file
   extern int LOG_PLANNER;                 // The planner environment (robot) which the logger will save its information
 
-  // Simulation Parameters (DO NOT CHANGE)
+  // Simulation Constants (DO NOT CHANGE)
   extern int THIS_ROBOT;                  // Always 0, representing first agent (own robot) of the list
   extern float SIM_TIME_STEP;             // Simulation time step, affects many parts of the code
 
@@ -48,6 +49,23 @@
   extern bool LIMIT_WORKSPACE_VEL;
   extern float X_LIMITS[2];               // Min-Max X workspace limits
   extern float Y_LIMITS[2];               // Min-Max X workspace limits
+
+  // Experiment Parameters
+  extern bool INVERT_X;
+  // const Vector2 I_g1;
+  // extern Vector2 I_g2;
+  // extern Vector2 I_g3;
+
+  extern float NEIGHBOR_DIST;
+  extern int MAX_NEIGHBORS;
+  extern float AGENT_RADIUS;
+  extern float GOAL_RADIUS;
+  extern float PREF_SPEED;
+  extern float PREF_PEOPLE_SPEED;
+  extern float MAX_SPEED;
+  extern float MAX_PEOPLE_SPEED;
+  extern float MAX_ACCELERATION;
+  extern float MAX_PEOPLE_ACCELERATION;
 
   extern void ParamInitialise();
 

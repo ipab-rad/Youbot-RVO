@@ -10,7 +10,6 @@ namespace hrvo {
 
   Environment::Environment(enum Actor actorID, const Vector2 startPos)
   { 
-    INFO("FROM_ENV=" << ENABLE_PLANNER << std::endl);
     nActorID_ = actorID;
     startPos_ = startPos;
     planner_ = new Simulator(nh_, "planner", nActorID_);
