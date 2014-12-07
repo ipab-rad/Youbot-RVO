@@ -209,6 +209,8 @@ namespace hrvo {
     YOUBOT_5
   };
 
+  void interrupt_callback(int s);
+
   const char* getActorName(enum Actor actorID);
 
   std::string intToString(int i);

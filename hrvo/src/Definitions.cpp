@@ -18,6 +18,16 @@ namespace hrvo {
   // hrvo::ros::param::get("enablePlanner", ENABLE_PLANNER);
   // bool ros::param::get("enablePlanner", ENABLE_PLANNER) const;
 
+  void interrupt_callback(int s)
+  {
+    if ( !STARTED )
+    {
+      WARN("Aborted!" << std::endl);
+      exit(1);
+    }
+    SAFETY_STOP = true;
+  }
+
   const char* getActorName(enum Actor actorID)
     {
       switch (actorID) 
