@@ -1,6 +1,8 @@
 Youbot-RVO
 ==========
 
+WIKI: https://github.com/ipab-rad/Youbot-RVO/wiki/YouBot
+
 This repository holds the code for enabling YouBots to navigate autonomously in a space populated by other intelligent independent agents (i.e. humans/other robots).
 
 The HRVO library is from http://gamma.cs.unc.edu/HRVO/ and we are editing it for academic purposes.
