@@ -21,6 +21,11 @@ The main sections of this repository include:
 
 Requirements
 ------------
+On PC:
+* `ros hydro`
+* `hrvo`
 
-* `ros groovy`
-
+On Youbot
+* `ros hydro`
+* `youbot_driver`
+* `youbot_driver_ros_interface`
