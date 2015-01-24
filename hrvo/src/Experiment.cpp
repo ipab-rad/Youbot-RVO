@@ -59,34 +59,22 @@
 * <http://gamma.cs.unc.edu/HRVO/>
 */
 
-// #ifndef HRVO_HRVO_H_
 // #include "HRVO.h"
-// #endif
 
-// #ifndef HRVO_DEFINITIONS_H_
 // #include "Definitions.h"
-// #endif
 
-// #ifndef HRVO_ENVIRONMENT_H_
 // #include "Environment.h"
-// #endif
 
-// #ifndef HRVO_MODEL_H_
 // #include "Model.h"
-// #endif
 
-#ifndef HRVO_EXPERIMENT_H_
-#include "Experiment.h"
-#endif
+// #include "Experiment.h"
 
 #include <cmath>
 
 #include <fstream>
 #include <csignal>
 
-// #if ROS_PUBLISHER
 // #include <ros/ros.h>
-// #endif
 
 #include "Environment.h"
 

@@ -32,8 +32,6 @@ namespace hrvo {
 
     std::map<std::size_t, float> getGoalLikelihoods() {return goalLikelihood_;}
 
-    // float* getgoalRatio() {return goalRatio_;}
-
     std::vector<float> getGoalRatios() {return goalRatios_;}
 
     private:
@@ -47,7 +45,6 @@ namespace hrvo {
       std::map<std::size_t, Simulator *>* simvectPoint_;
       std::vector<Vector2> simVels_;
 
-      // float goalRatio_[3];  // TODO: Allocate depending on Goal num
       std::vector<float> goalRatios_;
       std::vector<bool> reachedGoal_;
       std::vector<bool> leftGoal_;

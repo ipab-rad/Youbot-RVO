@@ -113,12 +113,6 @@ namespace hrvo {
               planner_->setAgentPosition(AgentID, EXIT);
               planner_->setAgentVelocity(AgentID, STOP);
               planner_->setAgentType(AgentID, INACTIVE);
-              
-            // std::find(planner_->agents_.begin(), planner_->agents_.end(), AgentID)!=planner_->agents_.end() {
-            // for (std::vector<Agent *>::iterator Viter = planner_->agents_.begin(); Viter != planner_->agents_.end(); ++Viter) {
-            // delete planner_->agents_[AgentID];
-            // delete Viter;
-            // Viter = NULL;
             }
               // planner_->agents_.erase(iterator __position);
             trackedAgents_.erase(iter);
@@ -143,7 +137,6 @@ namespace hrvo {
         }
 
       }
-
 
       // Update existing tracked agents or create new agents for new trackers
       for (std::size_t i = 0; i < numAgents; ++i)
@@ -232,17 +225,11 @@ namespace hrvo {
         // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
         }
 
-        // if (planner_->getOdomNeeded())
-        // {
-
-
-        // }
         // Increase comparison magnitude proportional to the difference between odometry and tracker positions
         if (ENABLE_PLANNER)
         {
           // if (trackerComparisonCounter_ < TRACKER_ODOM_COMPARISONS)
           // {
-            // TODO: MOVING AVERAGE!!
             float odomdiff = sqrdiff(planner_->getOdomPosition(), agentPos);
             // if (planner_->getAgentType(trackedAgents_[TrackerID]) != INACTIVE)
             // {

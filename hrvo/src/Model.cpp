@@ -132,7 +132,7 @@ namespace hrvo {
           float probx = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((xval - xmean), 2) / (2 * var2) ) );
           float proby = (1 / sqrtf(2 * HRVO_PI * var2)) * exp(-( pow((yval - ymean), 2) / (2 * var2) ) );
           // inferredGoals[j] = probx * proby;
-          inferredGoals[j] = ((probx + proby) / 2); // TODO: Bivariate Gaussian
+          inferredGoals[j] = ((probx + proby) / 2);
           // * inferredGoalsHistory_[j].back()
         }
         else
@@ -171,19 +171,6 @@ namespace hrvo {
       {
         likelihoodSum += inferredGoals[j];
       }
-      // if (LIMIT_LIKELIHOOD)
-      // {
-      //   float likelihoodLimit = 0.9f;
-      //   for (std::size_t j = 0; j < inferredGoals.size(); ++j)
-      //   {
-          
-      //   }
-      // }
-
-      // for (std::size_t j = 0; j < inferredGoals.size(); ++j)
-      // {
-      //   inferredGoals[j] = inferredGoals[j] / likelihoodSum;
-      // }
     }
 
     bool travelling = true;
@@ -313,7 +300,7 @@ namespace hrvo {
     {
       if (inferredGoalsTotal == 0)
       {
-        goalRatio = 1.0f / inferredGoals.size();  // Avoid NaNs when likelihoods are all 0
+        goalRatio = 1.0f / inferredGoals.size();  // Avoiding NaNs when likelihoods are all 0
       }
       else  
       {
