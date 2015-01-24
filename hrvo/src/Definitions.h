@@ -107,7 +107,7 @@ namespace hrvo {
   // ************************************************************
 
   // InSpace Goal positions
-  // const bool INVERT_X = true;
+  const bool INVERT_X = true;
   const Vector2 I_g1 = Vector2(-6.3f, 1.5f);
   const Vector2 I_g2 = Vector2(-3.07f, 1.5f);
   const Vector2 I_g3 = Vector2(-4.45f, 3.3f);

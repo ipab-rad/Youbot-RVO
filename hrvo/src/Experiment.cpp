@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
   PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
 
-  (*PlannerMap_)[1] = new Environment(YOUBOT_1, START_POS1);
-  (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
+  (*PlannerMap_)[1] = new Environment(YOUBOT_3, START_POS1);
+  // (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
   // (*PlannerMap_)[3] = new Environment(YOUBOT_3, START_POS3);
   // (*PlannerMap_)[4] = new Environment(YOUBOT_4, START_POS4);
 
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
   {
     if (ENABLE_PLANNER)
     {
-      // Stopping robots at start up
+      // Stop robots at start up
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
         Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
         planner->addAndSetPlannerGoal(ForwVec);
 
-              //  **** MOVE YOUBOT INTO AREA ****
+        //  **** MOVE YOUBOT INTO AREA ****
         STARTED = true;
         while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
         {   
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
         planner->stopYoubot();
         STARTED = false;
 
-              //  **** ASSIGN TRACKER ****
+        //  **** ASSIGN TRACKER ****
         planner->updateTracker();
         std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
@@ -223,12 +223,12 @@ int main(int argc, char *argv[])
     INFO("Starting Experiment..." << std::endl);
     ros::Time begin = ros::Time::now();
     (*PlannerMap_)[1]->setPlannerInitialGoal(2);
-    (*PlannerMap_)[2]->setPlannerInitialGoal(3);
+    // (*PlannerMap_)[2]->setPlannerInitialGoal(3);
     // (*PlannerMap_)[3]->setPlannerInitialGoal(3);
     // (*PlannerMap_)[4]->setPlannerInitialGoal(3);
 
-    (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
-    (*PlannerMap_)[2]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
+    (*PlannerMap_)[1]->setPlannerGoalPlan(GOAL_1_2);
+    // (*PlannerMap_)[2]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
     // (*PlannerMap_)[3]->setPlannerGoalPlan(GOAL_CYCLE_CCW);
     // (*PlannerMap_)[4]->setPlannerGoalPlan(GOAL_3_1);
   }
