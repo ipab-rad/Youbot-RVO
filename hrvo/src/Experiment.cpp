@@ -93,9 +93,9 @@ using namespace hrvo;
 
 int main(int argc, char *argv[])
 {
-  ParamInitialise();
   if (CLEAR_SCREEN) {CLEAR();}
   ros::init(argc, argv, "hrvo_planner");
+  ParamInitialise();
 
     // ************************************************************
     //                      ENVIRONMENT SETUP
@@ -157,7 +157,6 @@ int main(int argc, char *argv[])
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        // INFO("TESTPARAM=" << testValue << std::endl);
         INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
         while( std::cin.get() != '\n') {;}
 

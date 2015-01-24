@@ -69,9 +69,7 @@
 
 #include "hrvo/AddAgentService.h"
 
-#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
 
 
 /**

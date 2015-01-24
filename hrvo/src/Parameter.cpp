@@ -86,7 +86,6 @@ void ParamInitialise()
   ros::param::param("logPlanner", LOG_PLANNER, 1);
 
   // Simulation Constants (DO NOT CHANGE)
-  // ros::param::param("thisRobot", THIS_ROBOT, 0);
   ros::param::param("simTimeStep", SIM_TIME_STEP, 0.1f);
 
   ros::param::param("bivariate", BIVARIATE, true);
@@ -124,5 +123,5 @@ void ParamInitialise()
   ros::param::param("maxPeopleSpeed", MAX_PEOPLE_SPEED, 2.0f);
   ros::param::param("maxAcceleration", MAX_ACCELERATION, 1.2f);
   ros::param::param("maxPeopleAcceleration", MAX_PEOPLE_ACCELERATION, 5.0f);
-
+  
 }

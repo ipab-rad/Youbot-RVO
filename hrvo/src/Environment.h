@@ -7,13 +7,9 @@
 #define HRVO_ENVIRONMENT_H_
 
 
-#ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
-#endif
 
-#ifndef HRVO_AGENT_H_
 #include "Agent.h"
-#endif
 
 #include "PTrackingBridge/TargetEstimations.h"
 #include "geometry_msgs/Twist.h"
