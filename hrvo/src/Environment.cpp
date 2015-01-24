@@ -222,14 +222,12 @@ namespace hrvo {
           planner_->setAgentVelocity(trackedAgents_[TrackerID], avgVel);
           planner_->setAgentPrefSpeed(trackedAgents_[TrackerID], avgSpeed);
           planner_->setAgentMaxSpeed(trackedAgents_[TrackerID], maxSpeed_[trackedAgents_[TrackerID]]);
-        // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
+          // planner_->setAgentMaxAcceleration(trackedAgents_[TrackerID], maxAcc_);
         }
 
         // Increase comparison magnitude proportional to the difference between odometry and tracker positions
         if (ENABLE_PLANNER)
         {
-          // if (trackerComparisonCounter_ < TRACKER_ODOM_COMPARISONS)
-          // {
             float odomdiff = sqrdiff(planner_->getOdomPosition(), agentPos);
             // if (planner_->getAgentType(trackedAgents_[TrackerID]) != INACTIVE)
             // {
@@ -238,19 +236,12 @@ namespace hrvo {
               DEBUG("Tracker " << TrackerID << " Pos " << agentPos << std::endl);
               // DEBUG("CompOdom " << odomdiff << std::endl);
             // }
-          // }
         }
       }
 
       // Compare robot odometry with tracker positions in order to reacquire stolen tracker
       if (ENABLE_PLANNER)
       {
-        // if (trackerComparisonCounter_ < TRACKER_ODOM_COMPARISONS)
-        // {
-        //   trackerComparisonCounter_++;
-        // }
-        // else 
-        // {
           int TargetTrackerID = -1; // Initialisation values
           float minComp = 10.0f;
           std::map<int, float> odomSums;
@@ -278,8 +269,6 @@ namespace hrvo {
               minComp = odomSum;
             }
           }
-
-
 
           if (TargetTrackerID == -1)
           { ERR("ERROR: NO TRACKER CAN BE ASSIGNED TO " << this->getStringActorID() << std::endl);}
@@ -505,8 +494,6 @@ namespace hrvo {
     }
     else
     {
-      // simID = simvect_.rbegin()->first + 1;
-
       simID = simvect_.size();
     }
     simvect_[simID] = new Simulator(nh_, "simulation", nActorID_, simID);
@@ -555,25 +542,10 @@ namespace hrvo {
     {
         planner_->setAgentVelocity(i, STOP);
     }
-
-    // for(std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
-    // {
-    //   std::size_t simID = iter->first;
-    //   for (std::size_t i = 0; i < simvect_[simID]->getNumAgents(); ++i)
-    //   {
-    //     simvect_[simID]->setAgentVelocity(i, STOP);
-    //   }
-    // }
   }
 
   std::pair<float, Vector2> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
   {
-    // agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = AgentVel;
-    // agentVelHistory_[trackedAgents_[AgentID]][agentVelCount_[trackedAgents_[AgentID]]] = abs(AgentVel);
-    // agentVelCount_[trackedAgents_[AgentID]] += 1;
-    // if (agentVelCount_[trackedAgents_[AgentID]] == VELOCITY_AVERAGE_WINDOW)
-    //   {agentVelCount_[trackedAgents_[AgentID]] = 0;}
-    // TODO: Make into vector, insert velocity at the beginning, eliminate last element if larger than window
     // TODO: Implement discounted sum over past Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
     agentVelHistory_[AgentID].insert(agentVelHistory_[AgentID].begin(), AgentVel);
     agentVelHistory_[AgentID].resize(VELOCITY_AVERAGE_WINDOW);
@@ -597,7 +569,5 @@ namespace hrvo {
 
     return std::make_pair(avgSpeed, avgVel);
   }
-
-
 
 }
