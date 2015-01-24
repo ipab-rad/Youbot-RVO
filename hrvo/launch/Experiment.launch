@@ -32,7 +32,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         <param name="logPlanner" type="int" value="1"/>
 
         <!-- Simulation Constants / DO NOT CHANGE -->
-        <param name="thisRobot" type="int" value="0"/>
+        <!-- <param name="thisRobot" type="int" value="0"/> -->
 	<param name="simTimeStep" type="double" value="0.1"/>
 
         <!-- Model Parameters -->

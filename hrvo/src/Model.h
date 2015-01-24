@@ -10,9 +10,7 @@
 #include <vector>
 #include <map>
 
-#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
 
 namespace hrvo {
   class Simulator;

@@ -27,7 +27,7 @@
   int LOG_PLANNER;
 
   // Simulation Constants (DO NOT CHANGE)
-  int THIS_ROBOT;
+  int THIS_ROBOT = 0;
   float SIM_TIME_STEP;
 
   // Model Parameters
@@ -46,6 +46,9 @@
   float Y_LIMITS[2];         // Min-Max X workspace limits
 
   // Experiment Parameters
+  bool SAFETY_STOP = false;
+  bool STARTED = false;
+
   bool INVERT_X;
   // Vector2 I_g1;
   // Vector2 I_g2;
@@ -62,7 +65,7 @@
   float MAX_ACCELERATION;
   float MAX_PEOPLE_ACCELERATION;
 
-
+// Acquire parameters from launch file. Default values are included just in case
 void ParamInitialise()
 {
   ros::param::param("enablePlanner", ENABLE_PLANNER, true);
@@ -83,7 +86,7 @@ void ParamInitialise()
   ros::param::param("logPlanner", LOG_PLANNER, 1);
 
   // Simulation Constants (DO NOT CHANGE)
-  ros::param::param("thisRobot", THIS_ROBOT, 0);
+  // ros::param::param("thisRobot", THIS_ROBOT, 0);
   ros::param::param("simTimeStep", SIM_TIME_STEP, 0.1f);
 
   ros::param::param("bivariate", BIVARIATE, true);

@@ -88,36 +88,19 @@
 // #include <ros/ros.h>
 // #endif
 
-#ifndef HRVO_ENVIRONMENT_H_
 #include "Environment.h"
-#endif
 
-#ifndef HRVO_MODEL_H_
 #include "Model.h"
-#endif
 
-#ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
-#endif
 
 #include "Parameter.h"
 
 
-
 using namespace hrvo;
 
-bool SAFETY_STOP = false;
-bool STARTED = false;
-
-void interrupt_callback(int s)
-{
-  if ( !STARTED )
-  {
-    WARN("Aborted!" << std::endl);
-    exit(1);
-  }
-  SAFETY_STOP = true;
-}
+// bool SAFETY_STOP = false;
+// bool STARTED = false;
 
 
 int main(int argc, char *argv[])

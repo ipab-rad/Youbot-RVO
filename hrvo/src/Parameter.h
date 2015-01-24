@@ -51,6 +51,9 @@
   extern float Y_LIMITS[2];               // Min-Max X workspace limits
 
   // Experiment Parameters
+  extern bool SAFETY_STOP;                // Safety stop flag
+  extern bool STARTED;                    // Robot movement started flag
+
   extern bool INVERT_X;
   // const Vector2 I_g1;
   // extern Vector2 I_g2;
