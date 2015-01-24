@@ -68,42 +68,43 @@
 // Acquire parameters from launch file. Default values are included just in case
 void ParamInitialise()
 {
-  ros::param::param("enablePlanner", ENABLE_PLANNER, true);
-  ros::param::param("performRobotSetup", PERFORM_ROBOT_SETUP, true);
-  ros::param::param("manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
-  ros::param::param("onlyOdometry", ONLY_ODOMETRY, false);
-  ros::param::param("enableModelling", ENABLE_MODELLING, true);
-  ros::param::param("logData", LOG_DATA, true);
-  ros::param::param("assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);
-  ros::param::param("trackerOdomComparisons", TRACKER_ODOM_COMPARISONS, 10);
-  ros::param::param("rosFreq", ROS_FREQ, 10);
-  ros::param::param("clearScreen", CLEAR_SCREEN, true);
-  ros::param::param("displayInferenceValues", DISPLAY_INFERENCE_VALUES, false);
-  ros::param::param("maxNoTrackedAgents", MAX_NO_TRACKED_AGENTS, 10);
-  ros::param::param("wifiAttempts", WIFI_ATTEMPTS, 5);
+  std::string nn="youbot_experiment/";  // Add node parameter path
+  ros::param::param(nn+"enablePlanner", ENABLE_PLANNER, false);
+  ros::param::param(nn+"performRobotSetup", PERFORM_ROBOT_SETUP, true);
+  ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
+  ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
+  ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
+  ros::param::param(nn+"logData", LOG_DATA, true);
+  ros::param::param(nn+"assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);
+  ros::param::param(nn+"trackerOdomComparisons", TRACKER_ODOM_COMPARISONS, 10);
+  ros::param::param(nn+"rosFreq", ROS_FREQ, 10);
+  ros::param::param(nn+"clearScreen", CLEAR_SCREEN, true);
+  ros::param::param(nn+"displayInferenceValues", DISPLAY_INFERENCE_VALUES, false);
+  ros::param::param(nn+"maxNoTrackedAgents", MAX_NO_TRACKED_AGENTS, 10);
+  ros::param::param(nn+"wifiAttempts", WIFI_ATTEMPTS, 5);
 
-  ros::param::param<std::string>("logName", LOG_NAME, "InSpaceDemo.csv");
-  ros::param::param("logPlanner", LOG_PLANNER, 1);
+  ros::param::param<std::string>(nn+"logName", LOG_NAME, "InSpaceDemo.csv");
+  ros::param::param(nn+"logPlanner", LOG_PLANNER, 1);
 
   // Simulation Constants (DO NOT CHANGE)
-  ros::param::param("simTimeStep", SIM_TIME_STEP, 0.1f);
+  ros::param::param(nn+"simTimeStep", SIM_TIME_STEP, 0.1f);
 
-  ros::param::param("bivariate", BIVARIATE, true);
-  ros::param::param("goalSumPrior", GOAL_SUM_PRIOR, 0.001f);
-  ros::param::param("goalHistoryDiscount", GOAL_HISTORY_DISCOUNT, 0.5f);
-  ros::param::param("goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
-  ros::param::param("velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
-  ros::param::param("useProbModel", USE_PROB_MODEL, true);
-  ros::param::param("priorLambda", PRIOR_LAMBDA, 0.5f);
+  ros::param::param(nn+"bivariate", BIVARIATE, true);
+  ros::param::param(nn+"goalSumPrior", GOAL_SUM_PRIOR, 0.001f);
+  ros::param::param(nn+"goalHistoryDiscount", GOAL_HISTORY_DISCOUNT, 0.5f);
+  ros::param::param(nn+"goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
+  ros::param::param(nn+"velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
+  ros::param::param(nn+"useProbModel", USE_PROB_MODEL, true);
+  ros::param::param(nn+"priorLambda", PRIOR_LAMBDA, 0.5f);
 
-  ros::param::param("limitWorkspaceVel", LIMIT_WORKSPACE_VEL, true);
+  ros::param::param(nn+"limitWorkspaceVel", LIMIT_WORKSPACE_VEL, true);
   // Ros param get only works with vectors/maps, not arrays :(
-  if (ros::param::has("xLimits") && ros::param::has("yLimits"))
+  if (ros::param::has(nn+"xLimits") && ros::param::has(nn+"yLimits"))
   {
     std::vector<float> x_lim;
     std::vector<float> y_lim;
-    ros::param::get("xLimits", x_lim);
-    ros::param::get("yLimits", y_lim);
+    ros::param::get(nn+"xLimits", x_lim);
+    ros::param::get(nn+"yLimits", y_lim);
     X_LIMITS[0]=x_lim[0];   X_LIMITS[1]=x_lim[1];
     Y_LIMITS[0]=y_lim[0];   Y_LIMITS[1]=y_lim[1];
   }
@@ -113,15 +114,15 @@ void ParamInitialise()
     Y_LIMITS[0]=0.0f;   Y_LIMITS[1]=3.5f;
   }
 
-  ros::param::param("neighborDist", NEIGHBOR_DIST, 5.0f);
-  ros::param::param("maxNeighbors", MAX_NEIGHBORS, 10);
-  ros::param::param("agentRadius", AGENT_RADIUS, 0.5f);
-  ros::param::param("goalRadius", GOAL_RADIUS, 0.3f);
-  ros::param::param("prefSpeed", PREF_SPEED, 0.3f);
-  ros::param::param("prefPeopleSpeed", PREF_PEOPLE_SPEED, 0.3f);
-  ros::param::param("maxSpeed", MAX_SPEED, 0.6f);
-  ros::param::param("maxPeopleSpeed", MAX_PEOPLE_SPEED, 2.0f);
-  ros::param::param("maxAcceleration", MAX_ACCELERATION, 1.2f);
-  ros::param::param("maxPeopleAcceleration", MAX_PEOPLE_ACCELERATION, 5.0f);
+  ros::param::param(nn+"neighborDist", NEIGHBOR_DIST, 5.0f);
+  ros::param::param(nn+"maxNeighbors", MAX_NEIGHBORS, 10);
+  ros::param::param(nn+"agentRadius", AGENT_RADIUS, 0.5f);
+  ros::param::param(nn+"goalRadius", GOAL_RADIUS, 0.3f);
+  ros::param::param(nn+"prefSpeed", PREF_SPEED, 0.3f);
+  ros::param::param(nn+"prefPeopleSpeed", PREF_PEOPLE_SPEED, 0.3f);
+  ros::param::param(nn+"maxSpeed", MAX_SPEED, 0.6f);
+  ros::param::param(nn+"maxPeopleSpeed", MAX_PEOPLE_SPEED, 2.0f);
+  ros::param::param(nn+"maxAcceleration", MAX_ACCELERATION, 1.2f);
+  ros::param::param(nn+"maxPeopleAcceleration", MAX_PEOPLE_ACCELERATION, 5.0f);
   
 }

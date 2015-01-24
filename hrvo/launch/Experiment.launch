@@ -11,59 +11,61 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 -->
 
 <launch>
-
-        <!-- Experiment Setup -->
-        <param name="enablePlanner" type="bool" value="true"/>
-        <param name="performRobotSetup" type="bool" value="true"/>
-        <param name="manualTrackerAssignment" type="bool" value="true"/>
-        <param name="onlyOdometry" type="bool" value="false"/>
-        <param name="enableModelling" type="bool" value="true"/>
-        <param name="logData" type="bool" value="true"/>
-        <param name="assignTrackerWhenAlone" type="bool" value="false"/>
-        <param name="trackerOdomComparisons" type="int" value="10"/>
-        <param name="rosFreq" type="int" value="10"/>
-        <param name="clearScreen" type="bool" value="true"/>
-        <param name="displayInferenceValues" type="bool" value="true"/>
-        <param name="maxNoTrackedAgents" type="int" value="10"/>
-        <param name="wifiAttempts" type="int" value="5"/>
-
-        <!-- Logger Parameters -->
-        <param name="logName" type="string" value="InSpaceDemo.csv"/>
-        <param name="logPlanner" type="int" value="1"/>
-
-        <!-- Simulation Constants / DO NOT CHANGE -->
-        <!-- <param name="thisRobot" type="int" value="0"/> -->
-	<param name="simTimeStep" type="double" value="0.1"/>
-
-        <!-- Model Parameters -->
-        <param name="bivariate" type="bool" value="true"/>
-        <param name="goalSumPrior" type="double" value="0.001"/>
-        <param name="goalHistoryDiscount" type="double" value="0.5"/>
-        <param name="goalInferenceHistory" type="int" value="10"/>
-        <param name="velocityAverageWindow" type="int" value="10"/>
-        <param name="useProbModel" type="bool" value="true"/>
-        <param name="priorLambda" type="double" value="0.5"/>
-
-        <!-- Workspace limits -->
-        <param name="limitWorkspaceVel" type="bool" value="true"/>
-        
-
-        <!-- Experiment Parameters -->
-
-        <!-- Simulation Parameters -->
-        <param name="neighborDist" type="double" value="5.0"/>
-        <param name="maxNeighbors" type="int" value="10"/>
-        <param name="agentRadius" type="double" value="0.5"/>
-        <param name="goalRadius" type="double" value="0.3"/>
-        <param name="prefSpeed" type="double" value="0.3"/>
-        <param name="prefPeopleSpeed" type="double" value="0.3"/>
-        <param name="maxSpeed" type="double" value="0.6"/>
-        <param name="maxPeopleSpeed" type="double" value="2.0"/>
-        <param name="maxAcceleration" type="double" value="1.2"/>
-        <param name="maxPeopleAcceleration" type="double" value="5.0"/>
-
         <!-- Start the experiment node -->
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
+                <!-- Experiment Setup -->
+                <param name="enablePlanner" type="bool" value="true"/>
+                <param name="performRobotSetup" type="bool" value="true"/>
+                <param name="manualTrackerAssignment" type="bool" value="true"/>
+                <param name="onlyOdometry" type="bool" value="false"/>
+                <param name="enableModelling" type="bool" value="true"/>
+                <param name="logData" type="bool" value="true"/>
+                <param name="assignTrackerWhenAlone" type="bool" value="false"/>
+                <param name="trackerOdomComparisons" type="int" value="10"/>
+                <param name="rosFreq" type="int" value="10"/>
+                <param name="clearScreen" type="bool" value="true"/>
+                <param name="displayInferenceValues" type="bool" value="true"/>
+                <param name="maxNoTrackedAgents" type="int" value="10"/>
+                <param name="wifiAttempts" type="int" value="5"/>
+
+                <!-- Logger Parameters -->
+                <param name="logName" type="string" value="InSpaceDemo.csv"/>
+                <param name="logPlanner" type="int" value="1"/>
+
+                <!-- Simulation Constants / DO NOT CHANGE -->
+                <!-- <param name="thisRobot" type="int" value="0"/> -->
+        	<param name="simTimeStep" type="double" value="0.1"/>
+
+                <!-- Model Parameters -->
+                <param name="bivariate" type="bool" value="true"/>
+                <param name="goalSumPrior" type="double" value="0.001"/>
+                <param name="goalHistoryDiscount" type="double" value="0.5"/>
+                <param name="goalInferenceHistory" type="int" value="10"/>
+                <param name="velocityAverageWindow" type="int" value="10"/>
+                <param name="useProbModel" type="bool" value="true"/>
+                <param name="priorLambda" type="double" value="0.5"/>
+
+                <!-- Workspace limits -->
+                <param name="limitWorkspaceVel" type="bool" value="true"/>
+
+
+                <!-- Experiment Parameters -->
+
+                <!-- Simulation Parameters -->
+                <param name="neighborDist" type="double" value="5.0"/>
+                <param name="maxNeighbors" type="int" value="10"/>
+                <param name="agentRadius" type="double" value="0.5"/>
+                <param name="goalRadius" type="double" value="0.3"/>
+                <param name="prefSpeed" type="double" value="0.3"/>
+                <param name="prefPeopleSpeed" type="double" value="0.3"/>
+                <param name="maxSpeed" type="double" value="0.6"/>
+                <param name="maxPeopleSpeed" type="double" value="2.0"/>
+                <param name="maxAcceleration" type="double" value="1.2"/>
+                <param name="maxPeopleAcceleration" type="double" value="5.0"/>
+
+
+
+        </node>
 
 </launch>
 
