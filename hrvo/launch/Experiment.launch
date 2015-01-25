@@ -43,6 +43,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="goalInferenceHistory" type="int" value="10"/>
                 <param name="velocityAverageWindow" type="int" value="10"/>
                 <param name="useProbModel" type="bool" value="true"/>
+                <param name="useTrackerVelocities" type="bool" value="true"/>
                 <param name="priorLambda" type="double" value="0.5"/>
 
                 <!-- Workspace limits -->
