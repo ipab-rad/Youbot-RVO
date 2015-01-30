@@ -42,7 +42,6 @@
   extern int GOAL_INFERENCE_HISTORY;      // 1 second window
   extern int VELOCITY_AVERAGE_WINDOW;     // 1 second window
   extern bool USE_PROB_MODEL;             // Enable probabilistic modelling/inference
-  extern bool USE_TRACKER_VELOCITIES;     // TODO: Remove this and all related
   extern float PRIOR_LAMBDA;
 
   // Agent Parameters

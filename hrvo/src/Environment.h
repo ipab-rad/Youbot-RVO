@@ -57,8 +57,6 @@ namespace hrvo {
     void setPlannerPosition(Vector2 plannerPos) {planner_->setAgentPosition(THIS_ROBOT, plannerPos);}
 
     void disablePlannerAgent()  {planner_->setAgentType(THIS_ROBOT, INACTIVE);}
-
-    // void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
     
     void setPlannerParam();
 
@@ -132,16 +130,11 @@ namespace hrvo {
 
     std::map<std::size_t, Simulator *>* getSimVectPointer() {return simvectPoint_;}
 
-    // int getRobotTrackerID()  {return robotTrackerID_;}
-
     void resetOdomPosition()  {planner_->resetOdomPosition();}
 
     void stopYoubot();
 
     void emergencyStop();
-
-    // float calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
-    std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
     Environment* getEnvPointer() {return this;}
 
@@ -162,27 +155,18 @@ namespace hrvo {
       std::size_t goal2_;
       std::size_t goal3_;
       std::size_t goalPlan_;
-      
-      std::map<size_t, Vector2> prevPos;
-      // bool trackOtherAgents_;
 
       ros::NodeHandle nh_;
-      ros::Subscriber Targsub;
-      PTrackingBridge::TargetEstimations msg_;
 
       Simulator *planner_;
       Tracker *tracker_;
 
-      int robotTrackerID_;
-      // int trackerComparisonCounter_;
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<int, std::vector<float> > trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
       std::map<std::size_t, Vector2> possGoals_;
       std::map<std::size_t, std::size_t> simIDs_;
       std::map<std::size_t, Simulator *> simvect_;
       std::map<std::size_t, Simulator *>* simvectPoint_;
-      std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
-      // std::map<std::size_t, std::size_t>  agentVelCount_; // TODO: TO BE REMOVED
       std::map<std::size_t, float>  maxSpeed_;
 
   };

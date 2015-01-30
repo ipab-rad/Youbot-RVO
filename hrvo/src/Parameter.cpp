@@ -95,7 +95,6 @@ void ParamInitialise()
   ros::param::param(nn+"goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
   ros::param::param(nn+"velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
   ros::param::param(nn+"useProbModel", USE_PROB_MODEL, true);
-  ros::param::param(nn+"useTrackerVelocities", USE_TRACKER_VELOCITIES, true);
   ros::param::param(nn+"priorLambda", PRIOR_LAMBDA, 0.5f);
 
   ros::param::param(nn+"limitWorkspaceVel", LIMIT_WORKSPACE_VEL, true);

@@ -18,7 +18,6 @@ namespace hrvo {
     startGoal_ = planner_->addGoal(startPos_);
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
-    robotTrackerID_ = -1;
     simvectPoint_ = &simvect_;
     this->initTracker();
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
@@ -100,11 +99,6 @@ namespace hrvo {
   {
     tracker_->setAgentTracker(TrackerID, AgentID);
   }
-
-  // void Environment::receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg)
-  // {
-  //   msg_ = *msg;
-  // }
 
   void Environment::setPlannerParam()
   {
@@ -334,32 +328,6 @@ namespace hrvo {
     {
       planner_->setAgentVelocity(i, STOP);
     }
-  }
-
-  std::pair<float, Vector2> Environment::calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel)
-  { // TODO: TO BE REMOVED
-    // TODO: Implement discounted sum over past Sum:(1 - disc)^t-1 * Value  where disc(0 < disc =< 1)
-    agentVelHistory_[AgentID].insert(agentVelHistory_[AgentID].begin(), AgentVel);
-    agentVelHistory_[AgentID].resize(VELOCITY_AVERAGE_WINDOW);
-    std::size_t VelHist = agentVelHistory_[AgentID].size();
-
-    float avgSpeed = 0.0f;
-    float avgVelx = 0.0f;
-    float avgVely = 0.0f;
-    for(std::vector<Vector2>::iterator vel = agentVelHistory_[AgentID].begin(); vel != agentVelHistory_[AgentID].end(); ++vel)
-    {
-      avgSpeed += abs(*vel);
-      avgVelx += (*vel).getX();
-      avgVely += (*vel).getY();
-    }
-    avgSpeed = avgSpeed / agentVelHistory_[AgentID].size();
-    Vector2 avgVel = Vector2(avgVelx / VelHist, avgVely / VelHist);
-    if (avgSpeed > maxSpeed_[AgentID])
-    {maxSpeed_[AgentID] = avgSpeed;}
-
-    // DEBUG("Agent" << AgentID << " AvgVel="<<avgSpeed<<" maxVel="<<maxSpeed_[AgentID]<<std::endl);
-
-    return std::make_pair(avgSpeed, avgVel);
   }
 
 }

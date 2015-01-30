@@ -62,7 +62,6 @@ namespace hrvo {
       Simulator *planner_;
 
       // Private Members
-      std::map<size_t, Vector2> prevPos;  // TODO: To be removed
       std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, float> maxSpeed_;
       bool trackOtherAgents_;

@@ -67,7 +67,6 @@ namespace hrvo {
             trackedAgents_.erase(iter);
             trackerCompOdom_.erase(TrackID);
           }
-
       }
 
       // Deactivate any pedestrian agents who are no longer being tracked
@@ -84,7 +83,6 @@ namespace hrvo {
             planner_->setAgentVelocity(AgentNo, STOP);
             planner_->setAgentType(AgentNo, INACTIVE);
         }
-
       }
 
       // Update existing tracked agents or create new agents for new trackers
@@ -101,33 +99,17 @@ namespace hrvo {
         {
           agentPos = Vector2(msg_.positions[i].x, msg_.positions[i].y);
         }
+
         Vector2 agentVel = STOP;
-        // TODO: Remove USE_TRACKER_VELOCITIES and all associated to it
-        if (!USE_TRACKER_VELOCITIES)
+        // agentVel = Vector2(-1 * msg_.velocities[i].x, msg_.velocities[i].y);
+        if (INVERT_X)
         {
-          if (prevPos.find(TrackerID) != prevPos.end())
-          {
-            agentVel = (agentPos - prevPos[TrackerID]) * ROS_FREQ;
-            prevPos[TrackerID] = agentPos;
-          }
-          else
-          {
-            prevPos[TrackerID] = agentPos;
-          }
+          agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
         }
         else
         {
-          // agentVel = Vector2(-1 * msg_.velocities[i].x, msg_.velocities[i].y);
-          if (INVERT_X)
-          {
-            agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
-          }
-          else
-          {
-          agentVel = Vector2(msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
-          }
+        agentVel = Vector2(msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
         }
-
 
         if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
         { 
@@ -246,14 +228,11 @@ namespace hrvo {
   {
     std::size_t numAgents = msg_.identities.size();
 
-    // DEBUG("Identities:");
     std::map<int, std::size_t> ids;     // First = Index, Second = Tracker ID
     for (int i = 0; i < numAgents; ++i)
     {
       ids[i] = msg_.identities[i];
-      // DEBUG(ids[i] <<",");
     }
-    // INFO(std::endl);
     return ids;
   }
 
