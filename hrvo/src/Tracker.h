@@ -40,6 +40,14 @@ namespace hrvo {
 
       std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
+      void checkExistingTrackers(std::map<int, std::size_t> ids);
+
+      void removeInactiveTrackers();
+
+      void updateActiveAgents(std::size_t numAgents);
+
+      void odometryComparison();
+
       // Awaits robot initialisation before tracking more agents
       void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
 
