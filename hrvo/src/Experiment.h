@@ -1,8 +1,20 @@
 #ifndef HRVO_EXPERIMENT_H_
 #define HRVO_EXPERIMENT_H_
 
+#include "Environment.h"
+
+#include "Model.h"
+
+#include "Definitions.h"
+
+#include "Parameter.h"
+
 namespace hrvo {
 
+typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
+typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer; // EnvID, ModelID, ModelObject
+
+void SetupRobots(PlannerMapPointer* PlannerMap);
 /*
   // EXPERIMENT PARAMETERS
   bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
