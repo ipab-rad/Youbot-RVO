@@ -21,6 +21,7 @@ class AMCLWrapper
   ~AMCLWrapper();
   void update();
   void receive_pose(const geometry_msgs::Twist::ConstPtr& pose_msg);
+  void pretty_print();
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
