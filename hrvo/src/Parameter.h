@@ -12,6 +12,18 @@
   #include <ros/ros.h>
   #include "Vector2.h"
 
+  // Robot Setup
+  extern bool MEGATRON_ACTIVE;
+  extern int MEGATRON_PLAN;
+  extern bool SOUNDWAVE_ACTIVE;
+  extern int SOUNDWAVE_PLAN;
+  extern bool STARSCREAM_ACTIVE;
+  extern int STARSCREAM_PLAN;
+  extern bool BLACKOUT_ACTIVE;
+  extern int BLACKOUT_PLAN;
+  extern bool THUNDERCRACKER_ACTIVE;
+  extern int THUNDERCRACKER_PLAN;
+
   // Experiment Setup
   extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
   extern bool PERFORM_ROBOT_SETUP;        // Robots move into initial positions

@@ -7,6 +7,18 @@
 
 #include "Parameter.h"  
 
+  // Robot Setup
+  bool MEGATRON_ACTIVE;
+  int MEGATRON_PLAN;
+  bool SOUNDWAVE_ACTIVE;
+  int SOUNDWAVE_PLAN;
+  bool STARSCREAM_ACTIVE;
+  int STARSCREAM_PLAN;
+  bool BLACKOUT_ACTIVE;
+  int BLACKOUT_PLAN;
+  bool THUNDERCRACKER_ACTIVE;
+  int THUNDERCRACKER_PLAN;
+
   // Experiment Setup
   bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
   bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
@@ -69,6 +81,20 @@
 void ParamInitialise()
 {
   std::string nn="youbot_experiment/";  // Add node parameter path
+
+  // ROBOT SETUP
+  ros::param::param(nn+"megatronActive", MEGATRON_ACTIVE, false);
+  ros::param::param(nn+"megatronPlan", MEGATRON_PLAN, 0);
+  ros::param::param(nn+"soundwaveActive", SOUNDWAVE_ACTIVE, false);
+  ros::param::param(nn+"soundwavePlan", SOUNDWAVE_PLAN, 0);
+  ros::param::param(nn+"starscreamActive", STARSCREAM_ACTIVE, false);
+  ros::param::param(nn+"starscreamPlan", STARSCREAM_PLAN, 0);
+  ros::param::param(nn+"blackoutActive", BLACKOUT_ACTIVE, false);
+  ros::param::param(nn+"blackoutPlan", BLACKOUT_PLAN, 0);
+  ros::param::param(nn+"thundercrackerActive", THUNDERCRACKER_ACTIVE, false);
+  ros::param::param(nn+"thundercrackerPlan", THUNDERCRACKER_PLAN, 0);
+
+  // EXPERIMENT SETUP
   ros::param::param(nn+"enablePlanner", ENABLE_PLANNER, false);
   ros::param::param(nn+"performRobotSetup", PERFORM_ROBOT_SETUP, true);
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
