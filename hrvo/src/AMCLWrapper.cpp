@@ -10,20 +10,20 @@ namespace hrvo {
 
 AMCLWrapper::AMCLWrapper()
 {
-  sub_ = nh_.subscribe("/amcl_node",
+  sub_ = nh_.subscribe("/amcl_pose",
                       1,
                       &AMCLWrapper::receive_pose,
                       this);
-  ROS_INFO("Subscribing to default AMCL node");
+  ROS_INFO("Subscribing to default AMCL pose");
 }
 
 AMCLWrapper::AMCLWrapper(std::string sub_name)
 {
-  sub_ = nh_.subscribe(sub_name + "/amcl_node",
+  sub_ = nh_.subscribe(sub_name + "/amcl_pose",
                       1,
                       &AMCLWrapper::receive_pose,
                       this);
-  std::string info = "Subscribing to " + sub_name + " AMCL node";
+  std::string info = "Subscribing to " + sub_name + " AMCL pose";
   ROS_INFO("%s", info.c_str());
 }
 
