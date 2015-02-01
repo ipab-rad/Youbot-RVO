@@ -83,7 +83,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   #  LIBRARIES hrvo
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs nav_msgs message_runtime 
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs nav_msgs message_runtime
   #  DEPENDS system_lib
 )
 
@@ -105,6 +105,7 @@ add_library(Goal src/Goal.cpp)
 add_library(KdTree src/KdTree.cpp)
 add_library(Simulator src/Simulator.cpp)
 add_library(Vector2 src/Vector2.cpp)
+add_library(AMCLWrapper src/AMCLWrapper.cpp)
 
 
 #set(HRVO_HEADERS
@@ -156,6 +157,7 @@ add_executable(Experiment
   src/Definitions.cpp
   src/Parameter.cpp
   src/Tracker.cpp
+  src/AMCLWrapper.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library
@@ -197,6 +199,7 @@ target_link_libraries(Experiment
   KdTree
   Simulator
   Vector2
+  AMCLWrapper
 )
 
 #############
