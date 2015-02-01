@@ -40,6 +40,14 @@ namespace hrvo {
 
       std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
+      void checkExistingTrackers(std::map<int, std::size_t> ids);
+
+      void removeInactiveTrackers();
+
+      void updateActiveAgents(std::size_t numAgents);
+
+      void odometryComparison();
+
       // Awaits robot initialisation before tracking more agents
       void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
 
@@ -62,7 +70,6 @@ namespace hrvo {
       Simulator *planner_;
 
       // Private Members
-      std::map<size_t, Vector2> prevPos;  // TODO: To be removed
       std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
       std::map<std::size_t, float> maxSpeed_;
       bool trackOtherAgents_;

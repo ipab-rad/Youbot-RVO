@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
   PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
 
-  (*PlannerMap_)[1] = new Environment(YOUBOT_3, START_POS1);
+  (*PlannerMap_)[1] = new Environment(YOUBOT_1, START_POS1);
   // (*PlannerMap_)[2] = new Environment(YOUBOT_2, START_POS2);
   // (*PlannerMap_)[3] = new Environment(YOUBOT_3, START_POS3);
   // (*PlannerMap_)[4] = new Environment(YOUBOT_4, START_POS4);
