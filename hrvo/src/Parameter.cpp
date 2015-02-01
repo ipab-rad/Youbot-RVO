@@ -5,77 +5,77 @@
 *         These are read once at the beginning of execution from the ROS launch file.
 */
 
-#include "Parameter.h"  
+#include "Parameter.h"
 
-  // Robot Setup
-  bool MEGATRON_ACTIVE;
-  int MEGATRON_PLAN;
-  bool SOUNDWAVE_ACTIVE;
-  int SOUNDWAVE_PLAN;
-  bool STARSCREAM_ACTIVE;
-  int STARSCREAM_PLAN;
-  bool BLACKOUT_ACTIVE;
-  int BLACKOUT_PLAN;
-  bool THUNDERCRACKER_ACTIVE;
-  int THUNDERCRACKER_PLAN;
+// Robot Setup
+bool MEGATRON_ACTIVE;
+int MEGATRON_PLAN;
+bool SOUNDWAVE_ACTIVE;
+int SOUNDWAVE_PLAN;
+bool STARSCREAM_ACTIVE;
+int STARSCREAM_PLAN;
+bool BLACKOUT_ACTIVE;
+int BLACKOUT_PLAN;
+bool THUNDERCRACKER_ACTIVE;
+int THUNDERCRACKER_PLAN;
 
-  // Experiment Setup
-  bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
-  bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
-  bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
-  bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
-  bool ENABLE_MODELLING;            // Enable inference model
-  bool LOG_DATA;                    // Log data into a file
-  bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
-  int TRACKER_ODOM_COMPARISONS;     // How many iterations after tracker of another agent is reassigned to robot
-  int ROS_FREQ;                     // Planner frequency Hz
-  bool CLEAR_SCREEN;                // Clearing makes it prettier but fits less on the screen
-  bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values 
-  int MAX_NO_TRACKED_AGENTS;        // TODO: Not working as intended
-  int WIFI_ATTEMPTS;
+// Experiment Setup
+bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
+bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
+bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
+bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
+bool ENABLE_MODELLING;            // Enable inference model
+bool LOG_DATA;                    // Log data into a file
+bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
+int TRACKER_ODOM_COMPARISONS;     // How many iterations after tracker of another agent is reassigned to robot
+int ROS_FREQ;                     // Planner frequency Hz
+bool CLEAR_SCREEN;                // Clearing makes it prettier but fits less on the screen
+bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values 
+int MAX_NO_TRACKED_AGENTS;        // TODO: Not working as intended
+int WIFI_ATTEMPTS;
 
-  // Logger Parameters
-  std::string LOG_NAME;
-  int LOG_PLANNER;
+// Logger Parameters
+std::string LOG_NAME;
+int LOG_PLANNER;
 
-  // Simulation Constants (DO NOT CHANGE)
-  int THIS_ROBOT = 0;
-  float SIM_TIME_STEP;
+// Simulation Constants (DO NOT CHANGE)
+int THIS_ROBOT = 0;
+float SIM_TIME_STEP;
 
-  // Model Parameters
-  bool BIVARIATE;
-  float GOAL_SUM_PRIOR;             // Goal inference initial prior
-  float GOAL_HISTORY_DISCOUNT;      // Discount of previous likelihood history
-  int GOAL_INFERENCE_HISTORY;       // 1 second window
-  int VELOCITY_AVERAGE_WINDOW;      // 1 second window
-  bool USE_PROB_MODEL;
-  bool USE_TRACKER_VELOCITIES;
-  float PRIOR_LAMBDA;
+// Model Parameters
+bool BIVARIATE;
+float GOAL_SUM_PRIOR;             // Goal inference initial prior
+float GOAL_HISTORY_DISCOUNT;      // Discount of previous likelihood history
+int GOAL_INFERENCE_HISTORY;       // 1 second window
+int VELOCITY_AVERAGE_WINDOW;      // 1 second window
+bool USE_PROB_MODEL;
+bool USE_TRACKER_VELOCITIES;
+float PRIOR_LAMBDA;
 
-  // Workspace limits
-  bool LIMIT_WORKSPACE_VEL;
-  float X_LIMITS[2];         // Min-Max X workspace limits
-  float Y_LIMITS[2];         // Min-Max X workspace limits
+// Workspace limits
+bool LIMIT_WORKSPACE_VEL;
+float X_LIMITS[2];         // Min-Max X workspace limits
+float Y_LIMITS[2];         // Min-Max X workspace limits
 
-  // Experiment Parameters
-  bool SAFETY_STOP = false;
-  bool STARTED = false;
+// Experiment Parameters
+bool SAFETY_STOP = false;
+bool STARTED = false;
 
-  bool INVERT_X;
-  // Vector2 I_g1;
-  // Vector2 I_g2;
-  // Vector2 I_g3;
+bool INVERT_X;
+// Vector2 I_g1;
+// Vector2 I_g2;
+// Vector2 I_g3;
 
-  float NEIGHBOR_DIST;
-  int MAX_NEIGHBORS;
-  float AGENT_RADIUS;
-  float GOAL_RADIUS;
-  float PREF_SPEED;
-  float PREF_PEOPLE_SPEED;
-  float MAX_SPEED;
-  float MAX_PEOPLE_SPEED;
-  float MAX_ACCELERATION;
-  float MAX_PEOPLE_ACCELERATION;
+float NEIGHBOR_DIST;
+int MAX_NEIGHBORS;
+float AGENT_RADIUS;
+float GOAL_RADIUS;
+float PREF_SPEED;
+float PREF_PEOPLE_SPEED;
+float MAX_SPEED;
+float MAX_PEOPLE_SPEED;
+float MAX_ACCELERATION;
+float MAX_PEOPLE_ACCELERATION;
 
 // Acquire parameters from launch file. Default values are included just in case
 void ParamInitialise()
@@ -150,5 +150,4 @@ void ParamInitialise()
   ros::param::param(nn+"maxPeopleSpeed", MAX_PEOPLE_SPEED, 2.0f);
   ros::param::param(nn+"maxAcceleration", MAX_ACCELERATION, 1.2f);
   ros::param::param(nn+"maxPeopleAcceleration", MAX_PEOPLE_ACCELERATION, 5.0f);
-  
 }
