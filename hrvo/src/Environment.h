@@ -64,21 +64,22 @@ namespace hrvo {
 
     std::size_t addPedestrianAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
 
-    std::size_t addPlannerGoal(const Vector2 goalPosition);
-
     std::size_t getAgentType(std::size_t agentNo) {return planner_->getAgentType(agentNo);}
+
+    // GOAL FUNCTIONS
+    std::size_t addPlannerGoal(const Vector2 goalPosition) {return planner_->addGoal(goalPosition);}
 
     std::size_t getPlannerGoal() {return planner_->getAgentGoal(THIS_ROBOT);}
 
-    void setPlannerGoal(std::size_t goalNo);
+    void setPlannerGoal(std::size_t goalNo) {planner_->setAgentGoal(THIS_ROBOT, goalNo);}
 
-    void editPlannerGoal(std::size_t goalNo, Vector2 goalPosition);
+    void editPlannerGoal(std::size_t goalNo, Vector2 goalPosition) {planner_->editGoal(goalNo, goalPosition);}
 
-    void setPlannerInitialGoal(int goalIndex);
+    void setPlannerInitialGoal(std::size_t initialGoalNo) {initialGoalNo_ = initialGoalNo;}
+
+    void loadPlannerInitialGoal();
 
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);
-
-    std::size_t setSimParam(std::size_t simID);
 
     std::size_t getNumPlannerGoals()  { return planner_->getNumGoals(); }
 
@@ -101,6 +102,9 @@ namespace hrvo {
     void cycleGoals2_3();
 
     void cycleGoals3_1();
+
+    // SIMULATOR FUNCTIONS
+    std::size_t setSimParam(std::size_t simID);
 
     void doPlannerStep();
 
@@ -130,6 +134,8 @@ namespace hrvo {
 
     std::map<std::size_t, Simulator *>* getSimVectPointer() {return simvectPoint_;}
 
+    // ROBOT FUNCTIONS
+
     void resetOdomPosition()  {planner_->resetOdomPosition();}
 
     void stopYoubot();
@@ -151,6 +157,7 @@ namespace hrvo {
       Vector2 currPos_;
       size_t currGoal_;
       Vector2 currVel_;
+      std::size_t initialGoalNo_;
       std::size_t goal1_;
       std::size_t goal2_;
       std::size_t goal3_;
