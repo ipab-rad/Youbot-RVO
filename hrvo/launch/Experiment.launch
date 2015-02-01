@@ -13,6 +13,22 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 <launch>
         <!-- Start the experiment node -->
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
+                <!-- Robot Setup -->
+                <param name="megatronActive" type="bool" value="true"/>
+                <param name="megatronPlan" type="int" value="3"/>
+
+                <param name="soundwaveActive" type="bool" value="false"/>
+                <param name="soundwavePlan" type="int" value="3"/>
+
+                <param name="starscreamActive" type="bool" value="false"/>
+                <param name="starscreamActive" type="int" value="3"/>
+
+                <param name="blackoutActive" type="bool" value="false"/>
+                <param name="blackoutPlan" type="int" value="3"/>
+
+                <param name="thundercrackerActive" type="bool" value="false"/>
+                <param name="thundercrackerPlan" type="int" value="3"/>
+
                 <!-- Experiment Setup -->
                 <param name="enablePlanner" type="bool" value="true"/>
                 <param name="performRobotSetup" type="bool" value="true"/>
@@ -62,9 +78,6 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="maxPeopleSpeed" type="double" value="2.0"/>
                 <param name="maxAcceleration" type="double" value="1.2"/>
                 <param name="maxPeopleAcceleration" type="double" value="5.0"/>
-
-
-
         </node>
 
 </launch>

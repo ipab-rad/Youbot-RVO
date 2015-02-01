@@ -116,25 +116,9 @@ namespace hrvo {
     return planner_->addAgent(sActorID_ + "_p" + id, PERSON, startPos, goalNo);
   }
 
-
-  std::size_t Environment::addPlannerGoal(const Vector2 goalPosition)
+  void Environment::loadPlannerInitialGoal()
   {
-    return planner_->addGoal(goalPosition);
-  }
-
-  void Environment::setPlannerGoal(std::size_t goalNo)
-  {
-    planner_->setAgentGoal(THIS_ROBOT, goalNo);
-  }
-
-  void Environment::editPlannerGoal(std::size_t goalNo, Vector2 goalPosition)
-  {
-    planner_->editGoal(goalNo, goalPosition);
-  }
-
-  void Environment::setPlannerInitialGoal(int goalIndex)
-  {
-    switch (goalIndex) {
+    switch (initialGoalNo_) {
     case 1:
       this->setPlannerGoal(goal1_);
       break;
@@ -155,12 +139,6 @@ namespace hrvo {
     std::size_t goalNo = planner_->addGoal(goalPosition);
     planner_->setAgentGoal(THIS_ROBOT, goalNo);
     return goalNo;
-  }
-
-  std::size_t Environment::setSimParam(std::size_t simID)
-  {
-    simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f);
   }
 
   bool Environment::getVirtualAgentReachedGoal(std::size_t simID, std::size_t agentNo)
@@ -250,6 +228,12 @@ namespace hrvo {
       {this->setPlannerGoal(goal1_);}
     else
     {ERR("Could not cycle goals for " << this->getStringActorID() << std::endl)}
+  }
+
+  std::size_t Environment::setSimParam(std::size_t simID)
+  {
+    simvect_[simID]->setTimeStep(SIM_TIME_STEP);
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f);
   }
 
   void Environment::doPlannerStep()
