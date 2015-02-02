@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 
   PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
+  //AMCLWrapper* AMCLpointer_ = new AMCLWrapper();
 
   SetupRobots(PlannerMap_);
 
@@ -241,6 +242,8 @@ int main(int argc, char *argv[])
         INFO("Agent" << i << " Pos: [" << (*PlannerMap_)[LOG_PLANNER]->getPlannerAgentPosition(i) << "]" << std::endl);
       }
     }
+
+    //AMCLpointer_->pretty_print();
 
     // Vector2 DynGoalPos = STOP;
     //  **** PLANNER STEP ****

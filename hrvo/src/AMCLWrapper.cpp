@@ -30,19 +30,19 @@ AMCLWrapper::AMCLWrapper(std::string sub_name)
 
 AMCLWrapper::~AMCLWrapper() {};
 
-void AMCLWrapper::receive_pose(const geometry_msgs::Twist::ConstPtr &pose_msg)
+void AMCLWrapper::receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &pose_msg)
 {
   pose_ = *pose_msg;
 }
 
 void AMCLWrapper::pretty_print()
 {
-    ERR("l.x: " << pose_.linear.x << std::endl);
-    ERR("l.y: " << pose_.linear.y << std::endl);
-    ERR("l.z: " << pose_.linear.z << std::endl);
-    WARN("a.x: " << pose_.angular.x << std::endl);
-    WARN("a.y: " << pose_.angular.y << std::endl);
-    WARN("a.z: " << pose_.angular.z << std::endl);
+    ERR("l.x: " << pose_.pose.pose.position.x << std::endl);
+    ERR("l.y: " << pose_.pose.pose.position.y << std::endl);
+    ERR("l.z: " << pose_.pose.pose.position.z << std::endl);
+    WARN("a.x: " << pose_.pose.pose.orientation.x << std::endl);
+    WARN("a.y: " << pose_.pose.pose.orientation.y << std::endl);
+    WARN("a.z: " << pose_.pose.pose.orientation.z << std::endl);
 }
 
 void AMCLWrapper::update()

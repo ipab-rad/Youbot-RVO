@@ -8,7 +8,7 @@
 #define AMCL_WRAPPER_H_
 
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <string>
 
 namespace hrvo {
@@ -20,12 +20,12 @@ class AMCLWrapper
   AMCLWrapper(std::string sub_name);
   ~AMCLWrapper();
   void update();
-  void receive_pose(const geometry_msgs::Twist::ConstPtr& pose_msg);
+  void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg);
   void pretty_print();
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
-  geometry_msgs::Twist pose_;
+  geometry_msgs::PoseWithCovarianceStamped pose_;
 };
 
 }

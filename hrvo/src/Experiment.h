@@ -9,6 +9,8 @@
 
 #include "Parameter.h"
 
+//#include "AMCLWrapper.h"
+
 namespace hrvo {
 
 typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
