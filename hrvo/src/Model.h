@@ -57,11 +57,9 @@ private:
   std::vector<Vector2> pastSimVels_;
 
   std::map<std::size_t, std::size_t> simIDs_;
-  std::map<std::size_t, float> inferredGoalsSum_;
   // std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
   // std::map<std::size_t, std::map<std::size_t, float> > inferredGoalHistory_;  // Goal, Count
   std::map<std::size_t, std::vector<float> > inferredGoalsHistory_;
-  std::map<std::size_t, std::size_t> inferredGoalCount_;
   std::map<std::size_t, float> goalLikelihood_;
   std::map<std::size_t, float> prevPrior_;
 
