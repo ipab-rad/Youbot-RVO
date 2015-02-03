@@ -21,8 +21,6 @@ float startTime(-1.0);
 
 std::ofstream dataLog;
 
-ros::Rate update_freq(ROS_FREQ);
-
 void WaitReturn() {while( std::cin.get() != '\n') {;}}
 
 typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject

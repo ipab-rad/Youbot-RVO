@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
   while ( ros::ok() && !SAFETY_STOP )
   {
     if (CLEAR_SCREEN) {CLEAR();}
-
+    ros::Rate update_freq(ROS_FREQ);
     SensingUpdate(PlannerMap_);
 
     PrintAgentState(PlannerMap_);
@@ -251,6 +251,7 @@ void hrvo::MoveIntoArea(Environment* planner)
   while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
   {
     if (CLEAR_SCREEN) {CLEAR();}
+    ros::Rate update_freq(ROS_FREQ);
     INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);
 
     planner->doPlannerStep();
