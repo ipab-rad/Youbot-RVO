@@ -24,13 +24,14 @@ bool ENABLE_PLANNER;              // Enables robot planner, disable when only in
 bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
 bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
 bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
+bool IS_AMCL_ACTIVE;
 bool ENABLE_MODELLING;            // Enable inference model
 bool LOG_DATA;                    // Log data into a file
 bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
 int TRACKER_ODOM_COMPARISONS;     // How many iterations after tracker of another agent is reassigned to robot
 int ROS_FREQ;                     // Planner frequency Hz
 bool CLEAR_SCREEN;                // Clearing makes it prettier but fits less on the screen
-bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values 
+bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values
 int MAX_NO_TRACKED_AGENTS;        // TODO: Not working as intended
 int WIFI_ATTEMPTS;
 
@@ -99,6 +100,7 @@ void ParamInitialise()
   ros::param::param(nn+"performRobotSetup", PERFORM_ROBOT_SETUP, true);
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
+    ros::param::param(nn+"onlyOdometry", IS_AMCL_ACTIVE, true);
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
   ros::param::param(nn+"logData", LOG_DATA, true);
   ros::param::param(nn+"assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);

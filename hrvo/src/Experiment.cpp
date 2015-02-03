@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
   PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
-  //AMCLWrapper* AMCLpointer_ = new AMCLWrapper();
+
 
   SetupRobots(PlannerMap_);
 
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
       for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
+        for(int i = 0; i < WIFI_ATTEMPTS; ++i)
         {
           planner->stopYoubot();
         }
@@ -156,9 +156,9 @@ int main(int argc, char *argv[])
         //  **** MOVE YOUBOT INTO AREA ****
         STARTED = true;
         while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-        {   
+        {
           if (CLEAR_SCREEN) {CLEAR();}
-          INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+          INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);
 
           planner->doPlannerStep();
 
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
         Environment* planner = iter->second;
         // planner->editPlannerGoal(3, planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1));
         // DynGoalPos = planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1);
-        
+
         // Change so that when reached goals, check planner goal plan, and change goals elsewhere
         if (planner->getReachedPlannerGoal())
           {planner->setNextGoal();}
@@ -303,8 +303,8 @@ int main(int argc, char *argv[])
           }
         }
       }
-      if (LOG_DATA && Logged) 
-      { 
+      if (LOG_DATA && Logged)
+      {
         if (!ENABLE_PLANNER) {(*PlannerMap_)[LOG_PLANNER]->doPlannerStep();}
         logData(log, LOG_PLANNER, (*PlannerMap_)[LOG_PLANNER]->getPlannerGlobalTime() - startTime, modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);
       }
@@ -317,11 +317,11 @@ int main(int argc, char *argv[])
   // while ( !environment1.getReachedPlannerGoal() &&  ros::ok() && !SAFETY_STOP );
   // while ( !simulator.haveReachedGoals() && ros::ok() && !SAFETY_STOP );
 
-  
+
   for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
   {
     Environment* planner = iter->second;
-    for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
+    for(int i = 0; i < WIFI_ATTEMPTS; ++i)
     {
       planner->stopYoubot();
     }
