@@ -6,7 +6,7 @@ agents (i.e. humans/other robots).
 
 Part of the software is based on the
 [HRVO](http://gamma.cs.unc.edu/HRVO/) library developed by the
-`Geometric Algorithms for Modeling, Motion, and Animation` group at
+*Geometric Algorithms for Modeling, Motion, and Animation* group at
 UNC.
 
 ## Documentation
