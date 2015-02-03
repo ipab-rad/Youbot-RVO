@@ -94,23 +94,33 @@
 
 namespace hrvo {
 
-Agent::Agent(Simulator *simulator) : simulator_(simulator), goalNo_(0), maxNeighbors_(0), goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f), orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
+Agent::Agent(Simulator *simulator) :
+    simulator_(simulator), goalNo_(0), maxNeighbors_(0),
+    goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f),
+    neighborDist_(0.0f), orientation_(0.0f), prefSpeed_(0.0f),
+    radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE
-                                     leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(0.0f), wheelTrack_(0.0f),
+    leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
+    timeToOrientation_(0.0f), wheelTrack_(0.0f),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                                     reachedGoal_(false)
+    reachedGoal_(false)
 {
   updated_ = false;
 }
 
 
-Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, int agent_type) : simulator_(simulator), goalNo_(0), maxNeighbors_(0),
-                                                                                          goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f), neighborDist_(0.0f),
-                                                                                          orientation_(0.0f), prefSpeed_(0.0f), radius_(0.0f), uncertaintyOffset_(0.0f),
+Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
+             std::string id, int agent_type) :
+    simulator_(simulator), goalNo_(0), maxNeighbors_(0),
+    goalRadius_(0.0f), maxAccel_(0.0f), maxSpeed_(0.0f),
+    neighborDist_(0.0f), orientation_(0.0f), prefSpeed_(0.0f),
+    radius_(0.0f), uncertaintyOffset_(0.0f),
 #if HRVO_DIFFERENTIAL_DRIVE
-  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(simulator_->defaults_->timeToOrientation_), wheelTrack_(simulator_->defaults_->wheelTrack_),
+    leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
+    timeToOrientation_(simulator_->defaults_->timeToOrientation_),
+    wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
+    reachedGoal_(false)
 {
   agent_type_ = agent_type;
   updated_ = false;
@@ -119,25 +129,41 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh, std::string id, int agen
 
   if ( agent_type_ == ROBOT )
   {
-    pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+    pub_ = nh.advertise<geometry_msgs::Twist>("/"
+                                              + id_
+                                              + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     odomFlag_ = true;
-    sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
+    sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                        &Agent::updatePose, this);
   }
 
 }
 
-Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int agent_type) :
-    simulator_(simulator), newVelocity_(simulator_->defaults_->velocity_), position_(position),
-    velocity_(simulator_->defaults_->velocity_), goalNo_(goalNo), maxNeighbors_(simulator_->defaults_->maxNeighbors_),
-    goalRadius_(simulator_->defaults_->goalRadius_), maxAccel_(simulator_->defaults_->maxAccel_), maxSpeed_(simulator_->defaults_->maxSpeed_),
-    neighborDist_(simulator_->defaults_->neighborDist_), orientation_(simulator_->defaults_->orientation_), prefSpeed_(simulator_->defaults_->prefSpeed_),
-  radius_(simulator_->defaults_->radius_), uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
+Agent::Agent(Simulator *simulator, const Vector2 &position,
+             std::size_t goalNo, ros::NodeHandle &nh, std::string id,
+             int agent_type) :
+    simulator_(simulator),
+    newVelocity_(simulator_->defaults_->velocity_),
+    position_(position),
+    velocity_(simulator_->defaults_->velocity_),
+    goalNo_(goalNo),
+    maxNeighbors_(simulator_->defaults_->maxNeighbors_),
+    goalRadius_(simulator_->defaults_->goalRadius_),
+    maxAccel_(simulator_->defaults_->maxAccel_),
+    maxSpeed_(simulator_->defaults_->maxSpeed_),
+    neighborDist_(simulator_->defaults_->neighborDist_),
+    orientation_(simulator_->defaults_->orientation_),
+    prefSpeed_(simulator_->defaults_->prefSpeed_),
+    radius_(simulator_->defaults_->radius_),
+    uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
 #if HRVO_DIFFERENTIAL_DRIVE
-  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(simulator_->defaults_->timeToOrientation_), wheelTrack_(simulator_->defaults_->wheelTrack_),
+    leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
+    timeToOrientation_(simulator_->defaults_->timeToOrientation_),
+    wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
+    reachedGoal_(false)
 {
   agent_type_ = agent_type;
   updated_ = false;
@@ -146,26 +172,41 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 
   if ( agent_type_ == ROBOT )
   {
-    pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+    pub_ = nh.advertise<geometry_msgs::Twist>("/"
+                                              + id_
+                                              + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     odomFlag_ = true;
-    sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
+    sub_ = nh.subscribe("/" + id_ + "/odom",
+                        1, &Agent::updatePose, this);
   }
 #if HRVO_DIFFERENTIAL_DRIVE
   computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 }
 
-Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, const Vector2 &velocity, float maxAccel, float goalRadius, float prefSpeed, float maxSpeed, float orientation,
+Agent::Agent(Simulator *simulator, const Vector2 &position,
+             std::size_t goalNo, float neighborDist,
+             std::size_t maxNeighbors, float radius,
+             const Vector2 &velocity, float maxAccel,
+             float goalRadius, float prefSpeed,
+             float maxSpeed, float orientation,
 #if HRVO_DIFFERENTIAL_DRIVE
              float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-             float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int agent_type) : simulator_(simulator), newVelocity_(velocity), position_(position), velocity_(velocity), goalNo_(goalNo),
-  maxNeighbors_(maxNeighbors), goalRadius_(goalRadius), maxAccel_(maxAccel), maxSpeed_(maxSpeed), neighborDist_(neighborDist),
-  orientation_(orientation), prefSpeed_(prefSpeed), radius_(radius), uncertaintyOffset_(uncertaintyOffset),
+             float uncertaintyOffset, ros::NodeHandle& nh,
+             std::string id, int agent_type) :
+  simulator_(simulator), newVelocity_(velocity),
+  position_(position), velocity_(velocity),
+  goalNo_(goalNo), maxNeighbors_(maxNeighbors),
+  goalRadius_(goalRadius), maxAccel_(maxAccel),
+  maxSpeed_(maxSpeed), neighborDist_(neighborDist),
+  orientation_(orientation), prefSpeed_(prefSpeed),
+  radius_(radius), uncertaintyOffset_(uncertaintyOffset),
 #if HRVO_DIFFERENTIAL_DRIVE
-  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f), timeToOrientation_(timeToOrientation), wheelTrack_(wheelTrack),
+  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
+  timeToOrientation_(timeToOrientation), wheelTrack_(wheelTrack),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
@@ -179,11 +220,14 @@ Agent::Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, 
 
   if ( agent_type_ == ROBOT )
   {
-    pub_ = nh.advertise<geometry_msgs::Twist>("/" + id_ + "/cmd_vel", 1);
+    pub_ = nh.advertise<geometry_msgs::Twist>("/"
+                                              + id_
+                                              + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     odomFlag_ = true;
-    sub_ = nh.subscribe("/" + id_ + "/odom", 1, &Agent::updatePose, this);
+    sub_ = nh.subscribe("/" + id_ + "/odom",
+                        1, &Agent::updatePose, this);
   }
 
 }
@@ -201,34 +245,70 @@ void Agent::computeNewVelocity()
 
   VelocityObstacle velocityObstacle;
 
-  for (std::set<std::pair<float, std::size_t > >::const_iterator iter = neighbors_.begin(); iter != neighbors_.end(); ++iter) {
+  for (std::set<std::pair<float, std::size_t > >::const_iterator iter
+           = neighbors_.begin();
+       iter != neighbors_.end();
+       ++iter) {
     const Agent *const other = simulator_->agents_[iter->second];
 
     if (absSq(other->position_ - position_) > sqr(other->radius_ + radius_)) {
       const float angle = atan(other->position_ - position_);
-      const float openingAngle = std::asin((other->radius_ + radius_) / abs(other->position_ - position_));
+      const float openingAngle = std::asin((other->radius_ + radius_)
+                                           / abs(other->position_
+                                                 - position_));
 
-      velocityObstacle.side1_ = Vector2(std::cos(angle - openingAngle), std::sin(angle - openingAngle));
-      velocityObstacle.side2_ = Vector2(std::cos(angle + openingAngle), std::sin(angle + openingAngle));
+      velocityObstacle.side1_ = Vector2(std::cos(angle - openingAngle),
+                                        std::sin(angle - openingAngle));
+      velocityObstacle.side2_ = Vector2(std::cos(angle + openingAngle),
+                                        std::sin(angle + openingAngle));
 
       const float d = 2.0f * std::sin(openingAngle) * std::cos(openingAngle);
 
-      if (det(other->position_ - position_, prefVelocity_ - other->prefVelocity_) > 0.0f) {
-        const float s = 0.5f * det(velocity_ - other->velocity_, velocityObstacle.side2_) / d;
+      if (det(other->position_ - position_, prefVelocity_
+              - other->prefVelocity_) > 0.0f) {
+        const float s = 0.5f * det(velocity_ - other->velocity_,
+                                   velocityObstacle.side2_) / d;
 
-        velocityObstacle.apex_ = other->velocity_ + s * velocityObstacle.side1_ - (uncertaintyOffset_ * abs(other->position_ - position_) / (other->radius_ + radius_)) * normalize(other->position_ - position_);
+        velocityObstacle.apex_ = other->velocity_
+                                 + s
+                                 * velocityObstacle.side1_
+                                 - (uncertaintyOffset_
+                                    * abs(other->position_
+                                          - position_)
+                                    / (other->radius_ + radius_))
+                                 * normalize(other->position_
+                                             - position_);
       }
       else {
-        const float s = 0.5f * det(velocity_ - other->velocity_, velocityObstacle.side1_) / d;
+        const float s = 0.5f * det(velocity_
+                                   - other->velocity_,
+                                   velocityObstacle.side1_)
+                        / d;
 
-        velocityObstacle.apex_ = other->velocity_ + s * velocityObstacle.side2_ - (uncertaintyOffset_ * abs(other->position_ - position_) / (other->radius_ + radius_)) * normalize(other->position_ - position_);
+        velocityObstacle.apex_ = other->velocity_
+                                 + s
+                                 * velocityObstacle.side2_
+                                 - (uncertaintyOffset_
+                                    * abs(other->position_
+                                          - position_)
+                                    / (other->radius_ + radius_))
+                                 * normalize(other->position_
+                                             - position_);
       }
 
       velocityObstacles_.push_back(velocityObstacle);
     }
     else {
-      velocityObstacle.apex_ = 0.5f * (other->velocity_ + velocity_) - (uncertaintyOffset_ + 0.5f * (other->radius_ + radius_ - abs(other->position_ - position_)) / simulator_->timeStep_) * normalize(other->position_ - position_);
-      velocityObstacle.side1_ = normal(position_, other->position_);
+      velocityObstacle.apex_ = 0.5f * (other->velocity_ + velocity_)
+                               - (uncertaintyOffset_ + 0.5f
+                                  * (other->radius_ + radius_
+                                     - abs(other->position_
+                                           - position_))
+                                  / simulator_->timeStep_)
+                               * normalize(other->position_
+                                           - position_);
+      velocityObstacle.side1_ = normal(position_,
+                                       other->position_);
       velocityObstacle.side2_ = -velocityObstacle.side1_;
       velocityObstacles_.push_back(velocityObstacle);
     }
@@ -248,28 +328,45 @@ void Agent::computeNewVelocity()
     candidate.position_ = maxSpeed_ * normalize(prefVelocity_);
   }
 
-  candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+  candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                          - candidate.position_),
+                                    candidate));
 
   for (int i = 0; i < static_cast<int>(velocityObstacles_.size()); ++i) {
     candidate.velocityObstacle1_ = i;
     candidate.velocityObstacle2_ = i;
 
-    const float dotProduct1 = (prefVelocity_ - velocityObstacles_[i].apex_) * velocityObstacles_[i].side1_;
-    const float dotProduct2 = (prefVelocity_ - velocityObstacles_[i].apex_) * velocityObstacles_[i].side2_;
+    const float dotProduct1 = (prefVelocity_
+                               - velocityObstacles_[i].apex_)
+                              * velocityObstacles_[i].side1_;
+    const float dotProduct2 = (prefVelocity_ - velocityObstacles_[i].apex_)
+                              * velocityObstacles_[i].side2_;
 
-    if (dotProduct1 > 0.0f && det(velocityObstacles_[i].side1_, prefVelocity_ - velocityObstacles_[i].apex_) > 0.0f) {
-      candidate.position_ = velocityObstacles_[i].apex_ + dotProduct1 * velocityObstacles_[i].side1_;
+    if (dotProduct1 > 0.0f
+        && det(velocityObstacles_[i].side1_,
+               prefVelocity_ - velocityObstacles_[i].apex_) > 0.0f) {
+      candidate.position_ = velocityObstacles_[i].apex_
+                            + dotProduct1
+                            * velocityObstacles_[i].side1_;
 
       if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
     }
 
-    if (dotProduct2 > 0.0f && det(velocityObstacles_[i].side2_, prefVelocity_ - velocityObstacles_[i].apex_) < 0.0f) {
-      candidate.position_ = velocityObstacles_[i].apex_ + dotProduct2 * velocityObstacles_[i].side2_;
+    if (dotProduct2 > 0.0f
+        && det(velocityObstacles_[i].side2_,
+               prefVelocity_ - velocityObstacles_[i].apex_) < 0.0f) {
+      candidate.position_ = velocityObstacles_[i].apex_
+                            + dotProduct2
+                            * velocityObstacles_[i].side2_;
 
       if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
     }
   }
@@ -278,38 +375,66 @@ void Agent::computeNewVelocity()
     candidate.velocityObstacle1_ = std::numeric_limits<int>::max();
     candidate.velocityObstacle2_ = j;
 
-    float discriminant = maxSpeed_ * maxSpeed_ - sqr(det(velocityObstacles_[j].apex_, velocityObstacles_[j].side1_));
+    float discriminant = maxSpeed_ * maxSpeed_
+                         - sqr(det(velocityObstacles_[j].apex_,
+                                   velocityObstacles_[j].side1_));
 
     if (discriminant > 0.0f) {
 
-      const float t1 = -(velocityObstacles_[j].apex_ * velocityObstacles_[j].side1_) + std::sqrt(discriminant);
-      const float t2 = -(velocityObstacles_[j].apex_ * velocityObstacles_[j].side1_) - std::sqrt(discriminant);
+      const float t1 = -(velocityObstacles_[j].apex_ *
+                         velocityObstacles_[j].side1_)
+                       + std::sqrt(discriminant);
+      const float t2 = -(velocityObstacles_[j].apex_ *
+                         velocityObstacles_[j].side1_)
+                       - std::sqrt(discriminant);
 
       if (t1 >= 0.0f) {
-        candidate.position_ = velocityObstacles_[j].apex_ + t1 * velocityObstacles_[j].side1_;
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidate.position_ = velocityObstacles_[j].apex_
+                              + t1
+                              * velocityObstacles_[j].side1_;
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
 
       if (t2 >= 0.0f) {
-        candidate.position_ = velocityObstacles_[j].apex_ + t2 * velocityObstacles_[j].side1_;
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidate.position_ = velocityObstacles_[j].apex_
+                              + t2
+                              * velocityObstacles_[j].side1_;
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
     }
 
-    discriminant = maxSpeed_ * maxSpeed_ - sqr(det(velocityObstacles_[j].apex_, velocityObstacles_[j].side2_));
+    discriminant = maxSpeed_ * maxSpeed_
+                   - sqr(det(velocityObstacles_[j].apex_,
+                             velocityObstacles_[j].side2_));
 
     if (discriminant > 0.0f) {
-      const float t1 = -(velocityObstacles_[j].apex_ * velocityObstacles_[j].side2_) + std::sqrt(discriminant);
-      const float t2 = -(velocityObstacles_[j].apex_ * velocityObstacles_[j].side2_) - std::sqrt(discriminant);
+      const float t1 = -(velocityObstacles_[j].apex_ *
+                         velocityObstacles_[j].side2_)
+                       + std::sqrt(discriminant);
+      const float t2 = -(velocityObstacles_[j].apex_ *
+                         velocityObstacles_[j].side2_)
+                       - std::sqrt(discriminant);
 
       if (t1 >= 0.0f) {
-        candidate.position_ = velocityObstacles_[j].apex_ + t1 * velocityObstacles_[j].side2_;
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidate.position_ = velocityObstacles_[j].apex_
+                              + t1
+                              * velocityObstacles_[j].side2_;
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
 
       if (t2 >= 0.0f) {
-        candidate.position_ = velocityObstacles_[j].apex_ + t2 * velocityObstacles_[j].side2_;
-        candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+        candidate.position_ = velocityObstacles_[j].apex_
+                              + t2
+                              * velocityObstacles_[j].side2_;
+        candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                - candidate.position_),
+                                          candidate));
       }
     }
   }
@@ -319,62 +444,95 @@ void Agent::computeNewVelocity()
       candidate.velocityObstacle1_ = i;
       candidate.velocityObstacle2_ = j;
 
-      float d = det(velocityObstacles_[i].side1_, velocityObstacles_[j].side1_);
+      float d = det(velocityObstacles_[i].side1_,
+                    velocityObstacles_[j].side1_);
 
       if (d != 0.0f) {
-        const float s = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[j].side1_) / d;
-        const float t = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[i].side1_) / d;
+        const float s = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[j].side1_) / d;
+        const float t = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[i].side1_) / d;
 
         if (s >= 0.0f && t >= 0.0f) {
-          candidate.position_ = velocityObstacles_[i].apex_ + s * velocityObstacles_[i].side1_;
+          candidate.position_ = velocityObstacles_[i].apex_
+                                + s
+                                * velocityObstacles_[i].side1_;
 
           if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-            candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+            candidates_.insert(std::make_pair(absSq(prefVelocity_ -
+                                                    candidate.position_),
+                                              candidate));
           }
         }
       }
 
-      d = det(velocityObstacles_[i].side2_, velocityObstacles_[j].side1_);
+      d = det(velocityObstacles_[i].side2_,
+              velocityObstacles_[j].side1_);
 
       if (d != 0.0f) {
-        const float s = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[j].side1_) / d;
-        const float t = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[i].side2_) / d;
+        const float s = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[j].side1_) / d;
+        const float t = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[i].side2_) / d;
 
         if (s >= 0.0f && t >= 0.0f) {
-          candidate.position_ = velocityObstacles_[i].apex_ + s * velocityObstacles_[i].side2_;
+          candidate.position_ = velocityObstacles_[i].apex_
+                                + s * velocityObstacles_[i].side2_;
 
           if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-            candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+            candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                    - candidate.position_),
+                                              candidate));
           }
         }
       }
 
-      d = det(velocityObstacles_[i].side1_, velocityObstacles_[j].side2_);
+      d = det(velocityObstacles_[i].side1_,
+              velocityObstacles_[j].side2_);
 
       if (d != 0.0f) {
-        const float s = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[j].side2_) / d;
-        const float t = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[i].side1_) / d;
+        const float s = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[j].side2_) / d;
+        const float t = det(velocityObstacles_[j].apex_ -
+                            velocityObstacles_[i].apex_,
+                            velocityObstacles_[i].side1_) / d;
 
         if (s >= 0.0f && t >= 0.0f) {
-          candidate.position_ = velocityObstacles_[i].apex_ + s * velocityObstacles_[i].side1_;
+          candidate.position_ = velocityObstacles_[i].apex_ +
+                                s * velocityObstacles_[i].side1_;
 
           if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-            candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+            candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                    - candidate.position_),
+                                              candidate));
           }
         }
       }
 
-      d = det(velocityObstacles_[i].side2_, velocityObstacles_[j].side2_);
+      d = det(velocityObstacles_[i].side2_,
+              velocityObstacles_[j].side2_);
 
       if (d != 0.0f) {
-        const float s = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[j].side2_) / d;
-        const float t = det(velocityObstacles_[j].apex_ - velocityObstacles_[i].apex_, velocityObstacles_[i].side2_) / d;
+        const float s = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[j].side2_) / d;
+        const float t = det(velocityObstacles_[j].apex_
+                            - velocityObstacles_[i].apex_,
+                            velocityObstacles_[i].side2_) / d;
 
         if (s >= 0.0f && t >= 0.0f) {
-          candidate.position_ = velocityObstacles_[i].apex_ + s * velocityObstacles_[i].side2_;
+          candidate.position_ = velocityObstacles_[i].apex_
+                                + s * velocityObstacles_[i].side2_;
 
           if (absSq(candidate.position_) < maxSpeed_ * maxSpeed_) {
-            candidates_.insert(std::make_pair(absSq(prefVelocity_ - candidate.position_), candidate));
+            candidates_.insert(std::make_pair(absSq(prefVelocity_
+                                                    - candidate.position_),
+                                              candidate));
           }
         }
       }
@@ -383,12 +541,18 @@ void Agent::computeNewVelocity()
 
   int optimal = -1;
 
-  for (std::multimap<float, Candidate>::const_iterator iter = candidates_.begin(); iter != candidates_.end(); ++iter) {
+  for (std::multimap<float, Candidate>::const_iterator iter = candidates_.begin();
+       iter != candidates_.end(); ++iter) {
     candidate = iter->second;
     bool valid = true;
 
     for (int j = 0; j < static_cast<int>(velocityObstacles_.size()); ++j) {
-      if (j != candidate.velocityObstacle1_ && j != candidate.velocityObstacle2_ && det(velocityObstacles_[j].side2_, candidate.position_ - velocityObstacles_[j].apex_) < 0.0f && det(velocityObstacles_[j].side1_, candidate.position_ - velocityObstacles_[j].apex_) > 0.0f) {
+      if (j != candidate.velocityObstacle1_
+          && j != candidate.velocityObstacle2_
+          && det(velocityObstacles_[j].side2_,
+                 candidate.position_ - velocityObstacles_[j].apex_) < 0.0f
+          && det(velocityObstacles_[j].side1_,
+                 candidate.position_ - velocityObstacles_[j].apex_) > 0.0f) {
         valid = false;
 
         if (j > optimal) {
@@ -416,7 +580,9 @@ void Agent::computePreferredVelocity()
     prefVelocity_ = (goalPosition - position_) / simulator_->timeStep_;
   }
   else {
-    prefVelocity_ = prefSpeed_ * (goalPosition - position_) / std::sqrt(distSqToGoal);
+    prefVelocity_ = prefSpeed_
+                    * (goalPosition - position_)
+                    / std::sqrt(distSqToGoal);
   }
 }
 
@@ -432,7 +598,8 @@ void Agent::computeWheelSpeeds()
     targetOrientation = atan(newVelocity_);
   }
 
-  float orientationDiff = std::fmod(targetOrientation - orientation_, 2.0f * HRVO_PI);
+  float orientationDiff = std::fmod(targetOrientation - orientation_,
+                                    2.0f * HRVO_PI);
 
   if (orientationDiff < -HRVO_PI) {
     orientationDiff += 2.0f * HRVO_PI;
@@ -442,7 +609,8 @@ void Agent::computeWheelSpeeds()
     orientationDiff -= 2.0f * HRVO_PI;
   }
 
-  float speedDiff = (orientationDiff * wheelTrack_) / timeToOrientation_;
+  float speedDiff = (orientationDiff * wheelTrack_)
+                    / timeToOrientation_;
 
   if (speedDiff > 2.0f * maxSpeed_) {
     speedDiff = 2.0f * maxSpeed_;
@@ -516,8 +684,12 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
 
 void Agent::odomPosUpdate()
 {
-  // &Agent::updatePose;
-  // DEBUG("Pos " << position_ << ", Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
+  /*
+  &Agent::updatePose;
+  DEBUG("Pos " << position_ << ", Prev "
+        << previous_odometry_offset_
+        << ", Curr "<< current_odometry_offset_ << std::endl);
+  */
   position_ += current_odometry_offset_ - previous_odometry_offset_;
 }
 
@@ -531,12 +703,22 @@ void Agent::update()
 {
 #if HRVO_DIFFERENTIAL_DRIVE
 
-  const float averageWheelSpeed = 0.5f * (rightWheelSpeed_ + leftWheelSpeed_);
-  const float wheelSpeedDifference = rightWheelSpeed_ - leftWheelSpeed_;
+  const float averageWheelSpeed = 0.5f
+                                  * (rightWheelSpeed_
+                                     + leftWheelSpeed_);
+  const float wheelSpeedDifference = rightWheelSpeed_
+                                     - leftWheelSpeed_;
 
-  position_ += simulator_->timeStep_ * averageWheelSpeed * Vector2(std::cos(orientation_), std::sin(orientation_));
-  orientation_ += wheelSpeedDifference * simulator_->timeStep_ / wheelTrack_;
-  velocity_ = averageWheelSpeed * Vector2(std::cos(orientation_), std::sin(orientation_));
+  position_ += simulator_->timeStep_
+               * averageWheelSpeed
+               * Vector2(std::cos(orientation_),
+                         std::sin(orientation_));
+  orientation_ += wheelSpeedDifference
+                  * simulator_->timeStep_
+                  / wheelTrack_;
+  velocity_ = averageWheelSpeed
+              * Vector2(std::cos(orientation_),
+                        std::sin(orientation_));
 #else
 
   const float dv = abs(newVelocity_ - velocity_);
@@ -545,7 +727,9 @@ void Agent::update()
     velocity_ = newVelocity_;
   }
   else {
-    velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv)) * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv) * newVelocity_;
+    velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv))
+                * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv)
+                * newVelocity_;
   }
 
   // Limit velocity if robot attempts to leave the workspace
@@ -585,7 +769,8 @@ void Agent::update()
 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-  if (absSq(simulator_->goals_[goalNo_]->position_ - position_) < goalRadius_ * goalRadius_) {
+  if (absSq(simulator_->goals_[goalNo_]->position_ - position_)
+      < goalRadius_ * goalRadius_) {
     reachedGoal_ = true;
   }
   else {
