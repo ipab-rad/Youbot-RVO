@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
   PlannerMapPointer* PlannerMap_ = new PlannerMapPointer();
   ModelMapPointer* ModelMap_ = new ModelMapPointer();
-  //AMCLWrapper* AMCLpointer_ = new AMCLWrapper();
+
 
   InitialiseRobots(PlannerMap_);
 
@@ -93,11 +93,14 @@ int main(int argc, char *argv[])
     {
       StopRobots(PlannerMap_);
 
+
       for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
         INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
+
         WaitReturn();
+
 
         MoveIntoArea(planner);
 
@@ -129,21 +132,23 @@ int main(int argc, char *argv[])
   while ( ros::ok() && !SAFETY_STOP )
   {
     if (CLEAR_SCREEN) {CLEAR();}
-
+    ros::Rate update_freq(ROS_FREQ);
     SensingUpdate(PlannerMap_);
 
     PrintAgentState(PlannerMap_);
 
     // Vector2 DynGoalPos = STOP;
+
     PlannerStep(PlannerMap_);
 
     ModelStep(PlannerMap_, ModelMap_);
+
 
     ros::spinOnce();
     update_freq.sleep();
   }
   if (LOG_DATA){dataLog.close();}
-  
+
   StopRobots(PlannerMap_);
   if (SAFETY_STOP) { EStopRobots(PlannerMap_);}
 
@@ -208,7 +213,7 @@ void hrvo::SetupLogging(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap
   }
   if (LOG_DATA) { logSetup(dataLog, PlannerMap, ModelMap);}
   INFO("Parameters: TimeStep=" << SIM_TIME_STEP
-    << ", NumPlanningAgents=" << (*PlannerMap).size() 
+    << ", NumPlanningAgents=" << (*PlannerMap).size()
     << ", AgentRadius=" << AGENT_RADIUS << std::endl);
 }
 
@@ -217,7 +222,7 @@ void hrvo::StopRobots(PlannerMapPointer* PlannerMap)
   for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
-    for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
+    for(int i = 0; i < WIFI_ATTEMPTS; ++i)
     {
       planner->stopYoubot();
     }
@@ -244,9 +249,10 @@ void hrvo::MoveIntoArea(Environment* planner)
   planner->addAndSetPlannerGoal(ForwVec);
   STARTED = true;
   while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
-  {   
+  {
     if (CLEAR_SCREEN) {CLEAR();}
-    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);  
+    ros::Rate update_freq(ROS_FREQ);
+    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);
 
     planner->doPlannerStep();
 
@@ -324,7 +330,7 @@ void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)
       Environment* planner = iter->second;
       // planner->editPlannerGoal(3, planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1));
       // DynGoalPos = planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1);
-      
+
       // Change so that when reached goals, check planner goal plan, and change goals elsewhere
       if (planner->getReachedPlannerGoal())
         {planner->setNextGoal();}
@@ -374,8 +380,8 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
         }
       }
     }
-    if (LOG_DATA && Logged) 
-    { 
+    if (LOG_DATA && Logged)
+    {
       if (!ENABLE_PLANNER) {(*PlannerMap)[LOG_PLANNER]->doPlannerStep();}
       logData(dataLog, LOG_PLANNER, (*PlannerMap)[LOG_PLANNER]->getPlannerGlobalTime() - startTime,
        modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);
