@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     {
       StopRobots(PlannerMap_);
 
-      for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
+      for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
         INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
@@ -198,7 +198,7 @@ void hrvo::SetupLogging(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap
   // Setup logger environment when no youbot is present
   if (!ENABLE_PLANNER)
   {
-    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+    for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
     {
       Environment* planner = iter->second;
       planner->setPlannerPosition(EXIT);
@@ -214,7 +214,7 @@ void hrvo::SetupLogging(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap
 
 void hrvo::StopRobots(PlannerMapPointer* PlannerMap)
 {
-  for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
     for(int i = 0; i < WIFI_ATTEMPTS; ++i) 
@@ -227,7 +227,7 @@ void hrvo::StopRobots(PlannerMapPointer* PlannerMap)
 
 void hrvo::EStopRobots(PlannerMapPointer* PlannerMap)
 {
-  for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     for(int i = 0; i < WIFI_ATTEMPTS; ++i) {
       Environment* planner = iter->second;
@@ -285,7 +285,7 @@ void hrvo::SelectTracker(Environment* planner)
 
 void hrvo::LoadInitialGoals(PlannerMapPointer *PlannerMap)
 {
-  for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
     planner->loadPlannerInitialGoal();
@@ -294,7 +294,7 @@ void hrvo::LoadInitialGoals(PlannerMapPointer *PlannerMap)
 
 void hrvo::SensingUpdate(PlannerMapPointer* PlannerMap)
 {
-  for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
     planner->updateTracker();
@@ -319,7 +319,7 @@ void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)
 {
   if (ENABLE_PLANNER)
   {
-    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+    for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
     {
       Environment* planner = iter->second;
       // planner->editPlannerGoal(3, planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1));
@@ -350,7 +350,7 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
     // std::map<std::size_t, Vector2> possGoals;
     std::map<std::size_t, std::vector <std::size_t> > modelledAgents;
 
-    for(std::map<std::size_t, Environment *>::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+    for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
     {
       std::size_t EnvID = iter->first;
       Environment* planner = iter->second;
