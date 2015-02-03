@@ -142,7 +142,8 @@ namespace hrvo {
      * \brief      Constructor.
      * \param[in]  simulator  The simulation.
      */
-    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, int agent_type);
+    explicit Agent(Simulator *simulator, ros::NodeHandle &nh,
+                   std::string id, int agent_type);
 
     /**
      * \brief      Constructor.
@@ -150,7 +151,9 @@ namespace hrvo {
      * \param[in]  position   The starting position of this agent.
      * \param[in]  goalNo     The goal number of this agent.
      */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int agent_type);
+    Agent(Simulator *simulator, const Vector2 &position,
+          std::size_t goalNo, ros::NodeHandle &nh,
+          std::string id, int agent_type);
 
     /**
      * \brief      Constructor.
@@ -168,11 +171,17 @@ namespace hrvo {
      * \param[in]  velocity           The initial velocity of this agent.
      * \param[in]  orientation        The initial orientation (in radians) of this agent.
      */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, const Vector2 &velocity, float maxAccel, float goalRadius, float prefSpeed, float maxSpeed, float orientation,
+    Agent(Simulator *simulator, const Vector2 &position,
+          std::size_t goalNo, float neighborDist,
+          std::size_t maxNeighbors, float radius,
+          const Vector2 &velocity, float maxAccel,
+          float goalRadius, float prefSpeed,
+          float maxSpeed, float orientation,
 #if HRVO_DIFFERENTIAL_DRIVE
           float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int agent_type);
+          float uncertaintyOffset, ros::NodeHandle& nh,
+          std::string id, int agent_type);
 
     /**
      * \brief  Computes the neighbors of this agent.
@@ -275,8 +284,9 @@ namespace hrvo {
     /**
      * brief  set the pose subscriber.
      */
-    void attachPoseSubscriber(ros::NodeHandle &nh, std::string pose_topic);
-// #endif    
+    void attachPoseSubscriber(ros::NodeHandle &nh,
+                              std::string pose_topic);
+// #endif
   };
 }
 
