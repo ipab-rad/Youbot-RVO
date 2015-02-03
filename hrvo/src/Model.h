@@ -12,6 +12,8 @@
 
 #include "Vector2.h"
 
+#include "Environment.h"
+
 namespace hrvo {
   class Simulator;
   class Agent;

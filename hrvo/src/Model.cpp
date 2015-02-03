@@ -5,25 +5,7 @@
 * @Last Modified time: 2014-09-10 15:33:34
 */
 
-#ifndef HRVO_MODEL_H_
 #include "Model.h"
-#endif
-
-// #ifndef HRVO_SIMULATOR_H_
-// #include "Simulator.h"
-// #endif
-
-// #ifndef HRVO_AGENT_H_
-// #include "Agent.h"
-// #endif
-
-#ifndef HRVO_ENVIRONMENT_H_
-#include "Environment.h"
-#endif
-
-// #ifndef HRVO_DEFINITIONS_H_
-// #include "Definitions.h"
-// #endif
 
 namespace hrvo {
 
@@ -58,7 +40,6 @@ namespace hrvo {
             inferredGoalsSum_[l] = GOAL_SUM_PRIOR;
         }
       }
-
 
       if (reachedGoal_.empty() || leftGoal_.empty())
       {
