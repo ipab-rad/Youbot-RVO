@@ -12,6 +12,7 @@
 #include <std_msgs/Header.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Pose.h>
+#include "Vector2.h"
 
 namespace hrvo {
 
@@ -23,19 +24,23 @@ class AMCLWrapper
   AMCLWrapper(std::string sub_name);
   ~AMCLWrapper();
   void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg);
-  void pretty_print();
+  void pretty_print_msg();
+  void pretty_print_pose();
   void update();
   geometry_msgs::PoseWithCovarianceStamped get_full_msg();
   std_msgs::Header get_header();
-  geometry_msgs::Pose get_pose();
+  geometry_msgs::Pose get_full_pose();
+  Vector2 get_position();
   boost::array<double, 36> get_cov();
+  double get_orientation();
+  bool initialised;
 
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
   geometry_msgs::PoseWithCovarianceStamped received_pose_;
   std_msgs::Header header_;
-  geometry_msgs::Pose pose_;
+  geometry_msgs::Pose full_pose_;
   boost::array<double, 36> covariance_;
 
 };
