@@ -793,16 +793,22 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
   current_odometry_offset_.setX(pose_msg->pose.pose.position.x);
   current_odometry_offset_.setY(pose_msg->pose.pose.position.y);
   agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
+  /*
+  DEBUG("Pose Update CallBack" << std::endl);
+  DEBUG("Msg Prev " << previous_odometry_offset_
+        << ", Curr "
+        << current_odometry_offset_ << std::endl);
 
-  // DEBUG("Pose Update CallBack" << std::endl);
-  // DEBUG("Msg Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
+  if (odomFlag_)
+  {position_ += current_odometry_offset_ - previous_odometry_offset_;
+     odomFlag_ = false;}
 
-  // if (odomFlag_)
-  // {position_ += current_odometry_offset_ - previous_odometry_offset_;
-  //    odomFlag_ = false;}
-
-  // DEBUG("Pos " << position_ << ", Prev " << previous_odometry_offset_ << ", Curr "<< current_odometry_offset_ << std::endl);
-
+  DEBUG("Pos " << position_
+        << ", Prev "
+        << previous_odometry_offset_
+        << ", Curr "
+        << current_odometry_offset_ << std::endl);
+  */
   if(!updated_)
   {
     previous_odometry_offset_ = current_odometry_offset_;
