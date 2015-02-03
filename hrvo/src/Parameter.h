@@ -54,7 +54,6 @@ extern float GOAL_SUM_PRIOR;            // Goal inference initial prior
 extern float GOAL_HISTORY_DISCOUNT;     // Discount of previous likelihood history
 extern int GOAL_INFERENCE_HISTORY;      // 1 second window
 extern int VELOCITY_AVERAGE_WINDOW;     // 1 second window
-extern bool USE_PROB_MODEL;             // Enable probabilistic modelling/inference
 extern float PRIOR_LAMBDA;
 
 // Agent Parameters

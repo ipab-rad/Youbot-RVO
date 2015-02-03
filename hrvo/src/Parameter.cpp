@@ -49,7 +49,6 @@ float GOAL_SUM_PRIOR;             // Goal inference initial prior
 float GOAL_HISTORY_DISCOUNT;      // Discount of previous likelihood history
 int GOAL_INFERENCE_HISTORY;       // 1 second window
 int VELOCITY_AVERAGE_WINDOW;      // 1 second window
-bool USE_PROB_MODEL;
 bool USE_TRACKER_VELOCITIES;
 float PRIOR_LAMBDA;
 
@@ -122,7 +121,6 @@ void ParamInitialise()
   ros::param::param(nn+"goalHistoryDiscount", GOAL_HISTORY_DISCOUNT, 0.5f);
   ros::param::param(nn+"goalInferenceHistory", GOAL_INFERENCE_HISTORY, 1 * ROS_FREQ);
   ros::param::param(nn+"velocityAverageWindow", VELOCITY_AVERAGE_WINDOW, 1 * ROS_FREQ);
-  ros::param::param(nn+"useProbModel", USE_PROB_MODEL, true);
   ros::param::param(nn+"priorLambda", PRIOR_LAMBDA, 0.5f);
 
   ros::param::param(nn+"limitWorkspaceVel", LIMIT_WORKSPACE_VEL, true);
