@@ -4,8 +4,10 @@ This repository holds the code for enabling YouBots to navigate
 autonomously in a space populated by other intelligent independent
 agents (i.e. humans/other robots).
 
-The [HRVO](http://gamma.cs.unc.edu/HRVO/) library is from
-editing it for academic purposes.
+Part of the software is based on the
+[HRVO](http://gamma.cs.unc.edu/HRVO/) library developed by the
+`Geometric Algorithms for Modeling, Motion, and Animation` group at
+UNC.
 
 ## Documentation
 
