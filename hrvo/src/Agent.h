@@ -74,210 +74,222 @@
 
 #include "Parameter.h"
 
+#include "AMCLWrapper.h"
+
 namespace hrvo {
-  class Simulator;
-  /**
-   * \class  Agent
-   * \brief  An agent in the simulation.
-   */
-  class Agent {
+class Simulator;
+/**
+ * \class  Agent
+ * \brief  An agent in the simulation.
+ */
+class Agent {
 
 
  private:
-    /**
-     * \class  Candidate
-     * \brief  A candidate point.
-     */
-    class Candidate {
+  /**
+   * \class  Candidate
+   * \brief  A candidate point.
+   */
+  class Candidate {
    public:
-      /**
-       * \brief  Constructor.
-       */
-   Candidate() : velocityObstacle1_(0), velocityObstacle2_(0) { }
-
-      /**
-       * \brief  The position of the candidate point.
-       */
-      Vector2 position_;
-
-      /**
-       * \brief  The number of the first velocity obstacle.
-       */
-      int velocityObstacle1_;
-
-      /**
-       * \brief  The number of the second velocity obstacle.
-       */
-      int velocityObstacle2_;
-    };
+    /**
+     * \brief  Constructor.
+     */
+    Candidate() : velocityObstacle1_(0), velocityObstacle2_(0) { }
 
     /**
-     * \class  VelocityObstacle
-     * \brief  A hybrid reciprocal velocity obstacle.
+     * \brief  The position of the candidate point.
      */
-    class VelocityObstacle {
-   public:
-      /**
-       * \brief  Constructor.
-       */
-      VelocityObstacle() { }
-      /**
-       * \brief  The position of the apex of the hybrid reciprocal velocity obstacle.
-       */
-      Vector2 apex_;
-
-      /**
-       * \brief  The direction of the first side of the hybrid reciprocal velocity obstacle.
-       */
-      Vector2 side1_;
-
-      /**
-       * \brief  The direction of the second side of the hybrid reciprocal velocity obstacle.
-       */
-      Vector2 side2_;
-    };
-
-    explicit Agent(Simulator *simulator);
-    /**
-     * \brief      Constructor.
-     * \param[in]  simulator  The simulation.
-     */
-    explicit Agent(Simulator *simulator, ros::NodeHandle &nh, std::string id, int agent_type);
-
-    /**
-     * \brief      Constructor.
-     * \param[in]  simulator  The simulation.
-     * \param[in]  position   The starting position of this agent.
-     * \param[in]  goalNo     The goal number of this agent.
-     */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, ros::NodeHandle &nh, std::string id, int agent_type);
-
-    /**
-     * \brief      Constructor.
-     * \param[in]  simulator          The simulation.
-     * \param[in]  position           The starting position of this agent.
-     * \param[in]  goalNo             The goal number of this agent.
-     * \param[in]  neighborDist       The maximum neighbor distance of this agent.
-     * \param[in]  maxNeighbors       The maximum neighbor count of this agent.
-     * \param[in]  radius             The radius of this agent.
-     * \param[in]  goalRadius         The goal radius of this agent.
-     * \param[in]  prefSpeed          The preferred speed of this agent.
-     * \param[in]  maxSpeed           The maximum speed of this agent.
-     * \param[in]  uncertaintyOffset  The uncertainty offset of this agent.
-     * \param[in]  maxAccel           The maximum acceleration of this agent.
-     * \param[in]  velocity           The initial velocity of this agent.
-     * \param[in]  orientation        The initial orientation (in radians) of this agent.
-     */
-    Agent(Simulator *simulator, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, const Vector2 &velocity, float maxAccel, float goalRadius, float prefSpeed, float maxSpeed, float orientation,
-#if HRVO_DIFFERENTIAL_DRIVE
-          float timeToOrientation, float wheelTrack,
-#endif /* HRVO_DIFFERENTIAL_DRIVE */
-          float uncertaintyOffset, ros::NodeHandle& nh, std::string id, int agent_type);
-
-    /**
-     * \brief  Computes the neighbors of this agent.
-     */
-    void computeNeighbors();
-
-    /**
-     * \brief  Computes the new velocity of this agent.
-     */
-    void computeNewVelocity();
-
-    /**
-     * \brief  Computes the preferred velocity of this agent.
-     */
-    void computePreferredVelocity();
-
-#if HRVO_DIFFERENTIAL_DRIVE
-    /**
-     * \brief  Computes the wheel speeds of this agent.
-     */
-    void computeWheelSpeeds();
-#endif /* HRVO_DIFFERENTIAL_DRIVE */
-
-    /**
-     * \brief          Inserts a neighbor into the set of neighbors of this agent.
-     * \param[in]      agentNo  The number of the agent to be inserted.
-     * \param[in,out]  rangeSq  The squared range around this agent.
-     */
-    void insertNeighbor(std::size_t agentNo, float &rangeSq);
-
-    /**
-     * \brief  Updates the orientation, position, and velocity of this agent.
-     */
-    void update();
-
-    void odomPosUpdate();
-
-    void odomUpdate();
-
-    // AGENT PARAMETERS
-    // bool limit_workspace_vel;
-    // float x_limits[2];       // Min-Max X workspace limits
-    // float y_limits[2];        // Min-Max X workspace limits
-
-    Simulator *const simulator_;
-    Vector2 newVelocity_;
     Vector2 position_;
-    Vector2 agent_sensed_position_;
-    Vector2 previous_odometry_offset_;  // Odometry offset before action step
-    Vector2 current_odometry_offset_;   // Odometry offset after action step
-    bool odomFlag_;
-    Vector2 odomPosition_;
-    Vector2 prefVelocity_;
-    Vector2 velocity_;
-    std::size_t goalNo_;
-    std::size_t maxNeighbors_;
-    bool updated_;
-    int agent_type_;
-    float goalRadius_;
-    float maxAccel_;
-    float maxSpeed_;
-    float neighborDist_;
-    float orientation_;
-    float agent_sensed_orientation_;
-    float prefSpeed_;
-    float radius_;
-    float uncertaintyOffset_;
+
+    /**
+     * \brief  The number of the first velocity obstacle.
+     */
+    int velocityObstacle1_;
+
+    /**
+     * \brief  The number of the second velocity obstacle.
+     */
+    int velocityObstacle2_;
+  };
+
+  /**
+   * \class  VelocityObstacle
+   * \brief  A hybrid reciprocal velocity obstacle.
+   */
+  class VelocityObstacle {
+   public:
+    /**
+     * \brief  Constructor.
+     */
+    VelocityObstacle() { }
+    /**
+     * \brief  The position of the apex of the hybrid reciprocal velocity obstacle.
+     */
+    Vector2 apex_;
+
+    /**
+     * \brief  The direction of the first side of the hybrid reciprocal velocity obstacle.
+     */
+    Vector2 side1_;
+
+    /**
+     * \brief  The direction of the second side of the hybrid reciprocal velocity obstacle.
+     */
+    Vector2 side2_;
+  };
+
+  explicit Agent(Simulator *simulator);
+  /**
+   * \brief      Constructor.
+   * \param[in]  simulator  The simulation.
+   */
+  explicit Agent(Simulator *simulator, ros::NodeHandle &nh,
+                 std::string id, int agent_type);
+
+  /**
+   * \brief      Constructor.
+   * \param[in]  simulator  The simulation.
+   * \param[in]  position   The starting position of this agent.
+   * \param[in]  goalNo     The goal number of this agent.
+   */
+  Agent(Simulator *simulator, const Vector2 &position,
+        std::size_t goalNo, ros::NodeHandle &nh,
+        std::string id, int agent_type);
+
+  /**
+   * \brief      Constructor.
+   * \param[in]  simulator          The simulation.
+   * \param[in]  position           The starting position of this agent.
+   * \param[in]  goalNo             The goal number of this agent.
+   * \param[in]  neighborDist       The maximum neighbor distance of this agent.
+   * \param[in]  maxNeighbors       The maximum neighbor count of this agent.
+   * \param[in]  radius             The radius of this agent.
+   * \param[in]  goalRadius         The goal radius of this agent.
+   * \param[in]  prefSpeed          The preferred speed of this agent.
+   * \param[in]  maxSpeed           The maximum speed of this agent.
+   * \param[in]  uncertaintyOffset  The uncertainty offset of this agent.
+   * \param[in]  maxAccel           The maximum acceleration of this agent.
+   * \param[in]  velocity           The initial velocity of this agent.
+   * \param[in]  orientation        The initial orientation (in radians) of this agent.
+   */
+  Agent(Simulator *simulator, const Vector2 &position,
+        std::size_t goalNo, float neighborDist,
+        std::size_t maxNeighbors, float radius,
+        const Vector2 &velocity, float maxAccel,
+        float goalRadius, float prefSpeed,
+        float maxSpeed, float orientation,
 #if HRVO_DIFFERENTIAL_DRIVE
-    float leftWheelSpeed_;
-    float rightWheelSpeed_;
-    float timeToOrientation_;
-    float wheelTrack_;
+        float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-    bool reachedGoal_;
-    std::multimap<float, Candidate> candidates_;
-    std::set<std::pair<float, std::size_t> > neighbors_;
-    std::vector<VelocityObstacle> velocityObstacles_;
+        float uncertaintyOffset, ros::NodeHandle& nh,
+        std::string id, int agent_type);
 
-    friend class KdTree;
-    friend class Simulator;
-    friend class Environment;
+  /**
+   * \brief  Computes the neighbors of this agent.
+   */
+  void computeNeighbors();
 
+  /**
+   * \brief  Computes the new velocity of this agent.
+   */
+  void computeNewVelocity();
+
+  /**
+   * \brief  Computes the preferred velocity of this agent.
+   */
+  void computePreferredVelocity();
+
+#if HRVO_DIFFERENTIAL_DRIVE
+  /**
+   * \brief  Computes the wheel speeds of this agent.
+   */
+  void computeWheelSpeeds();
+#endif /* HRVO_DIFFERENTIAL_DRIVE */
+
+  /**
+   * \brief          Inserts a neighbor into the set of neighbors of this agent.
+   * \param[in]      agentNo  The number of the agent to be inserted.
+   * \param[in,out]  rangeSq  The squared range around this agent.
+   */
+  void insertNeighbor(std::size_t agentNo, float &rangeSq);
+
+  /**
+   * \brief  Updates the orientation, position, and velocity of this agent.
+   */
+  void update();
+
+  void odomPosUpdate();
+
+  void odomUpdate();
+
+  // AGENT PARAMETERS
+  // bool limit_workspace_vel;
+  // float x_limits[2];       // Min-Max X workspace limits
+  // float y_limits[2];        // Min-Max X workspace limits
+
+  Simulator *const simulator_;
+  Vector2 newVelocity_;
+  Vector2 position_;
+  Vector2 agent_sensed_position_;
+  Vector2 previous_odometry_offset_;  // Odometry offset before action step
+  Vector2 current_odometry_offset_;   // Odometry offset after action step
+  bool odomFlag_;
+  Vector2 odomPosition_;
+  Vector2 prefVelocity_;
+  Vector2 velocity_;
+  std::size_t goalNo_;
+  std::size_t maxNeighbors_;
+  bool updated_;
+  int agent_type_;
+  float goalRadius_;
+  float maxAccel_;
+  float maxSpeed_;
+  float neighborDist_;
+  float orientation_;
+  float agent_sensed_orientation_;
+  float prefSpeed_;
+  float radius_;
+  float uncertaintyOffset_;
+#if HRVO_DIFFERENTIAL_DRIVE
+  float leftWheelSpeed_;
+  float rightWheelSpeed_;
+  float timeToOrientation_;
+  float wheelTrack_;
+#endif /* HRVO_DIFFERENTIAL_DRIVE */
+  bool reachedGoal_;
+  std::multimap<float, Candidate> candidates_;
+  std::set<std::pair<float, std::size_t> > neighbors_;
+  std::vector<VelocityObstacle> velocityObstacles_;
+
+  friend class KdTree;
+  friend class Simulator;
+  friend class Environment;
 
  public:
-    std::string id_, pose_topic_;
-    ros::Publisher pub_;
-    ros::Subscriber sub_;
-    /**
-     * \brief  Updates the position from topic.
-     */
-    void updatePose(const nav_msgs::Odometry::ConstPtr &pose_msg);
-    /**
-     * \brief  get the pose topic.
-     */
-    std::string getPoseTopic();
-    /**
-     * \brief  set the pose topic.
-     */
-    void setPoseTopic(std::string pose_topic);
-    /**
-     * brief  set the pose subscriber.
-     */
-    void attachPoseSubscriber(ros::NodeHandle &nh, std::string pose_topic);
-// #endif    
-  };
+  std::string id_, pose_topic_;
+  ros::Publisher pub_;
+  ros::Subscriber odom_sub_;
+  AMCLWrapper* AMCLpointer_;
+  /**
+   * \brief  Updates the position from topic.
+   */
+  void updatePose(const nav_msgs::Odometry::ConstPtr &pose_msg);
+  /**
+   * \brief  get the pose topic.
+   */
+  std::string getPoseTopic();
+  /**
+   * \brief  set the pose topic.
+   */
+  void setPoseTopic(std::string pose_topic);
+  /**
+   * brief  set the pose subscriber.
+   */
+  void attachPoseSubscriber(ros::NodeHandle &nh,
+                            std::string pose_topic);
+  // #endif
+};
 }
 
 #endif /* HRVO_AGENT_H_ */
