@@ -2,7 +2,7 @@
 * Experiment.cpp
 * Experiment setup code by Alejandro Bordallo, based on HRVO for performing interactive dynamic planning
 * Copyright notice included below
-*\
+*/
 
 /*
 * HRVO Library
