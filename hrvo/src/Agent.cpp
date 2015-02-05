@@ -135,15 +135,6 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     odomFlag_ = true;
-    if (!IS_AMCL_ACTIVE)
-    {
-      odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-                               &Agent::updatePose, this);
-    }
-    else
-    {
-      AMCLpointer_ = new AMCLWrapper(id_);
-    }
   }
 }
 
@@ -188,10 +179,6 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
     {
       odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                &Agent::updatePose, this);
-    }
-    else
-    {
-        AMCLWrapper* AMCLpointer_ = new AMCLWrapper(id_);
     }
   }
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -243,10 +230,6 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
     {
       odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                &Agent::updatePose, this);
-    }
-    else
-    {
-        AMCLWrapper* AMCLpointer_ = new AMCLWrapper(id_);
     }
   }
 }
@@ -713,14 +696,7 @@ void Agent::odomPosUpdate()
   {
     position_ += current_odometry_offset_ - previous_odometry_offset_;
   }
-  else
-  {
-    WARN("odomPosUpdate: get_position is called!" << std::endl);
-    current_odometry_offset_ = AMCLpointer_->get_position();
-    position_ += current_odometry_offset_ - previous_odometry_offset_;
-    AMCLpointer_->pretty_print_pose();
-    ERR(current_odometry_offset_ << std::endl);
-  }
+
 }
 
 void Agent::odomUpdate()
@@ -730,15 +706,6 @@ void Agent::odomUpdate()
   {
     odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
     previous_odometry_offset_ = current_odometry_offset_;
-  }
-  else
-  {
-    WARN("odomUpdate: get_position is called!" << std::endl);
-    current_odometry_offset_ = AMCLpointer_->get_position();
-    odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
-    previous_odometry_offset_ = current_odometry_offset_;
-    AMCLpointer_->pretty_print_pose();
-    ERR(current_odometry_offset_ << std::endl);
   }
 }
 

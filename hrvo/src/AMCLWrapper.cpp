@@ -84,7 +84,7 @@ void AMCLWrapper::pretty_print_pose()
   ERR("--------------------" << std::endl);
 }
 
-void AMCLWrapper::update()
+void AMCLWrapper::updatePose()
 {
   WARN("AMCLWrapper: update is called!" << std::endl);
   initialised = true;

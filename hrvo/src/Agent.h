@@ -74,8 +74,6 @@
 
 #include "Parameter.h"
 
-#include "AMCLWrapper.h"
-
 namespace hrvo {
 class Simulator;
 /**
@@ -270,7 +268,7 @@ class Agent {
   std::string id_, pose_topic_;
   ros::Publisher pub_;
   ros::Subscriber odom_sub_;
-  AMCLWrapper* AMCLpointer_;
+
   /**
    * \brief  Updates the position from topic.
    */

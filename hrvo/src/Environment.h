@@ -6,6 +6,7 @@
 #ifndef HRVO_ENVIRONMENT_H_
 #define HRVO_ENVIRONMENT_H_
 
+#include "AMCLWrapper.h"
 #include "Tracker.h"
 
 #include "Simulator.h"
@@ -25,6 +26,7 @@ namespace hrvo {
   class Simulator;
   class Agent;
   class Goal;
+  class AMCLWrapper;
 
   class Environment
   {
@@ -43,6 +45,7 @@ namespace hrvo {
     void setupPlanner();  // NOT USED. UNRESOLVED BUG WHERE ODOMETRY IS NOT EXTRACTED PROPERLY
 
     // TRACKER FUNCTIONS
+    void initAMCL();
     void initTracker();
 
     void updateLocalisation();
@@ -168,6 +171,7 @@ namespace hrvo {
 
       Simulator *planner_;
       Tracker *tracker_;
+      AMCLWrapper *amclwrapper_;
 
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<int, std::vector<float> > trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position

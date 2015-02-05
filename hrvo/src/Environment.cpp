@@ -20,6 +20,7 @@ namespace hrvo {
     this->goalSetup();
     simvectPoint_ = &simvect_;
     this->initTracker();
+    this->initAMCL();
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
   }
 
@@ -73,6 +74,14 @@ namespace hrvo {
     */
   }
 
+  void Environment::initAMCL()
+  {
+    /* Initialise wrapper to update AMCL messages */
+    amclwrapper_ = new AMCLWrapper(sActorID_);
+    amclwrapper_->setEnvPointer(this);
+    amclwrapper_->setPlannerPointer(planner_);
+  }
+
   void Environment::initTracker()
   {
     tracker_ = new Tracker();
@@ -80,11 +89,13 @@ namespace hrvo {
     tracker_->setPlannerPointer(planner_);
   }
 
+
 //  void Environment::updateTracker()
 void Environment::updateLocalisation()
   {
     // something->updatePose(); Should this not be run in the tracker
     // directly?
+    amclwrapper_->updatePose();
     tracker_->updateTracker();
   }
 

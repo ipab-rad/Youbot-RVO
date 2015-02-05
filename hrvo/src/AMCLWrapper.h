@@ -7,6 +7,8 @@
 #ifndef AMCL_WRAPPER_H_
 #define AMCL_WRAPPER_H_
 
+#include "Environment.h"
+#include "Simulator.h"
 #include <string>
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
@@ -33,6 +35,10 @@ class AMCLWrapper
   Vector2 get_position();
   boost::array<double, 36> get_cov();
   double get_orientation();
+  void setEnvPointer(Environment *environment) {environment_ = environment;}
+  void setPlannerPointer(Simulator *planner) {planner_ = planner;}
+
+
   bool initialised;
 
  private:
