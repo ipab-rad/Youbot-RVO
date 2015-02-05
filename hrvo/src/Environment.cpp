@@ -9,7 +9,7 @@
 namespace hrvo {
 
   Environment::Environment(enum Actor actorID, const Vector2 startPos)
-  { 
+  {
     nActorID_ = actorID;
     startPos_ = startPos;
     planner_ = new Simulator(nh_, "planner", nActorID_);
@@ -31,7 +31,7 @@ namespace hrvo {
     delete tracker_;
     tracker_ = NULL;
 
-    for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter) 
+    for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
     {
       delete iter->second;
       iter->second = NULL;
@@ -80,8 +80,11 @@ namespace hrvo {
     tracker_->setPlannerPointer(planner_);
   }
 
-  void Environment::updateTracker()
+//  void Environment::updateTracker()
+void Environment::updateLocalisation()
   {
+    // something->updatePose(); Should this not be run in the tracker
+    // directly?
     tracker_->updateTracker();
   }
 
@@ -103,7 +106,7 @@ namespace hrvo {
   void Environment::setPlannerParam()
   {
     planner_->setTimeStep(SIM_TIME_STEP);
-    planner_->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f); 
+    planner_->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_ACCELERATION, STOP, 0.0f);
   }
 
   std::size_t Environment::addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo)
@@ -270,9 +273,9 @@ namespace hrvo {
 
     std::size_t nAgents = planner_->getNumAgents();
     simvect_[simID]->setTimeStep(SIM_TIME_STEP);
-    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
-    // simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_PEOPLE_SPEED, MAX_PEOPLE_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f); 
-    
+    simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_SPEED, MAX_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f);
+    // simvect_[simID]->setAgentDefaults(NEIGHBOR_DIST, MAX_NEIGHBORS, AGENT_RADIUS, GOAL_RADIUS, PREF_PEOPLE_SPEED, MAX_PEOPLE_SPEED, 0.0f, MAX_PEOPLE_ACCELERATION, STOP, 0.0f);
+
 
     simvect_[simID]->goals_=planner_->goals_;
 

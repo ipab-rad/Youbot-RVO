@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
       for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        INFO("Press enter to perform setup for " 
+        INFO("Press enter to perform setup for "
           << planner->getStringActorID() << std::endl);
         WaitReturn();
 
@@ -168,7 +168,7 @@ void hrvo::StopRobots(PlannerMapPointer* PlannerMap)
     {
       planner->stopYoubot();
     }
-    WARN("Agent " << planner->getStringActorID() 
+    WARN("Agent " << planner->getStringActorID()
       << " Stopping" << std::endl);
   }
 }
@@ -196,7 +196,7 @@ void hrvo::MoveIntoArea(Environment* planner)
     if (CLEAR_SCREEN) {CLEAR();}
     ros::Rate update_freq(ROS_FREQ);
 
-    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) 
+    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT)
       << " to Position " << ForwVec << std::endl);
 
     planner->doPlannerStep();
@@ -211,7 +211,8 @@ void hrvo::MoveIntoArea(Environment* planner)
 
 void hrvo::SelectTracker(Environment* planner)
 {
-  planner->updateTracker();
+  // planner->updateTracker();
+  planner->updateLocalisation();
   std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
   if (ids.empty())
@@ -221,12 +222,12 @@ void hrvo::SelectTracker(Environment* planner)
   else if (!MANUAL_TRACKER_ASSIGNMENT)
   {
     planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-    INFO("Automatically assigned TrackerID " << ids[0] 
+    INFO("Automatically assigned TrackerID " << ids[0]
       << " for " << planner->getStringActorID() << std::endl);
   }
   else if (MANUAL_TRACKER_ASSIGNMENT)
   {
-    INFO("Enter TrackerID for " << planner->getStringActorID() 
+    INFO("Enter TrackerID for " << planner->getStringActorID()
       << ":" << std::endl);
     int TrackerID = cinInteger();
     planner->setAgentTracker(TrackerID, THIS_ROBOT);
@@ -250,7 +251,8 @@ void hrvo::SensingUpdate(PlannerMapPointer* PlannerMap)
   for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
-    planner->updateTracker();
+    // planner->updateTracker();
+    planner->updateLocalisation();
   }
 }
 
@@ -262,8 +264,8 @@ void hrvo::PrintAgentState(PlannerMapPointer* PlannerMap)
       {INFO("Agent" << i << " Inactive"<< std::endl);}
     else
     {
-      INFO("Agent" << i << " Pos: [" 
-        << (*PlannerMap)[LOG_PLANNER]->getPlannerAgentPosition(i) 
+      INFO("Agent" << i << " Pos: ["
+        << (*PlannerMap)[LOG_PLANNER]->getPlannerAgentPosition(i)
         << "]" << std::endl);
     }
   }

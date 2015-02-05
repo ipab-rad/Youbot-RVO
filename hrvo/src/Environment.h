@@ -45,7 +45,8 @@ namespace hrvo {
     // TRACKER FUNCTIONS
     void initTracker();
 
-    void updateTracker();
+    void updateLocalisation();
+    //    void updateTracker();
 
     std::map<int, std::size_t> getTrackerIDs();
 
@@ -57,7 +58,7 @@ namespace hrvo {
     void setPlannerPosition(Vector2 plannerPos) {planner_->setAgentPosition(THIS_ROBOT, plannerPos);}
 
     void disablePlannerAgent()  {planner_->setAgentType(THIS_ROBOT, INACTIVE);}
-    
+
     void setPlannerParam();
 
     std::size_t addVirtualAgent(std::string id, const Vector2 startPos, std::size_t goalNo);
@@ -121,9 +122,9 @@ namespace hrvo {
     Vector2 getPlannerAgentPosition(std::size_t agentNo) { return planner_->getAgentPosition(agentNo); }
 
     Vector2 getPlannerAgentVelocity(std::size_t agentNo) { return planner_->getAgentVelocity(agentNo); }
-    
+
     float getPlannerAgentAvgSpeed(std::size_t agentNo) { return planner_->getAgentPrefSpeed(agentNo); }
-    
+
     float getPlannerAgentMaxSpeed(std::size_t agentNo) { return planner_->getAgentMaxSpeed(agentNo); }
 
     float getPlannerAgentPrefSpeed(std::size_t agentNo) { return planner_->getAgentPrefSpeed(agentNo); }
@@ -151,7 +152,7 @@ namespace hrvo {
 
       // Private members
       enum Actor nActorID_;
-      std::string sActorID_; 
+      std::string sActorID_;
       Vector2 startPos_;
       size_t startGoal_;
       Vector2 currPos_;
