@@ -45,3 +45,7 @@ workspace/src/CMakeLists.txt
 
 # catking_ignore files
 */CATKIN_IGNORE
+/GPATH
+/GRTAGS
+/GSYMS
+/GTAGS
