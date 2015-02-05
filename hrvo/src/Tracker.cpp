@@ -11,7 +11,8 @@ namespace hrvo {
   // Tracker::Tracker(Environment *environment) : environment_(environment)
   Tracker::Tracker()
   {
-    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations", 1, &Tracker::receiveTrackerData, this);
+    Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations",
+                            1, &Tracker::receiveTrackerData, this);
     ROS_INFO("Suscribing to TargetEstimations");
     trackOtherAgents_ = false;
   }
@@ -33,11 +34,15 @@ namespace hrvo {
       this->checkExistingTrackers(ids);
       this->removeInactiveTrackers();
       this->updateActiveAgents(numAgents);
+      // Compare tracker with odometry
       this->odometryComparison();
 
       DEBUG(std::endl);
     }
   }
+
+
+
 
   std::map<int, std::size_t> Tracker::getTrackerIDs()
   {
@@ -58,11 +63,11 @@ namespace hrvo {
     msg_ = *msg;
   }
 
-  void Tracker::setAgentTracker(int TrackerID, std::size_t AgentID)  
+  void Tracker::setAgentTracker(int TrackerID, std::size_t AgentID)
   {
     // Set TrackerID for robot
     trackedAgents_[TrackerID] = AgentID;
-    if (AgentID == THIS_ROBOT) 
+    if (AgentID == THIS_ROBOT)
     {
       robotTrackerID_ = TrackerID;
     }
@@ -163,29 +168,29 @@ namespace hrvo {
       Vector2 agentPos = EXIT;
       Vector2 agentVel = STOP;
       if (INVERT_X)
-      { 
+      {
         agentPos = Vector2(-1 * msg_.positions[i].x, msg_.positions[i].y);
         agentVel = Vector2(-1 * msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
       }
       else
-      { 
+      {
         agentPos = Vector2(msg_.positions[i].x, msg_.positions[i].y);
         agentVel = Vector2(msg_.averagedVelocities[i].x, msg_.averagedVelocities[i].y);
       }
 
       // If only one robot is being used, assign it the tracker if it's the only one left
       if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
-      { 
+      {
         this->setAgentTracker(TrackerID, THIS_ROBOT);
         planner_->resetOdomPosition();
         DEBUG("Assigned lone tracker" << TrackerID << "to "<< environment_->getStringActorID() << std::endl);
       }
 
       // If new Tracker has not been assigned yet, reassign to robot or create new agent
-      if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )  
+      if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )
       { // TODO: Implement working limit for number of created agents
         if (TrackerID == robotTrackerID_ && ENABLE_PLANNER)
-        { 
+        {
           this->setAgentTracker(TrackerID, THIS_ROBOT);
           planner_->resetOdomPosition();
           DEBUG("Re-assigned robot tracker" << TrackerID << " to "<< environment_->getStringActorID() << std::endl);
@@ -251,7 +256,7 @@ namespace hrvo {
           odomSums[TrackerID] = 0.0f;
           for(std::vector<float>::iterator iter = OdomComparison.begin(); iter != OdomComparison.end(); ++iter)
           {
-            odomSums[TrackerID] += (*iter); 
+            odomSums[TrackerID] += (*iter);
           }
         }
       }
@@ -278,7 +283,7 @@ namespace hrvo {
         robotTrackerID_ = TargetTrackerID;
       }
       // Reset all comparisons
-      
+
     }
   }
 
