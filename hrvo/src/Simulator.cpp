@@ -209,6 +209,7 @@ void Simulator::doStep()
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ == ROBOT)
     { // Should odometry be updated here?
+      ERR("What's going on?" << std::endl);
       if (odomNeeded_)
         {
           (*iter)->odomPosUpdate();

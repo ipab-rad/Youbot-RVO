@@ -99,7 +99,7 @@ void ParamInitialise()
   ros::param::param(nn+"performRobotSetup", PERFORM_ROBOT_SETUP, true);
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
-    ros::param::param(nn+"onlyOdometry", IS_AMCL_ACTIVE, true);
+  ros::param::param(nn+"isamclactive", IS_AMCL_ACTIVE, true);
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
   ros::param::param(nn+"logData", LOG_DATA, true);
   ros::param::param(nn+"assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);

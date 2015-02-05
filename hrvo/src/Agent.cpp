@@ -715,13 +715,16 @@ void Agent::odomPosUpdate()
   }
   else
   {
+    WARN("odomPosUpdate: get_position is called!" << std::endl);
     current_odometry_offset_ = AMCLpointer_->get_position();
-    position_ += current_odometry_offset_ - previous_odometry_offset_;
+    AMCLpointer_->pretty_print_pose();
+    ERR(current_odometry_offset_ << std::endl);
   }
 }
 
 void Agent::odomUpdate()
 {
+  
   if (!IS_AMCL_ACTIVE)
   {
     odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
@@ -729,8 +732,11 @@ void Agent::odomUpdate()
   }
   else
   {
+    WARN("odomUpdate: get_position is called!" << std::endl);
     current_odometry_offset_ = AMCLpointer_->get_position();
     position_ += current_odometry_offset_ - previous_odometry_offset_;
+    AMCLpointer_->pretty_print_pose();
+    ERR(current_odometry_offset_ << std::endl);
   }
 }
 

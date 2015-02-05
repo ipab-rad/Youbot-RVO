@@ -13,7 +13,7 @@ namespace hrvo {
 AMCLWrapper::AMCLWrapper()
 {
   sub_ = nh_.subscribe("/amcl_pose",
-                       1,
+                       1000,
                        &AMCLWrapper::receive_pose,
                        this);
   ROS_INFO("Subscribing to default AMCL pose");
@@ -22,22 +22,25 @@ AMCLWrapper::AMCLWrapper()
 
 AMCLWrapper::AMCLWrapper(std::string sub_name)
 {
-  sub_ = nh_.subscribe(sub_name + "/amcl_pose",
-                       1,
+  sub_ = nh_.subscribe("/" + sub_name + "/amcl_pose",
+                       1000,
                        &AMCLWrapper::receive_pose,
                        this);
   std::string info = "Subscribing to " + sub_name + " AMCL pose";
   ROS_INFO("%s", info.c_str());
   initialised = false;
+//  ros::spinOnce();
 }
 
 AMCLWrapper::~AMCLWrapper() {};
 
 void AMCLWrapper::receive_pose(
-    const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &pose_msg)
+    const boost::shared_ptr<const geometry_msgs::PoseWithCovarianceStamped> pose_msg)
 {
+  INFO("CALLBACK" << std::endl);
   received_pose_ = *pose_msg;
-  update();
+  INFO("END_CALLBACK" << std::endl);
+  this->update();
 }
 
 void AMCLWrapper::pretty_print_msg()
@@ -83,10 +86,12 @@ void AMCLWrapper::pretty_print_pose()
 
 void AMCLWrapper::update()
 {
+  WARN("AMCLWrapper: update is called!" << std::endl);
   initialised = true;
   header_ = received_pose_.header;
   full_pose_ = received_pose_.pose.pose;
   covariance_ = received_pose_.pose.covariance;
+  ERR("p.x: " << full_pose_.position.x << std::endl);
 }
 
 geometry_msgs::PoseWithCovarianceStamped AMCLWrapper::get_full_msg()
@@ -106,7 +111,14 @@ geometry_msgs::Pose AMCLWrapper::get_full_pose()
 
 Vector2 AMCLWrapper::get_position()
 {
+  ERR("SPINME!" << std::endl)
+  // ros::spinOnce();
+  WARN("AMCLWrapper: get_position is called!" << std::endl);
+  ERR("p.x: " << full_pose_.position.x << std::endl);
+  ERR("x" << full_pose_.position.x);
+  ERR("y" << full_pose_.position.y);
   return Vector2(full_pose_.position.x, full_pose_.position.y);
+
 }
 
 double AMCLWrapper::get_orientation()
