@@ -28,7 +28,7 @@ class AMCLWrapper
   void receive_pose(const boost::shared_ptr<const geometry_msgs::PoseWithCovarianceStamped> pose_msg);
   void pretty_print_msg();
   void pretty_print_pose();
-  void update();
+  void updatePose();
   geometry_msgs::PoseWithCovarianceStamped get_full_msg();
   std_msgs::Header get_header();
   geometry_msgs::Pose get_full_pose();
@@ -48,7 +48,8 @@ class AMCLWrapper
   std_msgs::Header header_;
   geometry_msgs::Pose full_pose_;
   boost::array<double, 36> covariance_;
-
+  Environment* environment_;
+  Simulator* planner_;
 };
 
 }

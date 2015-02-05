@@ -40,7 +40,7 @@ void AMCLWrapper::receive_pose(
   INFO("CALLBACK" << std::endl);
   received_pose_ = *pose_msg;
   INFO("END_CALLBACK" << std::endl);
-  this->update();
+  this->updatePose();
 }
 
 void AMCLWrapper::pretty_print_msg()
