@@ -93,14 +93,12 @@ int main(int argc, char *argv[])
     {
       StopRobots(PlannerMap_);
 
-
       for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
         Environment* planner = iter->second;
-        INFO("Press enter to perform setup for " << planner->getStringActorID() << std::endl);
-
+        INFO("Press enter to perform setup for " 
+          << planner->getStringActorID() << std::endl);
         WaitReturn();
-
 
         MoveIntoArea(planner);
 
@@ -133,16 +131,14 @@ int main(int argc, char *argv[])
   {
     if (CLEAR_SCREEN) {CLEAR();}
     ros::Rate update_freq(ROS_FREQ);
+
     SensingUpdate(PlannerMap_);
 
     PrintAgentState(PlannerMap_);
 
-    // Vector2 DynGoalPos = STOP;
-
     PlannerStep(PlannerMap_);
 
     ModelStep(PlannerMap_, ModelMap_);
-
 
     ros::spinOnce();
     update_freq.sleep();
@@ -161,6 +157,7 @@ int main(int argc, char *argv[])
 
 void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
 {
+  // TODO: Check if this section can be condensed
   if (MEGATRON_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
@@ -226,7 +223,8 @@ void hrvo::StopRobots(PlannerMapPointer* PlannerMap)
     {
       planner->stopYoubot();
     }
-    WARN("Agent " << planner->getStringActorID() << " Stopping" << std::endl);
+    WARN("Agent " << planner->getStringActorID() 
+      << " Stopping" << std::endl);
   }
 }
 
@@ -252,7 +250,9 @@ void hrvo::MoveIntoArea(Environment* planner)
   {
     if (CLEAR_SCREEN) {CLEAR();}
     ros::Rate update_freq(ROS_FREQ);
-    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) << " to Position " << ForwVec << std::endl);
+
+    INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT) 
+      << " to Position " << ForwVec << std::endl);
 
     planner->doPlannerStep();
 
@@ -276,11 +276,13 @@ void hrvo::SelectTracker(Environment* planner)
   else if (!MANUAL_TRACKER_ASSIGNMENT)
   {
     planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-    INFO("Automatically assigned TrackerID " << ids[0] << " for " << planner->getStringActorID() << std::endl);
+    INFO("Automatically assigned TrackerID " << ids[0] 
+      << " for " << planner->getStringActorID() << std::endl);
   }
   else if (MANUAL_TRACKER_ASSIGNMENT)
   {
-    INFO("Enter TrackerID for " << planner->getStringActorID() << ":" << std::endl);
+    INFO("Enter TrackerID for " << planner->getStringActorID() 
+      << ":" << std::endl);
     int TrackerID = cinInteger();
     planner->setAgentTracker(TrackerID, THIS_ROBOT);
   }
@@ -315,7 +317,9 @@ void hrvo::PrintAgentState(PlannerMapPointer* PlannerMap)
       {INFO("Agent" << i << " Inactive"<< std::endl);}
     else
     {
-      INFO("Agent" << i << " Pos: [" << (*PlannerMap)[LOG_PLANNER]->getPlannerAgentPosition(i) << "]" << std::endl);
+      INFO("Agent" << i << " Pos: [" 
+        << (*PlannerMap)[LOG_PLANNER]->getPlannerAgentPosition(i) 
+        << "]" << std::endl);
     }
   }
   //AMCLpointer_->pretty_print();
@@ -328,18 +332,11 @@ void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)
     for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
     {
       Environment* planner = iter->second;
-      // planner->editPlannerGoal(3, planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1));
-      // DynGoalPos = planner->getPlannerAgentPosition(planner->getNumPlannerAgents()-1);
-
-      // Change so that when reached goals, check planner goal plan, and change goals elsewhere
+      // Set new goal given goal plan
       if (planner->getReachedPlannerGoal())
         {planner->setNextGoal();}
-      // if (planner->getReachedPlannerGoal() && CYCLE_GOALS)
-      //   {planner->cycleGoalsCounterClockwise();}
 
       INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
-      // if (planner->getReachedPlannerGoal() && !CYCLE_GOALS)
-      //   {planner->stopYoubot();}
       planner->doPlannerStep();
     }
   }
@@ -352,9 +349,8 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
   if (ENABLE_MODELLING)
   {
     bool Logged = false;
-    std::map<std::size_t, std::map<std::size_t, Vector2> > possGoals;
-    // std::map<std::size_t, Vector2> possGoals;
-    std::map<std::size_t, std::vector <std::size_t> > modelledAgents;
+    std::map<std::size_t, std::map<std::size_t, Vector2> > possGoals; //EnvID, GoalID, GoalPos
+    std::map<std::size_t, std::vector <std::size_t> > modelledAgents; //EnvID, AgentIDs
 
     for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
     {
@@ -373,7 +369,9 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
         {
           Logged = true;
           if ( (*ModelMap)[EnvID].find(AgentID) == (*ModelMap)[EnvID].end() )
-          {(*ModelMap)[EnvID][AgentID] = new Model((*PlannerMap)[EnvID]);}  // TODO: Check if object is destroyed
+          {
+            (*ModelMap)[EnvID][AgentID] = new Model((*PlannerMap)[EnvID]);
+          }  // TODO: Check if object is destroyed
           (*ModelMap)[EnvID][AgentID]->setupModel(AgentID, possGoals[EnvID]);
           (*ModelMap)[EnvID][AgentID]->inferGoals(AgentID);
           modelledAgents[EnvID].push_back(AgentID);
