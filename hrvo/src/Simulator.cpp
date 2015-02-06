@@ -71,7 +71,7 @@
 #ifndef HRVO_AGENT_H_
 #include "Agent.h"
 #endif
- 
+
 #ifndef HRVO_GOAL_H
 #include "Goal.h"
 #endif
@@ -136,7 +136,7 @@ Simulator::~Simulator()
   /*for (std::vector<Goal *>::iterator iter = goals_.begin(); iter != goals_.end(); ++iter) {
     delete *iter;
     *iter = NULL;
-  }*/
+    }*/
 }
 
 std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo)
@@ -147,15 +147,15 @@ std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &p
 
   Agent *const agent = new Agent(this, position, goalNo, nh_, id, agent_type);
   /*  // Debugging agent creation message
-  switch(agent_type)
-  {
-    case 0:   DEBUG("Created Virtual Agent " << id);  break;
-    case 1:   DEBUG("Created Person Agent " << id);  break;
-    case 2:   DEBUG("Created Robot Agent " << id);  break;
-    case 2:   DEBUG("Created Inactive Agent " << id);  break;
-    default:  DEBUG("Created Default Agent " << id);  break;
-  }
-  std::cout << " with Pos [" << position << "] and Goal [" << this->getGoalPosition(goalNo) << "]" << std::endl;
+      switch(agent_type)
+      {
+      case 0:   DEBUG("Created Virtual Agent " << id);  break;
+      case 1:   DEBUG("Created Person Agent " << id);  break;
+      case 2:   DEBUG("Created Robot Agent " << id);  break;
+      case 2:   DEBUG("Created Inactive Agent " << id);  break;
+      default:  DEBUG("Created Default Agent " << id);  break;
+      }
+      std::cout << " with Pos [" << position << "] and Goal [" << this->getGoalPosition(goalNo) << "]" << std::endl;
   */
 
   agents_.push_back(agent);
@@ -163,11 +163,24 @@ std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &p
   return agents_.size() - 1;
 }
 
-std::size_t Simulator::addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+std::size_t Simulator::addAgent(std::string id,
+                                int agent_type,
+                                const Vector2 &position,
+                                std::size_t goalNo,
+                                float neighborDist,
+                                std::size_t maxNeighbors,
+                                float radius,
+                                float goalRadius,
+                                float prefSpeed,
+                                float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
-                                float timeToOrientation, float wheelTrack,
+                                float timeToOrientation,
+                                float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                                float uncertaintyOffset, float maxAccel, const Vector2 &velocity, float orientation)
+                                float uncertaintyOffset,
+                                float maxAccel,
+                                const Vector2 &velocity,
+                                float orientation)
 {
   Agent *const agent = new Agent(this, position, goalNo, neighborDist, maxNeighbors, radius, velocity, maxAccel, goalRadius, prefSpeed, maxSpeed, orientation,
 #if HRVO_DIFFERENTIAL_DRIVE
@@ -211,13 +224,13 @@ void Simulator::doStep()
     { // Should odometry be updated here?
       ERR("What's going on?" << std::endl);
       if (odomNeeded_)
-        {
-          (*iter)->odomPosUpdate();
-          // (*iter)->odomFlag_ = true;
-        }  
+      {
+        (*iter)->odomPosUpdate();
+        // (*iter)->odomFlag_ = true;
+      }
       (*iter)->odomUpdate();
     }
-  }  
+  }
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
@@ -225,14 +238,14 @@ void Simulator::doStep()
       (*iter)->computePreferredVelocity();
       (*iter)->computeNeighbors();
       (*iter)->computeNewVelocity();
-      #if HRVO_DIFFERENTIAL_DRIVE
+#if HRVO_DIFFERENTIAL_DRIVE
       (*iter)->computeWheelSpeeds();
-      #endif /* HRVO_DIFFERENTIAL_DRIVE */
+#endif /* HRVO_DIFFERENTIAL_DRIVE */
     }
   }
 
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE) 
+    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
     {
       (*iter)->update();
     }
@@ -447,7 +460,7 @@ void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
   }
 }
 
-void Simulator::setAgentType(std::size_t agentNo, int agent_type) 
+void Simulator::setAgentType(std::size_t agentNo, int agent_type)
 {
   agents_[agentNo]->agent_type_ = agent_type;
 }
@@ -495,7 +508,7 @@ bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService:
   const Vector2 position(req.position.x, req.position.y);
   const Vector2 velocity(req.velocity.x, req.velocity.y);
 
-  try { 
+  try {
     ROS_INFO_STREAM("detected " << ss.str());
     std::size_t agentNo = addAgent(ss.str(), false, position, addGoal(position));
     setAgentVelocity(agentNo, velocity);
@@ -510,4 +523,3 @@ bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService:
 }
 
 }
-

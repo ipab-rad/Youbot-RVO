@@ -1,8 +1,8 @@
 /**
-* Created by Alejandro Bordallo
-* \file   Tracker.h
-* \brief  Declares the Tracker class.
-*/
+ * Created by Alejandro Bordallo
+ * \file   Tracker.h
+ * \brief  Declares the Tracker class.
+ */
 
 #ifndef HRVO_TRACKER_H_
 #define HRVO_TRACKER_H_
@@ -21,64 +21,64 @@
 
 
 namespace hrvo {
-  class Environment;
-  class Simulator;
+class Environment;
+class Simulator;
 
-  class Tracker
-  {
-    public:
-      Tracker();
-      ~Tracker();
+class Tracker
+{
+ public:
+  Tracker();
+  ~Tracker();
 
-      void updateTracker();
+  void updateTracker();
 
-      std::map<int, std::size_t> getTrackerIDs();
+  std::map<int, std::size_t> getTrackerIDs();
 
-      void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
+  void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
 
-      void setAgentTracker(int TrackerID, std::size_t AgentID);
+  void setAgentTracker(int TrackerID, std::size_t AgentID);
 
-      std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
+  std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
 
-      void checkExistingTrackers(std::map<int, std::size_t> ids);
+  void checkExistingTrackers(std::map<int, std::size_t> ids);
 
-      void removeInactiveTrackers();
+  void removeInactiveTrackers();
 
-      void updateActiveAgents(std::size_t numAgents);
+  void updateActiveAgents(std::size_t numAgents);
 
-      void odometryComparison();
+  void odometryComparison();
 
-      // Awaits robot initialisation before tracking more agents
-      void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
+  // Awaits robot initialisation before tracking more agents
+  void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
 
-      int getRobotTrackerID()  {return robotTrackerID_;}
+  int getRobotTrackerID()  {return robotTrackerID_;}
 
-      void setEnvPointer(Environment *environment) {environment_ = environment;}
+  void setEnvPointer(Environment *environment) {environment_ = environment;}
 
-      void setPlannerPointer(Simulator *planner) {planner_ = planner;}
+  void setPlannerPointer(Simulator *planner) {planner_ = planner;}
 
 
-    private:
+ private:
 
-      // ROS members
-      ros::NodeHandle nh_;
-      ros::Subscriber Targsub;
-      PTrackingBridge::TargetEstimations msg_;
+  // ROS members
+  ros::NodeHandle nh_;
+  ros::Subscriber Targsub;
+  PTrackingBridge::TargetEstimations msg_;
 
-      // Class pointers
-      Environment *environment_;
-      Simulator *planner_;
+  // Class pointers
+  Environment *environment_;
+  Simulator *planner_;
 
-      // Private Members
-      std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
-      std::map<std::size_t, float> maxSpeed_;
-      bool trackOtherAgents_;
+  // Private Members
+  std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
+  std::map<std::size_t, float> maxSpeed_;
+  bool trackOtherAgents_;
 
-      int robotTrackerID_;
-      std::map<int, std::size_t> trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
-      std::map<int, std::vector<float> > trackerCompOdom_;  // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
+  int robotTrackerID_;
+  std::map<int, std::size_t> trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
+  std::map<int, std::vector<float> > trackerCompOdom_;  // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
 
-  };
+};
 
 }
 
