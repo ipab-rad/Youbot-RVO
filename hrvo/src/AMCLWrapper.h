@@ -25,7 +25,7 @@ class AMCLWrapper
   AMCLWrapper();
   AMCLWrapper(std::string sub_name);
   ~AMCLWrapper();
-  void receive_pose(const boost::shared_ptr<const geometry_msgs::PoseWithCovarianceStamped> pose_msg);
+  void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg);
   void pretty_print_msg();
   void pretty_print_pose();
   void updatePose();

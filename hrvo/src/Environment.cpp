@@ -93,9 +93,8 @@ namespace hrvo {
 //  void Environment::updateTracker()
 void Environment::updateLocalisation()
   {
-    // something->updatePose(); Should this not be run in the tracker
-    // directly?
     amclwrapper_->updatePose();
+    amclwrapper_->pretty_print_pose();
     tracker_->updateTracker();
   }
 

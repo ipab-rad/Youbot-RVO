@@ -41,9 +41,6 @@ namespace hrvo {
     }
   }
 
-
-
-
   std::map<int, std::size_t> Tracker::getTrackerIDs()
   {
     // Return list of ids provided by tracker message
