@@ -210,7 +210,7 @@ void Simulator::doStep()
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ == ROBOT)
     { // Should odometry be updated here?
-      ERR("What's going on?" << std::endl);
+      // ERR("What's going on?" << std::endl);
       if (odomNeeded_)
       {
         (*iter)->odomPosUpdate();
@@ -478,6 +478,16 @@ void Simulator::setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_
 Vector2 Simulator::getPrevOdomOffset(std::size_t agentNo)
 {
   return agents_[agentNo]->previous_odometry_offset_;
+}
+
+void Simulator::setSensedOrientation(std::size_t agentNo, double sensed_orientation)
+{
+  agents_[agentNo]->agent_sensed_orientation_ = sensed_orientation;
+}
+
+double Simulator::getSensedOrientation(std::size_t agentNo)
+{
+  return agents_[agentNo]->agent_sensed_orientation_;
 }
 
 void Simulator::setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry_offset)

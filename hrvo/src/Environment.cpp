@@ -98,6 +98,8 @@ namespace hrvo {
 void Environment::updateLocalisation()
   {
     amclwrapper_->updatePose();
+    planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_position());
+    planner_->setSensedOrientation(THIS_ROBOT, amclwrapper_->get_orientation());
     amclwrapper_->pretty_print_pose();
     tracker_->updateTracker();
   }

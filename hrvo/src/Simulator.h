@@ -457,9 +457,13 @@ class Simulator {
 
   void setOdomUpdated(std::size_t agentNo, bool odomUpdated);
 
+  void setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset);
+
   Vector2 getCurrOdomOffset(std::size_t agentNo);
 
-  void setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset);
+  void setSensedOrientation(std::size_t agentNo, double sensed_orientation);
+
+  double getSensedOrientation(std::size_t agentNo);
 
   Vector2 getPrevOdomOffset(std::size_t agentNo);
 
