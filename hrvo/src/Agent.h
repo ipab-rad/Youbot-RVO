@@ -64,15 +64,10 @@
 
 #include <nav_msgs/Odometry.h>
 
-#ifndef HRVO_SIMULATOR_H_
 #include "Simulator.h"
-#endif
-
-#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
-
 #include "Parameter.h"
+#include "AMCLWrapper.h"
 
 namespace hrvo {
 class Simulator;
@@ -143,7 +138,8 @@ class Agent {
    * \param[in]  simulator  The simulation.
    */
   explicit Agent(Simulator *simulator, ros::NodeHandle &nh,
-                 std::string id, int agent_type);
+                 std::string id, int agent_type,
+                 AMCLWrapper::AMCLWrapper* amclwrapper_);
 
   /**
    * \brief      Constructor.
@@ -153,7 +149,8 @@ class Agent {
    */
   Agent(Simulator *simulator, const Vector2 &position,
         std::size_t goalNo, ros::NodeHandle &nh,
-        std::string id, int agent_type);
+        std::string id, int agent_type,
+        AMCLWrapper::AMCLWrapper* amclwrapper_);
 
   /**
    * \brief      Constructor.
@@ -181,7 +178,8 @@ class Agent {
         float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
         float uncertaintyOffset, ros::NodeHandle& nh,
-        std::string id, int agent_type);
+        std::string id, int agent_type,
+        AMCLWrapper::AMCLWrapper* amclwrapper_);
 
   /**
    * \brief  Computes the neighbors of this agent.

@@ -59,13 +59,9 @@
  * \brief  Defines the Agent class.
  */
 
-#ifndef HRVO_AGENT_H_
 #include "Agent.h"
-#endif
 
-#ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
-#endif
 
 #include <algorithm>
 #include <cmath>
@@ -79,17 +75,12 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
-
+#include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
 
-#include <geometry_msgs/Twist.h>
-
-#ifndef HRVO_GOAL_H_
 #include "Goal.h"
-#endif
-#ifndef HRVO_KD_TREE_H_
 #include "KdTree.h"
-#endif
+
 
 namespace hrvo
 {
@@ -120,7 +111,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
     timeToOrientation_(simulator_->defaults_->timeToOrientation_),
     wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-    reachedGoal_(false)
+  reachedGoal_(false)
 {
   agent_type_ = agent_type;
   updated_ = false;
@@ -150,17 +141,17 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
     goalRadius_(simulator_->defaults_->goalRadius_),
     maxAccel_(simulator_->defaults_->maxAccel_),
     maxSpeed_(simulator_->defaults_->maxSpeed_),
-    neighborDist_(simulator_->defaults_->neighborDist_),
-    orientation_(simulator_->defaults_->orientation_),
-    prefSpeed_(simulator_->defaults_->prefSpeed_),
-    radius_(simulator_->defaults_->radius_),
-    uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
+  neighborDist_(simulator_->defaults_->neighborDist_),
+  orientation_(simulator_->defaults_->orientation_),
+  prefSpeed_(simulator_->defaults_->prefSpeed_),
+  radius_(simulator_->defaults_->radius_),
+  uncertaintyOffset_(simulator_->defaults_->uncertaintyOffset_),
 #if HRVO_DIFFERENTIAL_DRIVE
-    leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
-    timeToOrientation_(simulator_->defaults_->timeToOrientation_),
-    wheelTrack_(simulator_->defaults_->wheelTrack_),
+  leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
+  timeToOrientation_(simulator_->defaults_->timeToOrientation_),
+  wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-    reachedGoal_(false)
+  reachedGoal_(false)
 {
   agent_type_ = agent_type;
   updated_ = false;
@@ -197,7 +188,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
              float uncertaintyOffset, ros::NodeHandle& nh,
              std::string id, int agent_type) :
-  simulator_(simulator), newVelocity_(velocity),
+simulator_(simulator), newVelocity_(velocity),
   position_(position), velocity_(velocity),
   goalNo_(goalNo), maxNeighbors_(maxNeighbors),
   goalRadius_(goalRadius), maxAccel_(maxAccel),
@@ -687,10 +678,10 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
 void Agent::odomPosUpdate()
 {
   /*
-  &Agent::updatePose;
-  DEBUG("Pos " << position_ << ", Prev "
-        << previous_odometry_offset_
-        << ", Curr "<< current_odometry_offset_ << std::endl);
+    &Agent::updatePose;
+    DEBUG("Pos " << position_ << ", Prev "
+    << previous_odometry_offset_
+    << ", Curr "<< current_odometry_offset_ << std::endl);
   */
   if (!IS_AMCL_ACTIVE)
   {
