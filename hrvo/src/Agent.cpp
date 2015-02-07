@@ -687,19 +687,19 @@ void Agent::odomPosUpdate()
     << previous_odometry_offset_
     << ", Curr "<< current_odometry_offset_ << std::endl);
   */
-  
+
     position_ += current_odometry_offset_ - previous_odometry_offset_;
- 
+
 
 }
 
 void Agent::odomUpdate()
 {
 
-  
+
     odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
     previous_odometry_offset_ = current_odometry_offset_;
- 
+
 }
 
 void Agent::update()

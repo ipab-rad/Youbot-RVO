@@ -14,6 +14,8 @@
 #include <std_msgs/Header.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
 #include "Vector2.h"
 
 namespace hrvo {
@@ -27,6 +29,7 @@ class AMCLWrapper
   AMCLWrapper(std::string sub_name);
   ~AMCLWrapper();
   void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg);
+  void receive_odom(const nav_msgs::Odometry::ConstPtr& odom_msg);
   void pretty_print_msg();
   void pretty_print_pose();
   void updatePose();
@@ -39,11 +42,15 @@ class AMCLWrapper
   void setEnvPointer(Environment *environment) {environment_ = environment;}
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
   bool is_msg_received;
+  bool is_odom_received;
 
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
+  ros::Subscriber odom_sub_;
   geometry_msgs::PoseWithCovarianceStamped received_pose_;
+  nav_msgs::Odometry received_odom_;
+
   std_msgs::Header header_;
   geometry_msgs::Pose full_pose_;
   boost::array<double, 36> covariance_;

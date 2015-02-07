@@ -4,7 +4,9 @@
 * \brief  Deals with the AMCL data
 */
 
+#include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
+
 #include "AMCLWrapper.h"
 #include "Definitions.h"
 
@@ -18,8 +20,15 @@ AMCLWrapper::AMCLWrapper()
                        &AMCLWrapper::receive_pose,
                        this);
   ROS_INFO("Subscribing to default AMCL pose");
+
+  odom_sub_ = nh_.subscribe("/odom", 1,
+                           &AMCLWrapper::receive_odom, this);
+
+  ROS_INFO("Subsribing to default Odom pose");
   is_msg_received = false;
+  is_odom_received = false;
 }
+
 
 AMCLWrapper::AMCLWrapper(std::string sub_name)
 {
@@ -29,30 +38,55 @@ AMCLWrapper::AMCLWrapper(std::string sub_name)
                        this);
   std::string info = "Subscribing to " + sub_name + " AMCL pose";
   ROS_INFO("%s", info.c_str());
+
+  odom_sub_ = nh_.subscribe("/" + sub_name + "/odom", 1,
+                           &AMCLWrapper::receive_odom, this);
+  info = "Subscribing to " + sub_name + " odom updates";
+  ROS_INFO("%s", info.c_str());
   is_msg_received = false;
+  is_odom_received = false;
 }
+
 
 AMCLWrapper::~AMCLWrapper()
 {
 
 };
 
+
 void AMCLWrapper::receive_pose(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
 {
-  // DEBUG("CALLBACK" << std::endl);
   is_msg_received = true;
-  ERR("IS THIS CALLED?" << std::endl);
   received_pose_ = *pose_msg;
-  // DEBUG("END_CALLBACK" << std::endl);
 }
+
+
+void AMCLWrapper::receive_odom(
+    const nav_msgs::Odometry::ConstPtr& odom_msg)
+{
+  is_odom_received = true;
+  received_odom_ = *odom_msg;
+}
+
 
 void AMCLWrapper::updatePose()
 {
-  // WARN("AMCLWrapper: update is called!" << std::endl);
-  header_ = received_pose_.header;
-  full_pose_ = received_pose_.pose.pose;
-  covariance_ = received_pose_.pose.covariance;
+// WARN("AMCLWrapper: update is called!" << std::endl);
+
+header_ = received_pose_.header;
+full_pose_ = received_pose_.pose.pose;
+covariance_ = received_pose_.pose.covariance;
+if (full_pose_.position.x != 0.0 &&
+        full_pose_.position.y != 0.0 &&
+        full_pose_.position.z != 0.0) {
+is_msg_received = true;
+}
+  else {
+    // assume odometry has been received
+    WARN("AMCLWrapper: using odometry!" << std::endl);
+    full_pose_ = received_odom_.pose.pose;
+  }
 }
 
 
@@ -68,17 +102,21 @@ void AMCLWrapper::pretty_print_msg()
   DEBUG("o.z: " << full_pose_.orientation.z << std::endl);
   DEBUG("o.w: " << full_pose_.orientation.w << std::endl);
   WARN("Covariance from AMCL:" << std::endl);
-  WARN("Cov: " << covariance_.data() << std::endl);
   WARN("[");
+  int count = 0;
   for (boost::array<double, 36>::iterator i(covariance_.begin());
        i != covariance_.end(); ++i) {
+    count += 1;
     WARN(i);
+
     if (boost::next(i) != covariance_.end())
       std::cout << ',';
+    if(count % 4 == 0 && count != 35) { WARN(std::endl); }
   }
   WARN("]" << std::endl);
   ERR("--------------------" << std::endl);
 }
+
 
 void AMCLWrapper::pretty_print_pose()
 {
@@ -87,8 +125,8 @@ void AMCLWrapper::pretty_print_pose()
     ERR("Tried to print non-initialised AMCL pose!");
     return;
   }
-  Vector2 p = get_position();
-  double o = get_orientation();
+  Vector2 p = this->get_position();
+  double o = this->get_orientation();
   ERR("--------------------" << std::endl);
   WARN("Pose from AMCL in 2D:" << std::endl);
   WARN("p.x: " << p.getX() << std::endl);
@@ -97,11 +135,13 @@ void AMCLWrapper::pretty_print_pose()
   ERR("--------------------" << std::endl);
 }
 
+
 geometry_msgs::PoseWithCovarianceStamped AMCLWrapper::get_full_msg()
 {
 
   return received_pose_;
 }
+
 
 std_msgs::Header AMCLWrapper::get_header()
 {
@@ -109,11 +149,13 @@ std_msgs::Header AMCLWrapper::get_header()
   return header_;
 }
 
+
 geometry_msgs::Pose AMCLWrapper::get_full_pose()
 {
 
   return full_pose_;
 }
+
 
 Vector2 AMCLWrapper::get_position()
 {
@@ -125,18 +167,19 @@ Vector2 AMCLWrapper::get_position()
 
 }
 
+
 double AMCLWrapper::get_orientation()
 {
-  if (!is_msg_received)
+  if (is_msg_received)
   {
-  return tf::getYaw(full_pose_.orientation);
+    return tf::getYaw(full_pose_.orientation);
   }
   return 0.0;
 }
+
 
 boost::array<double, 36> AMCLWrapper::get_cov()
 {
   return covariance_;
 }
-
 }

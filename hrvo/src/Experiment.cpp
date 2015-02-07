@@ -194,9 +194,8 @@ void hrvo::MoveIntoArea(Environment* planner)
   STARTED = true;
   while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
   {
-    if (CLEAR_SCREEN) {CLEAR();}
+    if (CLEAR_SCREEN) { CLEAR(); }
     ros::Rate update_freq(ROS_FREQ);
-    ERR("TRY"<< std::endl);
     planner->updateLocalisation(false);
     INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT)
       << " to Position " << ForwVec << std::endl);
@@ -213,7 +212,6 @@ void hrvo::MoveIntoArea(Environment* planner)
 
 void hrvo::SelectTracker(Environment* planner)
 {
-  // planner->updateTracker();
   planner->updateLocalisation(true);
   std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
@@ -253,7 +251,6 @@ void hrvo::SensingUpdate(PlannerMapPointer* PlannerMap)
   for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
   {
     Environment* planner = iter->second;
-    // planner->updateTracker();
     planner->updateLocalisation(true);
   }
 }
