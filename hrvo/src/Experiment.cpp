@@ -5,6 +5,7 @@
 */
 
 #include "Experiment.h"
+#include "AMCLWrapper.h"
 
 using namespace hrvo;
 

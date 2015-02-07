@@ -68,9 +68,7 @@
 #include <geometry_msgs/Twist.h>
 
 #include "hrvo/AddAgentService.h"
-
 #include "Vector2.h"
-
 
 /**
  * \brief  Set to 0 for a holonomic agent; set to 1 for a differential-drive agent.
@@ -82,6 +80,7 @@ class Agent;
 class Goal;
 class KdTree;
 class Environment;
+
 
 /**
  * \class  Simulator
@@ -109,7 +108,8 @@ class Simulator {
    * \param[in]  goalNo    The goal number of this agent.
    * \return     The number of the agent.
    */
-  std::size_t addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo);
+  std::size_t addAgent(std::string id, int agent_type,
+                       const Vector2 &position, std::size_t goalNo);
 
   /**
    * \brief      Adds a new agent to the simulation.
@@ -127,11 +127,18 @@ class Simulator {
    * \param[in]  orientation        The initial orientation (in radians) of this agent.
    * \return     The number of the agent.
    */
-  std::size_t addAgent(std::string id, int agent_type, const Vector2 &position, std::size_t goalNo, float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+  std::size_t addAgent(std::string id, int agent_type,
+                       const Vector2 &position, std::size_t goalNo,
+                       float neighborDist, std::size_t maxNeighbors,
+                       float radius, float goalRadius,
+                       float prefSpeed, float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
                        float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                       float uncertaintyOffset = 0.0f, float maxAccel = std::numeric_limits<float>::infinity(), const Vector2 &velocity = Vector2(0.0f, 0.0f), float orientation = 0.0f);
+                       float uncertaintyOffset = 0.0f,
+                       float maxAccel = std::numeric_limits<float>::infinity(),
+                       const Vector2 &velocity = Vector2(0.0f, 0.0f),
+                       float orientation = 0.0f);
 
   /**
    * \brief      Adds a new goal to the simulation.
@@ -464,7 +471,7 @@ class Simulator {
 
   void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
 
-  bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
+  // bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
 
  private:
   Simulator(const Simulator &other);

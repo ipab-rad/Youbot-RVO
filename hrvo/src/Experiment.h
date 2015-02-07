@@ -13,7 +13,7 @@
 #include <csignal>
 #include <fstream>
 
-//#include "AMCLWrapper.h"
+#include "AMCLWrapper.h"
 
 namespace hrvo {
 

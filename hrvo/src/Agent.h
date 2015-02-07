@@ -67,7 +67,6 @@
 #include "Simulator.h"
 #include "Vector2.h"
 #include "Parameter.h"
-#include "AMCLWrapper.h"
 
 namespace hrvo {
 class Simulator;
@@ -138,8 +137,7 @@ class Agent {
    * \param[in]  simulator  The simulation.
    */
   explicit Agent(Simulator *simulator, ros::NodeHandle &nh,
-                 std::string id, int agent_type,
-                 AMCLWrapper::AMCLWrapper* amclwrapper_);
+                 std::string id, int agent_type);
 
   /**
    * \brief      Constructor.
@@ -149,8 +147,7 @@ class Agent {
    */
   Agent(Simulator *simulator, const Vector2 &position,
         std::size_t goalNo, ros::NodeHandle &nh,
-        std::string id, int agent_type,
-        AMCLWrapper::AMCLWrapper* amclwrapper_);
+        std::string id, int agent_type);
 
   /**
    * \brief      Constructor.
@@ -178,8 +175,7 @@ class Agent {
         float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
         float uncertaintyOffset, ros::NodeHandle& nh,
-        std::string id, int agent_type,
-        AMCLWrapper::AMCLWrapper* amclwrapper_);
+        std::string id, int agent_type);
 
   /**
    * \brief  Computes the neighbors of this agent.

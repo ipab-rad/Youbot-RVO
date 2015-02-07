@@ -105,7 +105,7 @@ add_library(Goal src/Goal.cpp)
 add_library(KdTree src/KdTree.cpp)
 add_library(Simulator src/Simulator.cpp)
 add_library(Vector2 src/Vector2.cpp)
-add_library(AMCLWrapper src/AMCLWrapper.cpp)
+# add_library(AMCLWrapper src/AMCLWrapper.cpp)
 
 
 #set(HRVO_HEADERS
@@ -199,7 +199,7 @@ target_link_libraries(Experiment
   KdTree
   Simulator
   Vector2
-  AMCLWrapper
+#  AMCLWrapper
 )
 
 #############

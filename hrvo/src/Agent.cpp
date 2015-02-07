@@ -81,7 +81,6 @@
 #include "Goal.h"
 #include "KdTree.h"
 
-
 namespace hrvo
 {
 

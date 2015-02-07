@@ -5,6 +5,7 @@
 */
 
 #include "Environment.h"
+#include "AMCLWrapper.h"
 
 namespace hrvo {
 
@@ -16,11 +17,11 @@ namespace hrvo {
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos_);
+    this->initAMCL(); // has to be done before agent is added
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
     simvectPoint_ = &simvect_;
     this->initTracker();
-    this->initAMCL();
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
   }
 
@@ -31,6 +32,9 @@ namespace hrvo {
 
     delete tracker_;
     tracker_ = NULL;
+
+    delete amclwrapper_;
+    amclwrapper_ = NULL;
 
     for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
     {
@@ -326,5 +330,4 @@ void Environment::updateLocalisation()
       planner_->setAgentVelocity(i, STOP);
     }
   }
-
 }

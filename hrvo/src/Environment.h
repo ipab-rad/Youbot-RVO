@@ -22,11 +22,11 @@
 #include "Definitions.h"
 
 namespace hrvo {
+  class AMCLWrapper;
   class Tracker;
   class Simulator;
   class Agent;
   class Goal;
-  class AMCLWrapper;
 
   class Environment
   {
@@ -39,6 +39,7 @@ namespace hrvo {
     enum Actor getActorID() {return nActorID_;}
 
     std::string getStringActorID() {return sActorID_;}
+
 
     float getPlannerGlobalTime() {return planner_->getGlobalTime();}
 

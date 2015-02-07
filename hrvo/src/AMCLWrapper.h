@@ -17,10 +17,11 @@
 #include "Vector2.h"
 
 namespace hrvo {
+class Environment;
+class Simulator;
 
 class AMCLWrapper
 {
-
  public:
   AMCLWrapper();
   AMCLWrapper(std::string sub_name);
@@ -37,8 +38,6 @@ class AMCLWrapper
   double get_orientation();
   void setEnvPointer(Environment *environment) {environment_ = environment;}
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
-
-
   bool initialised;
 
  private:
