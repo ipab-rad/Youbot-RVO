@@ -43,9 +43,11 @@ class AMCLWrapper
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
   bool is_msg_received;
   bool is_odom_received;
+  int callback_counter;
 
  private:
   ros::NodeHandle nh_;
+  ros::NodeHandle amcl_nh_;
   ros::Subscriber sub_;
   ros::Subscriber odom_sub_;
   geometry_msgs::PoseWithCovarianceStamped received_pose_;

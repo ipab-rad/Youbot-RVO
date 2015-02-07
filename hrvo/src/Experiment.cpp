@@ -268,7 +268,6 @@ void hrvo::PrintAgentState(PlannerMapPointer* PlannerMap)
         << "]" << std::endl);
     }
   }
-  //AMCLpointer_->pretty_print();
 }
 
 void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)

@@ -84,7 +84,6 @@ namespace hrvo {
     amclwrapper_ = new AMCLWrapper(sActorID_);
     amclwrapper_->setEnvPointer(this);
     amclwrapper_->setPlannerPointer(planner_);
-    amclwrapper_->updatePose();
   }
 
   void Environment::initTracker()

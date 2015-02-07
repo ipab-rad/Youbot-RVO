@@ -15,7 +15,7 @@ namespace hrvo {
 
 AMCLWrapper::AMCLWrapper()
 {
-  sub_ = nh_.subscribe("/amcl_pose",
+  sub_ = amcl_nh_.subscribe("/amcl_pose",
                        1,
                        &AMCLWrapper::receive_pose,
                        this);
@@ -27,22 +27,25 @@ AMCLWrapper::AMCLWrapper()
   ROS_INFO("Subsribing to default Odom pose");
   is_msg_received = false;
   is_odom_received = false;
+  callback_counter = 0;
 }
 
 
 AMCLWrapper::AMCLWrapper(std::string sub_name)
 {
-  sub_ = nh_.subscribe("/" + sub_name + "/amcl_pose",
+  odom_sub_ = nh_.subscribe("/" + sub_name + "/odom", 1,
+                           &AMCLWrapper::receive_odom, this);
+  std::string info = "Subscribing to " + sub_name + " odom updates";
+  ROS_INFO("%s", info.c_str());
+
+  sub_ = amcl_nh_.subscribe("/" + sub_name + "/amcl_pose",
                        1,
                        &AMCLWrapper::receive_pose,
                        this);
-  std::string info = "Subscribing to " + sub_name + " AMCL pose";
+  info = "Subscribing to " + sub_name + " AMCL pose";
   ROS_INFO("%s", info.c_str());
 
-  odom_sub_ = nh_.subscribe("/" + sub_name + "/odom", 1,
-                           &AMCLWrapper::receive_odom, this);
-  info = "Subscribing to " + sub_name + " odom updates";
-  ROS_INFO("%s", info.c_str());
+  callback_counter = 0;
   is_msg_received = false;
   is_odom_received = false;
 }
@@ -57,8 +60,22 @@ AMCLWrapper::~AMCLWrapper()
 void AMCLWrapper::receive_pose(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
 {
-  is_msg_received = true;
-  received_pose_ = *pose_msg;
+  callback_counter++;
+  if (!(pose_msg->pose.pose.position.x == 0 &&
+    pose_msg->pose.pose.position.y == 0 &&
+    pose_msg->pose.pose.position.z == 0)) {
+    is_msg_received = true;
+    received_pose_ = *pose_msg;
+    callback_counter = 0;
+  }
+  else {
+    INFO("Callback counter = " << callback_counter << std::endl);
+  }
+
+  if (callback_counter > 10){
+    is_msg_received = false;
+    callback_counter = 0;
+  }
 }
 
 
@@ -77,15 +94,15 @@ void AMCLWrapper::updatePose()
 header_ = received_pose_.header;
 full_pose_ = received_pose_.pose.pose;
 covariance_ = received_pose_.pose.covariance;
-if (full_pose_.position.x != 0.0 &&
-        full_pose_.position.y != 0.0 &&
-        full_pose_.position.z != 0.0) {
-is_msg_received = true;
+if (!(full_pose_.position.x == 0.0 &&
+      full_pose_.position.y == 0.0 &&
+      full_pose_.position.z == 0.0)) {
+  WARN("AMCLWrapper: using AMCL!" << std::endl);
 }
-  else {
-    // assume odometry has been received
-    WARN("AMCLWrapper: using odometry!" << std::endl);
-    full_pose_ = received_odom_.pose.pose;
+else {
+  // assuming odometry has been received
+  WARN("AMCLWrapper: using odometry!" << std::endl);
+  full_pose_ = received_odom_.pose.pose;
   }
 }
 
@@ -146,21 +163,18 @@ ERR("--------------------" << std::endl);
 
 geometry_msgs::PoseWithCovarianceStamped AMCLWrapper::get_full_msg()
 {
-
   return received_pose_;
 }
 
 
 std_msgs::Header AMCLWrapper::get_header()
 {
-
   return header_;
 }
 
 
 geometry_msgs::Pose AMCLWrapper::get_full_pose()
 {
-
   return full_pose_;
 }
 
@@ -168,7 +182,6 @@ geometry_msgs::Pose AMCLWrapper::get_full_pose()
 Vector2 AMCLWrapper::get_position()
 {
   return Vector2(full_pose_.position.x, full_pose_.position.y);
-
 }
 
 
