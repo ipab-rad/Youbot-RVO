@@ -49,7 +49,7 @@ namespace hrvo {
     void initAMCL();
     void initTracker();
 
-    void updateLocalisation();
+    void updateLocalisation(bool USE_TRACKER);
     //    void updateTracker();
 
     std::map<int, std::size_t> getTrackerIDs();

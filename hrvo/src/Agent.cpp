@@ -125,6 +125,11 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     odomFlag_ = true;
+    if (!IS_AMCL_ACTIVE)
+    {
+      odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                               &Agent::updatePose, this);
+    }
   }
 }
 
@@ -682,21 +687,19 @@ void Agent::odomPosUpdate()
     << previous_odometry_offset_
     << ", Curr "<< current_odometry_offset_ << std::endl);
   */
-  if (!IS_AMCL_ACTIVE)
-  {
+  
     position_ += current_odometry_offset_ - previous_odometry_offset_;
-  }
+ 
 
 }
 
 void Agent::odomUpdate()
 {
 
-  if (!IS_AMCL_ACTIVE)
-  {
+  
     odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
     previous_odometry_offset_ = current_odometry_offset_;
-  }
+ 
 }
 
 void Agent::update()

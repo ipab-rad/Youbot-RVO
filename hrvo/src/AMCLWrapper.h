@@ -38,7 +38,7 @@ class AMCLWrapper
   double get_orientation();
   void setEnvPointer(Environment *environment) {environment_ = environment;}
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
-  bool initialised;
+  bool is_msg_received;
 
  private:
   ros::NodeHandle nh_;

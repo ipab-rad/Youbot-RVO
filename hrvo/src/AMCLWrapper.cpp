@@ -18,18 +18,18 @@ AMCLWrapper::AMCLWrapper()
                        &AMCLWrapper::receive_pose,
                        this);
   ROS_INFO("Subscribing to default AMCL pose");
-  initialised = false;
+  is_msg_received = false;
 }
 
 AMCLWrapper::AMCLWrapper(std::string sub_name)
 {
   sub_ = nh_.subscribe("/" + sub_name + "/amcl_pose",
-                       1000,
+                       1,
                        &AMCLWrapper::receive_pose,
                        this);
   std::string info = "Subscribing to " + sub_name + " AMCL pose";
   ROS_INFO("%s", info.c_str());
-  initialised = false;
+  is_msg_received = false;
 }
 
 AMCLWrapper::~AMCLWrapper()
@@ -41,6 +41,8 @@ void AMCLWrapper::receive_pose(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
 {
   // DEBUG("CALLBACK" << std::endl);
+  is_msg_received = true;
+  ERR("IS THIS CALLED?" << std::endl);
   received_pose_ = *pose_msg;
   // DEBUG("END_CALLBACK" << std::endl);
 }
@@ -48,11 +50,9 @@ void AMCLWrapper::receive_pose(
 void AMCLWrapper::updatePose()
 {
   // WARN("AMCLWrapper: update is called!" << std::endl);
-  initialised = true;
   header_ = received_pose_.header;
   full_pose_ = received_pose_.pose.pose;
   covariance_ = received_pose_.pose.covariance;
-  ERR("p.x: " << full_pose_.position.x << std::endl);
 }
 
 
@@ -82,7 +82,7 @@ void AMCLWrapper::pretty_print_msg()
 
 void AMCLWrapper::pretty_print_pose()
 {
-  if (!initialised)
+  if (!is_msg_received)
   {
     ERR("Tried to print non-initialised AMCL pose!");
     return;
@@ -99,16 +99,19 @@ void AMCLWrapper::pretty_print_pose()
 
 geometry_msgs::PoseWithCovarianceStamped AMCLWrapper::get_full_msg()
 {
+
   return received_pose_;
 }
 
 std_msgs::Header AMCLWrapper::get_header()
 {
+
   return header_;
 }
 
 geometry_msgs::Pose AMCLWrapper::get_full_pose()
 {
+
   return full_pose_;
 }
 
@@ -124,7 +127,11 @@ Vector2 AMCLWrapper::get_position()
 
 double AMCLWrapper::get_orientation()
 {
+  if (!is_msg_received)
+  {
   return tf::getYaw(full_pose_.orientation);
+  }
+  return 0.0;
 }
 
 boost::array<double, 36> AMCLWrapper::get_cov()

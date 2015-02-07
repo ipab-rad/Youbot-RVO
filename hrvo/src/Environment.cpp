@@ -84,6 +84,7 @@ namespace hrvo {
     amclwrapper_ = new AMCLWrapper(sActorID_);
     amclwrapper_->setEnvPointer(this);
     amclwrapper_->setPlannerPointer(planner_);
+    amclwrapper_->updatePose();
   }
 
   void Environment::initTracker()
@@ -95,13 +96,17 @@ namespace hrvo {
 
 
 //  void Environment::updateTracker()
-void Environment::updateLocalisation()
+void Environment::updateLocalisation(bool USE_TRACKER)
   {
+    ERR("1 PRINTING NOW! " << std::endl)
     amclwrapper_->updatePose();
+    amclwrapper_->pretty_print_pose();
     planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_position());
     planner_->setSensedOrientation(THIS_ROBOT, amclwrapper_->get_orientation());
-    amclwrapper_->pretty_print_pose();
-    tracker_->updateTracker();
+    ERR("2 PRINTING NOW! " << std::endl)
+    if (USE_TRACKER) {
+      tracker_->updateTracker();
+    }
   }
 
   std::map<int, std::size_t> Environment::getTrackerIDs()
