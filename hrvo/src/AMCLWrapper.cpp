@@ -122,17 +122,25 @@ void AMCLWrapper::pretty_print_pose()
 {
   if (!is_msg_received)
   {
-    ERR("Tried to print non-initialised AMCL pose!");
-    return;
-  }
-  Vector2 p = this->get_position();
-  double o = this->get_orientation();
-  ERR("--------------------" << std::endl);
-  WARN("Pose from AMCL in 2D:" << std::endl);
-  WARN("p.x: " << p.getX() << std::endl);
-  WARN("p.y: " << p.getY() << std::endl);
-  WARN("Yaw: " << o << std::endl);
-  ERR("--------------------" << std::endl);
+    Vector2 p = this->get_position();
+    double o = this->get_orientation();
+    ERR("--------------------" << std::endl);
+    WARN("Pose from odometry:" << std::endl);
+    WARN("p.x: " << p.getX() << std::endl);
+    WARN("p.y: " << p.getY() << std::endl);
+    WARN("Yaw: " << o << std::endl);
+    ERR("--------------------" << std::endl);
+}
+else {
+Vector2 p = this->get_position();
+double o = this->get_orientation();
+ERR("--------------------" << std::endl);
+WARN("Pose from AMCL in 2D:" << std::endl);
+WARN("p.x: " << p.getX() << std::endl);
+WARN("p.y: " << p.getY() << std::endl);
+WARN("Yaw: " << o << std::endl);
+ERR("--------------------" << std::endl);
+}
 }
 
 
@@ -159,10 +167,6 @@ geometry_msgs::Pose AMCLWrapper::get_full_pose()
 
 Vector2 AMCLWrapper::get_position()
 {
-  // WARN("AMCLWrapper: get_position is called!" << std::endl);
-  // ERR("p.x: " << full_pose_.position.x << std::endl);
-  // ERR("x" << full_pose_.position.x);
-  // ERR("y" << full_pose_.position.y);
   return Vector2(full_pose_.position.x, full_pose_.position.y);
 
 }

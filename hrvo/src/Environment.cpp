@@ -98,12 +98,10 @@ namespace hrvo {
 //  void Environment::updateTracker()
 void Environment::updateLocalisation(bool USE_TRACKER)
   {
-    ERR("1 PRINTING NOW! " << std::endl)
     amclwrapper_->updatePose();
     amclwrapper_->pretty_print_pose();
     planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_position());
     planner_->setSensedOrientation(THIS_ROBOT, amclwrapper_->get_orientation());
-    ERR("2 PRINTING NOW! " << std::endl)
     if (USE_TRACKER) {
       tracker_->updateTracker();
     }
