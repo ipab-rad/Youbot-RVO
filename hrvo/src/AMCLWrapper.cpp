@@ -60,7 +60,10 @@ AMCLWrapper::~AMCLWrapper()
 void AMCLWrapper::receive_pose(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
 {
-  callback_counter++;
+  // callback_counter++;
+  DEBUG("p.x: " << pose_msg->pose.pose.position.x << std::endl);
+  DEBUG("p.y: " << pose_msg->pose.pose.position.y << std::endl);
+  DEBUG("p.z: " << pose_msg->pose.pose.position.z << std::endl);
   if (!(pose_msg->pose.pose.position.x == 0 &&
     pose_msg->pose.pose.position.y == 0 &&
     pose_msg->pose.pose.position.z == 0)) {
@@ -69,12 +72,12 @@ void AMCLWrapper::receive_pose(
     callback_counter = 0;
   }
   else {
-    INFO("Callback counter = " << callback_counter << std::endl);
-  }
+  //   INFO("Callback counter = " << callback_counter << std::endl);
+  // }
 
-  if (callback_counter > 10){
+  // if (callback_counter > 1){
     is_msg_received = false;
-    callback_counter = 0;
+    // callback_counter = 0;
   }
 }
 
@@ -94,6 +97,10 @@ void AMCLWrapper::updatePose()
 header_ = received_pose_.header;
 full_pose_ = received_pose_.pose.pose;
 covariance_ = received_pose_.pose.covariance;
+// DEBUG("p.x: " << full_pose_.position.x << std::endl);
+// DEBUG("p.y: " << full_pose_.position.y << std::endl);
+// DEBUG("p.z: " << full_pose_.position.z << std::endl);
+
 if (!(full_pose_.position.x == 0.0 &&
       full_pose_.position.y == 0.0 &&
       full_pose_.position.z == 0.0)) {
