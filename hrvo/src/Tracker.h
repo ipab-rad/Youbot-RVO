@@ -75,8 +75,9 @@ namespace hrvo {
       bool trackOtherAgents_;
 
       int robotTrackerID_;
-      std::map<int, std::size_t> trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
-      std::map<int, std::vector<float> > trackerCompOdom_;  // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
+      std::map<int, std::size_t> trackedAgents_;            // First: Tracker ID, Second: SimAgent ID
+      std::map<std::size_t, std::size_t> trackedAgentCounter_;  // First: TrackerID, Second: TrackerCount
+      std::map<int, std::vector<float> > trackerCompOdom_;  // First: Tracker ID, Second: Cumulative Diff between Odometry and Tracker Position
 
   };
 
