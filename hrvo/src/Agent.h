@@ -226,8 +226,12 @@ class Agent {
   Vector2 agent_sensed_position_;
   Vector2 previous_odometry_offset_;  // Odometry offset before action step
   Vector2 current_odometry_offset_;   // Odometry offset after action step
+  Vector2 curr_offset_;
+  Vector2 prev_offset_;
   bool odomFlag_;
   Vector2 odomPosition_;
+  Vector2 amcl_pose_;
+  bool amcl_update_;
   Vector2 prefVelocity_;
   Vector2 velocity_;
   std::size_t goalNo_;
@@ -275,11 +279,7 @@ class Agent {
    * \brief  set the pose topic.
    */
   void setPoseTopic(std::string pose_topic);
-  /**
-   * brief  set the pose subscriber.
-   */
-  void attachPoseSubscriber(ros::NodeHandle &nh,
-                            std::string pose_topic);
+
   // #endif
 };
 }

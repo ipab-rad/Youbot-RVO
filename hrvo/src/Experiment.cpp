@@ -189,8 +189,10 @@ void hrvo::EStopRobots(PlannerMapPointer* PlannerMap)
 
 void hrvo::MoveIntoArea(Environment* planner)
 {
-  Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
-  planner->addAndSetPlannerGoal(ForwVec);
+  // Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
+  // planner->addAndSetPlannerGoal(ForwVec);
+  std::size_t initGoal = 1;
+  planner->setPlannerGoal(initGoal);
   STARTED = true;
   while ( !planner->getReachedPlannerGoal() && ros::ok() && !SAFETY_STOP )
   {
@@ -198,7 +200,7 @@ void hrvo::MoveIntoArea(Environment* planner)
     ros::Rate update_freq(ROS_FREQ);
     planner->updateLocalisation(false);
     INFO("Moving from " << planner->getPlannerAgentPosition(THIS_ROBOT)
-      << " to Position " << ForwVec << std::endl);
+      << " to Position " << planner->getPlannerGoalPosition(initGoal) << std::endl);
 
     planner->doPlannerStep();
 

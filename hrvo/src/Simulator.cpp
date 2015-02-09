@@ -210,12 +210,13 @@ void Simulator::doStep()
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ == ROBOT)
     { // Should odometry be updated here?
-      // ERR("What's going on?" << std::endl);
       if (odomNeeded_)
       {
+        ERR("Odom Needed!" << std::endl);
         (*iter)->odomPosUpdate();
         // (*iter)->odomFlag_ = true;
       }
+      ERR("Odom Update!" << std::endl);
       (*iter)->odomUpdate();
     }
   }
@@ -472,7 +473,8 @@ Vector2 Simulator::getCurrOdomOffset(std::size_t agentNo)
 
 void Simulator::setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset)
 {
-  agents_[agentNo]->current_odometry_offset_ = current_odometry_offset;
+  // agents_[agentNo]->current_odometry_offset_ = current_odometry_offset;
+  agents_[agentNo]->curr_offset_ = current_odometry_offset;
 }
 
 Vector2 Simulator::getPrevOdomOffset(std::size_t agentNo)
@@ -499,25 +501,10 @@ void Simulator::resetOdomPosition() { agents_[THIS_ROBOT]->odomPosition_ = agent
 
 Vector2 Simulator::getOdomPosition()  {return agents_[THIS_ROBOT]->odomPosition_;}
 
-// bool Simulator::addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res)
-// {
-//   std::stringstream ss;
-//   ss << "agent_" << req.id;
-//   const Vector2 position(req.position.x, req.position.y);
-//   const Vector2 velocity(req.velocity.x, req.velocity.y);
-
-//   try {
-//     ROS_INFO_STREAM("detected " << ss.str());
-//     std::size_t agentNo = addAgent(ss.str(), false, position, addGoal(position));
-//     setAgentVelocity(agentNo, velocity);
-//     agents_[agentNo]->attachPoseSubscriber(nh_, req.topic_id);
-//   } catch (std::exception e) {
-//     ROS_ERROR("failed to add %s", ss.str().c_str());
-//     res.succeeded = false;
-//     return false;
-//   }
-//   res.succeeded = true;
-//   return true;
-// }
+void Simulator::setAMCLPose(std::size_t agentNo, Vector2 amcl_pose)
+{
+  agents_[THIS_ROBOT]->amcl_pose_ = amcl_pose;
+  agents_[THIS_ROBOT]->amcl_update_ = true;
+}
 
 }

@@ -473,6 +473,8 @@ class Simulator {
 
   Vector2 getOdomPosition();
 
+  void setAMCLPose(std::size_t agentNo, Vector2 amcl_pose);
+
   void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
 
   // bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);

@@ -130,6 +130,8 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
       odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                &Agent::updatePose, this);
     }
+    curr_offset_ = STOP;
+    prev_offset_ = STOP;
   }
 }
 
@@ -175,6 +177,8 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
       odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                &Agent::updatePose, this);
     }
+    curr_offset_ = STOP;
+    prev_offset_ = STOP;
   }
 #if HRVO_DIFFERENTIAL_DRIVE
   computeWheelSpeeds();
@@ -226,6 +230,8 @@ simulator_(simulator), newVelocity_(velocity),
       odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                &Agent::updatePose, this);
     }
+    curr_offset_ = STOP;
+    prev_offset_ = STOP;
   }
 }
 
@@ -681,25 +687,60 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
 
 void Agent::odomPosUpdate()
 {
-  /*
-    &Agent::updatePose;
-    DEBUG("Pos " << position_ << ", Prev "
-    << previous_odometry_offset_
-    << ", Curr "<< current_odometry_offset_ << std::endl);
-  */
+  Vector2 odom_offset = curr_offset_ - prev_offset_;
+  prev_offset_ = curr_offset_;
 
-    position_ += current_odometry_offset_ - previous_odometry_offset_;
+  if (amcl_update_ &&
+    amcl_pose_.getX() != 0.0 &&
+    amcl_pose_.getY() != 0.0)
+  {
+    position_ = amcl_pose_;
+  }
+  else
+  {
+    position_ += odom_offset;
+  }
 
+  amcl_update_ = false;
 
+  // if (previous_odometry_offset_.getX() == 0.0 &&
+  //   previous_odometry_offset_.getY() == 0.0 &&
+  //   current_odometry_offset_.getX() == 0.0 &&
+  //   current_odometry_offset_.getY() == 0.0)
+  // {
+  //   ERR("No Odometry information" << std::endl)
+  // }
+  // else if (previous_odometry_offset_.getX() == 0.0 &&
+  //   previous_odometry_offset_.getY() == 0.0)
+  // {
+  //   odomPosition_= current_odometry_offset_;
+  //   position_ = current_odometry_offset_;
+  //   previous_odometry_offset_ = current_odometry_offset_;
+  //   updated_ = true;
+  //   WARN("Odometry Initialised" << std::endl);
+  // }
+  // else
+  // {
+  //   position_ += current_odometry_offset_ - previous_odometry_offset_;
+  //   DEBUG("Pos Updated" << std::endl);
+  // }
+
+  // DEBUG("Pos " << position_ << ", Curr "
+  // << curr_offset_ << ", Prev "
+  // << prev_offset_ << std::endl);
+  // DEBUG("Ori: " << orientation_ << ", Sens: " 
+  // << agent_sensed_orientation_ << std::endl);
+  
+  
+
+  //orientation_ = agent_sensed_orientation_; // TO BE IMPLEMENTED
 }
 
 void Agent::odomUpdate()
 {
-
-
-    odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
-    previous_odometry_offset_ = current_odometry_offset_;
-
+  // odomPosition_ += current_odometry_offset_ - previous_odometry_offset_;
+  // previous_odometry_offset_ = current_odometry_offset_;
+  // ERR("odomPos " << odomPosition_ << std::endl);
 }
 
 void Agent::update()
@@ -793,7 +834,8 @@ void Agent::update()
 
 void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 {
-
+  ERR("Curr:" << current_odometry_offset_ << std::endl);
+  ERR("Prev:" << previous_odometry_offset_ << std::endl);
   current_odometry_offset_.setX(pose_msg->pose.pose.position.x);
   current_odometry_offset_.setY(pose_msg->pose.pose.position.y);
   agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
@@ -834,9 +876,4 @@ void Agent::setPoseTopic(std::string pose_topic)
   pose_topic_ = pose_topic;
 }
 
-void Agent::attachPoseSubscriber(ros::NodeHandle& nh, std::string pose_topic)
-{
-  setPoseTopic(pose_topic);
-  odom_sub_ = nh.subscribe(pose_topic, 1, &Agent::updatePose, this);
-}
 }

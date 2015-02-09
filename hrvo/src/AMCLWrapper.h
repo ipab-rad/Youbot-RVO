@@ -39,6 +39,8 @@ class AMCLWrapper
   Vector2 get_position();
   boost::array<double, 36> get_cov();
   double get_orientation();
+  Vector2 get_odom_position();
+  double get_odom_orientation();
   void setEnvPointer(Environment *environment) {environment_ = environment;}
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
   bool is_msg_received;
@@ -46,6 +48,7 @@ class AMCLWrapper
   int callback_counter;
 
  private:
+  std::size_t odCount;
   ros::NodeHandle nh_;
   ros::NodeHandle amcl_nh_;
   ros::Subscriber sub_;
@@ -55,6 +58,7 @@ class AMCLWrapper
 
   std_msgs::Header header_;
   geometry_msgs::Pose full_pose_;
+  geometry_msgs::Pose odom_pose_;
   boost::array<double, 36> covariance_;
   Environment* environment_;
   Simulator* planner_;
