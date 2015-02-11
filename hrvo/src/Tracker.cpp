@@ -126,7 +126,6 @@ namespace hrvo {
           planner_->setAgentVelocity(AgentID, STOP);
           planner_->setAgentType(AgentID, INACTIVE);
         }
-        trackedAgentCounter_[TrackID]=0;
         trackedAgents_.erase(iter);
         trackerCompOdom_.erase(TrackID);
       }
@@ -193,19 +192,8 @@ namespace hrvo {
         }
         else
         {
-          if (trackedAgentCounter_.find(TrackerID)==trackedAgentCounter_.end())
-          {
-            trackedAgentCounter_[TrackerID] = 1;
-          }
-          else
-          {
-            trackedAgentCounter_[TrackerID] = trackedAgentCounter_[TrackerID] + 1;
-          }
-          if (trackedAgentCounter_[TrackerID] > 5)
-          {
-            trackedAgents_[TrackerID] = environment_->addPedestrianAgent("TrackedPerson" + sid, agentPos, environment_->addPlannerGoal(agentPos));
-            DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
-          }
+          trackedAgents_[TrackerID] = environment_->addPedestrianAgent("TrackedPerson" + sid, agentPos, environment_->addPlannerGoal(agentPos));
+          DEBUG("New agent" << trackedAgents_[TrackerID] << " with tracker" << sid << std::endl);
         }
       }
 
@@ -238,7 +226,7 @@ namespace hrvo {
           // {
             trackerCompOdom_[TrackerID].insert(trackerCompOdom_[TrackerID].begin(), odomdiff);
             if (trackerCompOdom_[TrackerID].size() > TRACKER_ODOM_COMPARISONS)
-            {trackerCompOdom_[TrackerID].resize(TRACKER_ODOM_COMPARISONS);}
+              {trackerCompOdom_[TrackerID].resize(TRACKER_ODOM_COMPARISONS);}
             DEBUG("Tracker" << TrackerID << " Pos " << agentPos << std::endl);
             // DEBUG("CompOdom " << odomdiff << std::endl);
           // }
@@ -266,7 +254,6 @@ namespace hrvo {
           {
             odomSums[TrackerID] += (*iter); 
           }
-          odomSums[TrackerID] = odomSums[TrackerID] / trackerCompOdom_[TrackerID].size();
         }
       }
       for(std::map<int, float>::iterator iter = odomSums.begin(); iter != odomSums.end(); ++iter)
