@@ -115,7 +115,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     std::size_t id = (*PlannerMap).size()+1;
     (*PlannerMap)[id] = new Environment(YOUBOT_2, START_POS2);
     (*PlannerMap)[id]->setPlannerGoalPlan(SOUNDWAVE_PLAN);
-    (*PlannerMap)[id]->setPlannerInitialGoal(2);
+    (*PlannerMap)[id]->setPlannerInitialGoal(1);
   }
   if (STARSCREAM_ACTIVE)
   {
