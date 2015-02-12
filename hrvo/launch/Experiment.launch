@@ -15,10 +15,10 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
                 <!-- Robot Setup -->
                 <param name="megatronActive" type="bool" value="true"/>
-                <param name="megatronPlan" type="int" value="1"/>
+                <param name="megatronPlan" type="int" value="3"/>
 
-                <param name="soundwaveActive" type="bool" value="true"/>
-                <param name="soundwavePlan" type="int" value="1"/>
+                <param name="soundwaveActive" type="bool" value="false"/>
+                <param name="soundwavePlan" type="int" value="3"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
                 <param name="starscreamActive" type="int" value="3"/>
