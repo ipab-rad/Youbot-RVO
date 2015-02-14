@@ -14,10 +14,11 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         <!-- Start the experiment node -->
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
                 <!-- Robot Setup -->
-                <param name="megatronActive" type="bool" value="true"/>
+                <!-- One robot agent must always be initialised, even if not planning -->
+                <param name="megatronActive" type="bool" value="false"/>
                 <param name="megatronPlan" type="int" value="3"/>
 
-                <param name="soundwaveActive" type="bool" value="false"/>
+                <param name="soundwaveActive" type="bool" value="true"/>
                 <param name="soundwavePlan" type="int" value="3"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
@@ -36,8 +37,8 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="onlyOdometry" type="bool" value="false"/>
                 <param name="isamclactive" type="bool" value="false"/>
 
-                <param name="enableModelling" type="bool" value="false"/>
-                <param name="logData" type="bool" value="false"/>
+                <param name="enableModelling" type="bool" value="true"/>
+                <param name="logData" type="bool" value="true"/>
                 <param name="assignTrackerWhenAlone" type="bool" value="false"/>
                 <param name="trackerOdomComparisons" type="int" value="10"/>
                 <param name="rosFreq" type="int" value="10"/>
