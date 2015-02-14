@@ -209,35 +209,47 @@ void Simulator::doStep()
 
   // Update Robot Odometry
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ( ((*iter)->agent_type_ == ROBOT) && (odomNeeded_) )
+    Agent* agent = (*iter);
+    if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) )
     {
       DEBUG("Odom Update!" << std::endl);
-      (*iter)->odomPosUpdate();
+      agent->odomPosUpdate();
     }
   }
 
   // Calculate next velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
+    Agent* agent = (*iter);
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
     {
-      (*iter)->computePreferredVelocity();
-      (*iter)->computeNeighbors();
-      (*iter)->computeNewVelocity();
+      agent->computePreferredVelocity();
+      agent->computeNeighbors();
+      agent->computeNewVelocity();
 #if HRVO_DIFFERENTIAL_DRIVE
-      (*iter)->computeWheelSpeeds();
+      agent->computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
+      displaySimAgents(agent);
     }
   }
 
   // Update simulated agent positions given velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
+    Agent* agent = (*iter);
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
     {
-      (*iter)->update();
+      agent->update();
     }
   }
 
   globalTime_ += timeStep_;
+}
+
+void Simulator::displaySimAgents(Agent* agent)
+{
+  if (agent->agent_type_ == SIMAGENT) 
+    {INFO(agent->id_ << " Pos " << agent->position_ 
+      << " Vel " << agent->velocity_ << " Goal " 
+      << this->getGoalPosition(agent->goalNo_) << std::endl);}
 }
 
 std::size_t Simulator::getAgentGoal(std::size_t agentNo) const

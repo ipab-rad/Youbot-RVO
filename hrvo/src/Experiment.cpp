@@ -117,6 +117,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     (*PlannerMap)[id] = new Environment(YOUBOT_2, START_POS2);
     (*PlannerMap)[id]->setPlannerGoalPlan(SOUNDWAVE_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(2);
+    (*PlannerMap)[id]->addVirtualAgent("1", Vector2(-5, 1.5), 1);
   }
   if (STARSCREAM_ACTIVE)
   {

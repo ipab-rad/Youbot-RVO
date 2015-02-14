@@ -159,6 +159,9 @@ class Simulator {
    * \param[in]  agentNo  The number of the agent whose goal number is to be retrieved.
    * \return     The present goal number of the agent.
    */
+
+  void displaySimAgents(Agent* agent);   
+
   std::size_t getAgentGoal(std::size_t agentNo) const;
 
   /**
