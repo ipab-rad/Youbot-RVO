@@ -213,8 +213,6 @@ class Agent {
 
   void odomPosUpdate();
 
-  void odomUpdate();
-
   // AGENT PARAMETERS
   // bool limit_workspace_vel;
   // float x_limits[2];       // Min-Max X workspace limits
@@ -228,7 +226,6 @@ class Agent {
   Vector2 current_odometry_offset_;   // Odometry offset after action step
   Vector2 curr_offset_;
   Vector2 prev_offset_;
-  bool odomFlag_;
   Vector2 odomPosition_;
   Vector2 amcl_pose_;
   bool amcl_update_;
