@@ -300,7 +300,8 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
     std::map<std::size_t, std::map<std::size_t, Vector2> > possGoals; //EnvID, GoalID, GoalPos
     std::map<std::size_t, std::vector <std::size_t> > modelledAgents; //EnvID, AgentIDs
 
-    for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+    for(PlannerMapPointer::iterator iter = (*PlannerMap).begin();
+     iter != (*PlannerMap).end(); ++iter)
     {
       std::size_t EnvID = iter->first;
       Environment* planner = iter->second;
@@ -310,8 +311,12 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
       possGoals[EnvID][2] = I_g3;
       // possGoals[EnvID][2] = DynGoalPos;
 
+      DEBUG("NumAgents=" << planner->getNumPlannerAgents() << " Own:" << MODEL_OWN_ROBOT << std::endl);
       // TODO: Start at 0 to model main robot
-      for(std::size_t AgentID = 0; AgentID < planner->getNumPlannerAgents(); ++AgentID)
+      std::size_t firstModelledAgent = 1;
+      if (MODEL_OWN_ROBOT) {firstModelledAgent = 0;}
+      for(std::size_t AgentID = firstModelledAgent; 
+        AgentID < planner->getNumPlannerAgents(); ++AgentID)
       {
         if (planner->getAgentType(AgentID) != INACTIVE)
         {
@@ -329,7 +334,8 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
     if (LOG_DATA && Logged)
     {
       if (!ENABLE_PLANNER) {(*PlannerMap)[LOG_PLANNER]->doPlannerStep();}
-      logData(dataLog, LOG_PLANNER, (*PlannerMap)[LOG_PLANNER]->getPlannerGlobalTime() - startTime,
+      logData(dataLog, LOG_PLANNER,
+       (*PlannerMap)[LOG_PLANNER]->getPlannerGlobalTime() - startTime,
        modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);
     }
   }

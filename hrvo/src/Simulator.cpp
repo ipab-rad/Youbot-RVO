@@ -246,10 +246,12 @@ void Simulator::doStep()
 
 void Simulator::displaySimAgents(Agent* agent)
 {
-  if (agent->agent_type_ == SIMAGENT) 
-    {INFO(agent->id_ << " Pos " << agent->position_ 
-      << " Vel " << agent->velocity_ << " Goal " 
-      << this->getGoalPosition(agent->goalNo_) << std::endl);}
+  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS)) 
+  {
+    INFO(agent->id_ << " Pos " << agent->position_ 
+    << " Vel " << agent->velocity_ << " Goal " 
+    << this->getGoalPosition(agent->goalNo_) << std::endl);
+  }
 }
 
 std::size_t Simulator::getAgentGoal(std::size_t agentNo) const
