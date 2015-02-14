@@ -207,20 +207,16 @@ void Simulator::doStep()
 
   kdTree_->build();
 
+  // Update Robot Odometry
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ == ROBOT)
-    { // Should odometry be updated here?
-      if (odomNeeded_)
-      {
-        ERR("Odom Needed!" << std::endl);
-        (*iter)->odomPosUpdate();
-        // (*iter)->odomFlag_ = true;
-      }
-      ERR("Odom Update!" << std::endl);
-      (*iter)->odomUpdate();
+    if ( ((*iter)->agent_type_ == ROBOT) && (odomNeeded_) )
+    {
+      DEBUG("Odom Update!" << std::endl);
+      (*iter)->odomPosUpdate();
     }
   }
 
+  // Calculate next velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
     {
@@ -233,6 +229,7 @@ void Simulator::doStep()
     }
   }
 
+  // Update simulated agent positions given velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
     if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
     {
