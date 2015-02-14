@@ -17,7 +17,7 @@ namespace hrvo {
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos_);
-    this->initAMCL(); // has to be done before agent is added
+    if (IS_AMCL_ACTIVE) {this->initAMCL();}
     planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
     this->goalSetup();
     simvectPoint_ = &simvect_;
@@ -97,15 +97,18 @@ namespace hrvo {
 //  void Environment::updateTracker()
 void Environment::updateLocalisation(bool USE_TRACKER)
   {
-    amclwrapper_->updatePose();
-    if (amclwrapper_->is_msg_received)
+    if (IS_AMCL_ACTIVE)
     {
-      planner_->setAMCLPose(THIS_ROBOT, amclwrapper_->get_position());
+      amclwrapper_->updatePose();
+      if (amclwrapper_->is_msg_received)
+      {
+        planner_->setAMCLPose(THIS_ROBOT, amclwrapper_->get_position());
+      }
+      planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_odom_position());
+      // planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_position());
+      // planner_->setSensedOrientation(THIS_ROBOT, amclwrapper_->get_orientation());
+      amclwrapper_->pretty_print_pose();
     }
-    planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_odom_position());
-    // planner_->setCurrOdomOffset(THIS_ROBOT, amclwrapper_->get_position());
-    // planner_->setSensedOrientation(THIS_ROBOT, amclwrapper_->get_orientation());
-    amclwrapper_->pretty_print_pose();
     if (USE_TRACKER) {
       tracker_->updateTracker();
     }
