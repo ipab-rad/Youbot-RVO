@@ -207,40 +207,51 @@ void Simulator::doStep()
 
   kdTree_->build();
 
+  // Update Robot Odometry
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ == ROBOT)
-    { // Should odometry be updated here?
-      if (odomNeeded_)
-      {
-        ERR("Odom Needed!" << std::endl);
-        (*iter)->odomPosUpdate();
-        // (*iter)->odomFlag_ = true;
-      }
-      ERR("Odom Update!" << std::endl);
-      (*iter)->odomUpdate();
+    Agent* agent = (*iter);
+    if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) )
+    {
+      DEBUG("Odom Update!" << std::endl);
+      agent->odomPosUpdate();
     }
   }
 
+  // Calculate next velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
+    Agent* agent = (*iter);
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
     {
-      (*iter)->computePreferredVelocity();
-      (*iter)->computeNeighbors();
-      (*iter)->computeNewVelocity();
+      agent->computePreferredVelocity();
+      agent->computeNeighbors();
+      agent->computeNewVelocity();
 #if HRVO_DIFFERENTIAL_DRIVE
-      (*iter)->computeWheelSpeeds();
+      agent->computeWheelSpeeds();
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
+      displaySimAgents(agent);
     }
   }
 
+  // Update simulated agent positions given velocities
   for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
-    if ((*iter)->agent_type_ != PERSON && (*iter)->agent_type_ != INACTIVE)
+    Agent* agent = (*iter);
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
     {
-      (*iter)->update();
+      agent->update();
     }
   }
 
   globalTime_ += timeStep_;
+}
+
+void Simulator::displaySimAgents(Agent* agent)
+{
+  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS)) 
+  {
+    INFO(agent->id_ << " Pos " << agent->position_ 
+    << " Vel " << agent->velocity_ << " Goal " 
+    << this->getGoalPosition(agent->goalNo_) << std::endl);
+  }
 }
 
 std::size_t Simulator::getAgentGoal(std::size_t agentNo) const

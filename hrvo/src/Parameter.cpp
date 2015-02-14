@@ -26,12 +26,14 @@ bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last Tr
 bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
 bool IS_AMCL_ACTIVE;
 bool ENABLE_MODELLING;            // Enable inference model
+bool MODEL_OWN_ROBOT;             // Model the planning robot as well (Start from Agent 0)
 bool LOG_DATA;                    // Log data into a file
 bool ASSIGN_TRACKER_WHEN_ALONE;   // When only one agent is tracked, assign tracker to robot
 int TRACKER_ODOM_COMPARISONS;     // How many iterations after tracker of another agent is reassigned to robot
 int ROS_FREQ;                     // Planner frequency Hz
 bool CLEAR_SCREEN;                // Clearing makes it prettier but fits less on the screen
 bool DISPLAY_INFERENCE_VALUES;    // Displays curr vs sim Vels and goal inference vs sum values
+bool DISPLAY_SIM_AGENTS;          // Display pos, vel and goal for all simulated agents.
 int MAX_NO_TRACKED_AGENTS;        // TODO: Not working as intended
 int WIFI_ATTEMPTS;
 
@@ -100,13 +102,16 @@ void ParamInitialise()
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
   ros::param::param(nn+"isamclactive", IS_AMCL_ACTIVE, false);
+
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
+  ros::param::param(nn+"modelOwnRobot", MODEL_OWN_ROBOT, false);
   ros::param::param(nn+"logData", LOG_DATA, true);
   ros::param::param(nn+"assignTrackerWhenAlone", ASSIGN_TRACKER_WHEN_ALONE, false);
   ros::param::param(nn+"trackerOdomComparisons", TRACKER_ODOM_COMPARISONS, 10);
   ros::param::param(nn+"rosFreq", ROS_FREQ, 10);
   ros::param::param(nn+"clearScreen", CLEAR_SCREEN, true);
   ros::param::param(nn+"displayInferenceValues", DISPLAY_INFERENCE_VALUES, false);
+  ros::param::param(nn+"displaySimAgents", DISPLAY_SIM_AGENTS, true);
   ros::param::param(nn+"maxNoTrackedAgents", MAX_NO_TRACKED_AGENTS, 10);
   ros::param::param(nn+"wifiAttempts", WIFI_ATTEMPTS, 5);
 

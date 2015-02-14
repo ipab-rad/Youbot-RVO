@@ -30,13 +30,16 @@ extern bool PERFORM_ROBOT_SETUP;        // Robots move into initial positions
 extern bool MANUAL_TRACKER_ASSIGNMENT;  // False = Automatic setup will assign last TrackerID
 extern bool ONLY_ODOMETRY;              // Use only odometry for robots, no tracker feedback
 extern bool IS_AMCL_ACTIVE;
+
 extern bool ENABLE_MODELLING;           // Enable inference model
+extern bool MODEL_OWN_ROBOT;            // Model the planning robot as well (Start from Agent 0)
 extern bool LOG_DATA;                   // Log data into a file
 extern bool ASSIGN_TRACKER_WHEN_ALONE;  // When only one agent is tracked, assign tracker to robot
 extern int TRACKER_ODOM_COMPARISONS;    // How many iterations after tracker of another agent is reassigned to robot
 extern int ROS_FREQ;                    // Planner frequency Hz
 extern bool CLEAR_SCREEN;               // Clearing makes it prettier but fits less on the screen
 extern bool DISPLAY_INFERENCE_VALUES;   // Displays curr vs sim Vels and goal inference vs sum values
+extern bool DISPLAY_SIM_AGENTS;         // Display pos, vel and goal for all simulated agents.
 extern int MAX_NO_TRACKED_AGENTS;       // TODO: Not working as intended
 extern int WIFI_ATTEMPTS;
 
