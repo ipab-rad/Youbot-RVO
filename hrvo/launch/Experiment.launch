@@ -18,7 +18,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="megatronActive" type="bool" value="false"/>
                 <param name="megatronPlan" type="int" value="3"/>
 
-                <param name="soundwaveActive" type="bool" value="true"/>
+                <param name="soundwaveActive" type="bool" value="false"/>
                 <param name="soundwavePlan" type="int" value="3"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
@@ -30,16 +30,21 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="thundercrackerActive" type="bool" value="false"/>
                 <param name="thundercrackerPlan" type="int" value="3"/>
 
+                <param name="primeActive" type="bool" value="true"/>
+                <param name="primePlan" type="int" value="2"/>
+
+                <remap from="prime/cmd_vel" to="base_controller/command"/>
+
                 <!-- Experiment Setup -->
                 <param name="enablePlanner" type="bool" value="true"/>
-                <param name="performRobotSetup" type="bool" value="false"/>
+                <param name="performRobotSetup" type="bool" value="true"/>
                 <param name="manualTrackerAssignment" type="bool" value="true"/>
                 <param name="onlyOdometry" type="bool" value="false"/>
                 <param name="isamclactive" type="bool" value="false"/>
 
-                <param name="enableModelling" type="bool" value="true"/>
+                <param name="enableModelling" type="bool" value="false"/>
                 <param name="modelOwnRobot" type="bool" value="false"/>
-                <param name="logData" type="bool" value="true"/>
+                <param name="logData" type="bool" value="false"/>
                 <param name="assignTrackerWhenAlone" type="bool" value="false"/>
                 <param name="trackerOdomComparisons" type="int" value="10"/>
                 <param name="rosFreq" type="int" value="10"/>

@@ -23,6 +23,8 @@ extern bool BLACKOUT_ACTIVE;
 extern int BLACKOUT_PLAN;
 extern bool THUNDERCRACKER_ACTIVE;
 extern int THUNDERCRACKER_PLAN;
+extern bool PRIME_ACTIVE;
+extern int PRIME_PLAN;
 
 // Experiment Setup
 extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking

@@ -115,7 +115,7 @@ namespace hrvo {
   // Start positions for InSpace Setup
   const Vector2 STOP = Vector2(0.0f, 0.0f);
   const Vector2 EXIT = Vector2(0.0f, 0.0f);
-  const Vector2 START_POS1 = Vector2(-9.4f, 1.5f);
+  const Vector2 START_POS1 = Vector2(-9.3f, 1.5f);
   const Vector2 START_POS2 = Vector2(-9.4f, 1.5f);
   const Vector2 START_POS3 = Vector2(-9.4f, 0.0f);
   const Vector2 START_POS4 = Vector2(-9.4f, 0.5f);
@@ -137,7 +137,8 @@ namespace hrvo {
     YOUBOT_2 ,
     YOUBOT_3 ,
     YOUBOT_4 ,
-    YOUBOT_5
+    YOUBOT_5 ,
+    PRIME
   };
 
   void interrupt_callback(int s);

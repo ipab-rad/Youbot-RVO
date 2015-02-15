@@ -18,6 +18,8 @@ bool BLACKOUT_ACTIVE;
 int BLACKOUT_PLAN;
 bool THUNDERCRACKER_ACTIVE;
 int THUNDERCRACKER_PLAN;
+bool PRIME_ACTIVE;
+int PRIME_PLAN;
 
 // Experiment Setup
 bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
@@ -95,6 +97,8 @@ void ParamInitialise()
   ros::param::param(nn+"blackoutPlan", BLACKOUT_PLAN, 0);
   ros::param::param(nn+"thundercrackerActive", THUNDERCRACKER_ACTIVE, false);
   ros::param::param(nn+"thundercrackerPlan", THUNDERCRACKER_PLAN, 0);
+  ros::param::param(nn+"primeActive", PRIME_ACTIVE, false);
+  ros::param::param(nn+"primePlan", PRIME_PLAN, 0);
 
   // EXPERIMENT SETUP
   ros::param::param(nn+"enablePlanner", ENABLE_PLANNER, false);
