@@ -37,6 +37,7 @@ namespace hrvo {
         case 2: return "youbot_3";
         case 3: return "youbot_4";
         case 4: return "youbot_5";
+        case 5: return "prime";
       }
     }
 

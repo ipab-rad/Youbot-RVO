@@ -140,6 +140,13 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     (*PlannerMap)[id]->setPlannerGoalPlan(THUNDERCRACKER_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(2);
   }
+  if (PRIME_ACTIVE)
+  {
+    std::size_t id = (*PlannerMap).size()+1;
+    (*PlannerMap)[id] = new Environment(PRIME, START_POS1);
+    (*PlannerMap)[id]->setPlannerGoalPlan(PRIME_PLAN);
+    (*PlannerMap)[id]->setPlannerInitialGoal(2);
+  }
 }
 
 void hrvo::SetupLogging(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
