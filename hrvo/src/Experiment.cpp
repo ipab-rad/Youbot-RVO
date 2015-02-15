@@ -306,9 +306,25 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
       std::size_t EnvID = iter->first;
       Environment* planner = iter->second;
 
-      possGoals[EnvID][0] = I_g1;
-      possGoals[EnvID][1] = I_g2;
-      possGoals[EnvID][2] = I_g3;
+      // Goal Sampling
+      if (GOAL_SAMPLING)
+      {
+        for (int x = 0; x < 10; ++x)
+        {
+          float xval=x;
+          for (int y = 0; y < 10; ++y)
+          {
+            float yval=y;
+            possGoals[EnvID][(x*10)+y] = Vector2(-xval/1,yval/1);
+          }
+        }
+      }
+      else
+      {
+        possGoals[EnvID][0] = I_g1;
+        possGoals[EnvID][1] = I_g2;
+        possGoals[EnvID][2] = I_g3;
+      }
       // possGoals[EnvID][2] = DynGoalPos;
 
       DEBUG("NumAgents=" << planner->getNumPlannerAgents() << " Own:" << MODEL_OWN_ROBOT << std::endl);

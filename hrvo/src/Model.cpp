@@ -238,6 +238,7 @@ std::size_t Model::inferGoals(std::size_t agentNo)
     {
       if (k != 0) {INFO(":"); }
       INFO(goalRatio);
+      if (k%10==9) {INFO(std::endl);}
     }
     goalRatios_.push_back(goalRatio);
     if (goalRatio > maxLikelihoodRatio) {maxLikelihoodRatio = goalRatio; maxLikelihoodGoal = k;}
@@ -245,7 +246,7 @@ std::size_t Model::inferGoals(std::size_t agentNo)
 
   for (std::size_t j = 0; j < simIDs_.size(); ++j)
     { PlannerPt_->deleteSimulation(simIDs_[j]); }
-  if (DISPLAY_INFERENCE_VALUES) {
+  if (DISPLAY_INTENTION) {
     INFO(std::endl);
     INFO("Agent" << agentNo << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
     INFO(std::endl);
