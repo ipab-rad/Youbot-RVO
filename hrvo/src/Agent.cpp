@@ -126,8 +126,16 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
@@ -172,8 +180,16 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
@@ -224,8 +240,16 @@ simulator_(simulator), newVelocity_(velocity),
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
@@ -700,9 +724,9 @@ void Agent::odomPosUpdate()
 
   amcl_update_ = false;
 
-  // DEBUG("Pos " << position_ << ", Curr "
-  // << curr_offset_ << ", Prev "
-  // << prev_offset_ << std::endl);
+  DEBUG("Pos " << position_ << ", Curr "
+  << curr_offset_ << ", Prev "
+  << prev_offset_ << std::endl);
   // DEBUG("Ori: " << orientation_ << ", Sens: " 
   // << agent_sensed_orientation_ << std::endl);
 
@@ -800,10 +824,10 @@ void Agent::update()
 
 void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 {
-  ERR("Curr:" << current_odometry_offset_ << std::endl);
-  ERR("Prev:" << previous_odometry_offset_ << std::endl);
-  current_odometry_offset_.setX(pose_msg->pose.pose.position.x);
-  current_odometry_offset_.setY(pose_msg->pose.pose.position.y);
+  ERR("Curr:" << curr_offset_ << std::endl);
+  ERR("Prev:" << prev_offset_ << std::endl);
+  curr_offset_.setX(pose_msg->pose.pose.position.x);
+  curr_offset_.setY(pose_msg->pose.pose.position.y);
   agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
   /*
     DEBUG("Pose Update CallBack" << std::endl);
@@ -820,7 +844,7 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 
   if(!updated_)
   {
-    previous_odometry_offset_ = current_odometry_offset_;
+    prev_offset_ = curr_offset_;
     updated_ = true;
     ROS_INFO("Odometry Initialised");
   }

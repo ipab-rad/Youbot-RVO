@@ -222,8 +222,8 @@ class Agent {
   Vector2 newVelocity_;
   Vector2 position_;
   Vector2 agent_sensed_position_;
-  Vector2 previous_odometry_offset_;  // Odometry offset before action step
-  Vector2 current_odometry_offset_;   // Odometry offset after action step
+  // Vector2 previous_odometry_offset_;  // Odometry offset before action step
+  // Vector2 current_odometry_offset_;   // Odometry offset after action step
   Vector2 curr_offset_;
   Vector2 prev_offset_;
   Vector2 odomPosition_;
