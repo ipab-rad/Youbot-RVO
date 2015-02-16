@@ -126,10 +126,16 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      // odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-      //                          &Agent::updatePose, this);
-      odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
@@ -174,10 +180,16 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      // odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-      //                          &Agent::updatePose, this);
-      odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
@@ -228,10 +240,16 @@ simulator_(simulator), newVelocity_(velocity),
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
     if (!IS_AMCL_ACTIVE)
     {
-      // odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
-      //                          &Agent::updatePose, this);
-      odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
-                               &Agent::updatePose, this);
+      if ( id_.compare("prime") != 0)
+      {
+        odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
+                                &Agent::updatePose, this);
+      }
+      else
+      {
+        odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
+                                &Agent::updatePose, this);
+      }
     }
     curr_offset_ = STOP;
     prev_offset_ = STOP;
