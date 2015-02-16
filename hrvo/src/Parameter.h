@@ -38,6 +38,7 @@ extern bool ASSIGN_TRACKER_WHEN_ALONE;  // When only one agent is tracked, assig
 extern int TRACKER_ODOM_COMPARISONS;    // How many iterations after tracker of another agent is reassigned to robot
 extern int ROS_FREQ;                    // Planner frequency Hz
 extern bool CLEAR_SCREEN;               // Clearing makes it prettier but fits less on the screen
+extern bool DISPLAY_INTENTION;
 extern bool DISPLAY_INFERENCE_VALUES;   // Displays curr vs sim Vels and goal inference vs sum values
 extern bool DISPLAY_SIM_AGENTS;         // Display pos, vel and goal for all simulated agents.
 extern int MAX_NO_TRACKED_AGENTS;       // TODO: Not working as intended
@@ -52,6 +53,7 @@ extern int THIS_ROBOT;                  // Always 0, representing first agent (o
 extern float SIM_TIME_STEP;             // Simulation time step, affects many parts of the code
 
 // Model Parameters
+extern bool GOAL_SAMPLING;              // Enable sampling of goals over discretised space
 extern bool BIVARIATE;
 extern float GOAL_SUM_PRIOR;            // Goal inference initial prior
 extern float GOAL_HISTORY_DISCOUNT;     // Discount of previous likelihood history
