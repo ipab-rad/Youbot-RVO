@@ -37,6 +37,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 
                 <!-- Experiment Setup -->
                 <param name="enablePlanner" type="bool" value="true"/>
+                <param name="hrvoPlanner" type="bool" value="true"/>
                 <param name="performRobotSetup" type="bool" value="true"/>
                 <param name="manualTrackerAssignment" type="bool" value="true"/>
                 <param name="onlyOdometry" type="bool" value="false"/>

@@ -268,8 +268,16 @@ void Environment::updateLocalisation(bool USE_TRACKER)
   void Environment::doPlannerStep()
   {
     if (planner_->odomNeeded_ && planner_->getAgentType(THIS_ROBOT) != INACTIVE) {WARN(sActorID_<< " using odometry for navigation" << std::endl);}
-    planner_->doStep();
-    planner_->setOdomNeeded(true);
+
+    if (HRVO_PLANNER)
+    {
+      planner_->doStep();
+      planner_->setOdomNeeded(true);
+    }
+    else
+    {
+      ERR("MOVE BASE PLANNER" << std::endl);
+    }
   }
 
   void Environment::doSimulatorStep(std::size_t simID)

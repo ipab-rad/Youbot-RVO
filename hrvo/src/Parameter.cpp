@@ -23,6 +23,7 @@ int PRIME_PLAN;
 
 // Experiment Setup
 bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
+bool HRVO_PLANNER;
 bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
 bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
 bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
@@ -106,6 +107,7 @@ void ParamInitialise()
 
   // EXPERIMENT SETUP
   ros::param::param(nn+"enablePlanner", ENABLE_PLANNER, false);
+  ros::param::param(nn+"hrvoPlanner", HRVO_PLANNER, true);
   ros::param::param(nn+"performRobotSetup", PERFORM_ROBOT_SETUP, true);
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
