@@ -82,6 +82,8 @@ namespace hrvo {
 
     void setPlannerInitialGoal(std::size_t initialGoalNo) {initialGoalNo_ = initialGoalNo;}
 
+    std::size_t getPlannerInitalGoal() { return initialGoalNo_; }
+
     void loadPlannerInitialGoal();
 
     std::size_t addAndSetPlannerGoal(const Vector2 goalPosition);

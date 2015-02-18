@@ -39,7 +39,7 @@ void MoveIntoArea(Environment* planner);
 
 void SelectTracker(Environment* planner);
 
-void LoadInitialGoals(PlannerMapPointer* PlannerMap);
+void MoveToInitialGoal(Environment* planner);
 
 void SensingUpdate(PlannerMapPointer* PlannerMap);
 
