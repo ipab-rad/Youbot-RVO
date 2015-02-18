@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
         MoveIntoArea(planner);
 
         SelectTracker(planner);
+
+        MoveToInitialGoal(planner);
       }
     }
     else
@@ -68,7 +70,6 @@ int main(int argc, char *argv[])
     INFO("Starting Experiment..." << std::endl);
     ros::Time begin = ros::Time::now();
 
-    LoadInitialGoals(PlannerMap_);
   }
 
   startTime = (*PlannerMap_)[LOG_PLANNER]->getPlannerGlobalTime();
@@ -247,13 +248,34 @@ void hrvo::SelectTracker(Environment* planner)
   planner->setTrackOtherAgents(true);
 }
 
-void hrvo::LoadInitialGoals(PlannerMapPointer *PlannerMap)
+void hrvo::MoveToInitialGoal(Environment* planner)
 {
-  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  planner->loadPlannerInitialGoal();
+  bool arrived = false;
+  INFO("Press enter to navigate to initial goal "
+    << planner->getPlannerInitalGoal() << std::endl);
+  WaitReturn();
+  STARTED = true;
+  while ( ros::ok() && !SAFETY_STOP && !arrived)
   {
-    Environment* planner = iter->second;
-    planner->loadPlannerInitialGoal();
+    if (CLEAR_SCREEN) {CLEAR();}
+    ros::Rate update_freq(ROS_FREQ);
+
+    planner->updateLocalisation(true);
+
+    INFO(planner->getStringActorID() << " Pos: ["
+        << planner->getPlannerAgentPosition(THIS_ROBOT)
+        << "] to Initial Goal " << planner->getPlannerGoal() << std::endl);
+    planner->doPlannerStep();
+
+    if (planner->getReachedPlannerGoal())
+      {arrived = true;}
+
+    ros::spinOnce();
+    update_freq.sleep();
   }
+  planner->stopYoubot();
+  STARTED = false;
 }
 
 void hrvo::SensingUpdate(PlannerMapPointer* PlannerMap)
