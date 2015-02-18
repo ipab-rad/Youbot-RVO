@@ -11,9 +11,14 @@ using namespace hrvo;
 
 int main(int argc, char *argv[])
 {
-  if (CLEAR_SCREEN) {CLEAR();}
+  
   ros::init(argc, argv, "hrvo_planner");
   ParamInitialise();
+  if (CLEAR_SCREEN) {CLEAR();}
+  if (!LOADED_PARAM) 
+    {ERR("***************************************************" << std::endl <<
+      "NO PARAMETERS LOADED, did you use the launch file?" << std::endl <<
+      "***************************************************" << std::endl);}
 
   // ************************************************************
   //                      ENVIRONMENT SETUP

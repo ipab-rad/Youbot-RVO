@@ -76,6 +76,7 @@ extern bool INVERT_X;
 // const Vector2 I_g1;
 // extern Vector2 I_g2;
 // extern Vector2 I_g3;
+extern bool LOADED_PARAM;
 
 extern float NEIGHBOR_DIST;
 extern int MAX_NEIGHBORS;

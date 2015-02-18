@@ -72,6 +72,8 @@ bool INVERT_X;
 // Vector2 I_g2;
 // Vector2 I_g3;
 
+bool LOADED_PARAM;
+
 float NEIGHBOR_DIST;
 int MAX_NEIGHBORS;
 float AGENT_RADIUS;
@@ -152,6 +154,8 @@ void ParamInitialise()
     X_LIMITS[0]=-8.0f;   X_LIMITS[1]=-2.0f;
     Y_LIMITS[0]=0.0f;   Y_LIMITS[1]=3.5f;
   }
+
+  ros::param::param(nn+"loadedParam", LOADED_PARAM, false);
 
   ros::param::param(nn+"neighborDist", NEIGHBOR_DIST, 5.0f);
   ros::param::param(nn+"maxNeighbors", MAX_NEIGHBORS, 10);

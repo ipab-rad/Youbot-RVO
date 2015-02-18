@@ -78,6 +78,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="limitWorkspaceVel" type="bool" value="true"/>
 
                 <!-- Experiment Parameters -->
+                <param name="loadedParam" type="bool" value="true"/>
 
                 <!-- Simulation Parameters -->
                 <param name="neighborDist" type="double" value="5.0"/>
