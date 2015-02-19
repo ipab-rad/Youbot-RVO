@@ -12,7 +12,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 
 <launch>
         <!-- Start the experiment node -->
-        <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen">
+        <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen" clear_params="true">
                 <!-- Robot Setup -->
                 <!-- One robot agent must always be initialised, even if not planning -->
                 <param name="megatronActive" type="bool" value="false"/>
@@ -59,9 +59,10 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="logName" type="string" value="InSpaceDemo.csv"/>
                 <param name="logPlanner" type="int" value="1"/>
 
-                <!-- Simulation Constants / DO NOT CHANGE -->
+                <!-- Constants / DO NOT CHANGE -->
                 <!-- <param name="thisRobot" type="int" value="0"/> -->
         	<param name="simTimeStep" type="double" value="0.1"/>
+                <param name="loadedParam" type="bool" value="true"/>
 
                 <!-- Model Parameters -->
                 <param name="goalSampling" type="bool" value="true"/>
@@ -78,7 +79,6 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="limitWorkspaceVel" type="bool" value="true"/>
 
                 <!-- Experiment Parameters -->
-                <param name="loadedParam" type="bool" value="true"/>
 
                 <!-- Simulation Parameters -->
                 <param name="neighborDist" type="double" value="5.0"/>

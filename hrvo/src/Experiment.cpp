@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
   ParamInitialise();
   if (CLEAR_SCREEN) {CLEAR();}
   if (!LOADED_PARAM) 
-    {ERR("***************************************************" << std::endl <<
-      "NO PARAMETERS LOADED, did you use the launch file?" << std::endl <<
-      "***************************************************" << std::endl);}
+    {ERR("********************************************************" << std::endl <<
+        "DEFAULT PARAMETERS LOADED, did you use the launch file?" << std::endl <<
+        "********************************************************" << std::endl);}
 
   // ************************************************************
   //                      ENVIRONMENT SETUP
@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 
   StopRobots(PlannerMap_);
   if (SAFETY_STOP) { EStopRobots(PlannerMap_);}
+  ros::param::del("/youbot_experiment/loadedParam");
 
   return 0;
 }
