@@ -23,6 +23,7 @@ namespace hrvo {
     if ( !STARTED )
     {
       WARN("Aborted!" << std::endl);
+      ros::param::del("/youbot_experiment/loadedParam");
       exit(1);
     }
     SAFETY_STOP = true;
