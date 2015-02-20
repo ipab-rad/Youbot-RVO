@@ -5,7 +5,6 @@
 */
 
 #include "Environment.h"
-#include "AMCLWrapper.h"
 
 namespace hrvo {
 
@@ -14,6 +13,7 @@ namespace hrvo {
     nActorID_ = actorID;
     startPos_ = startPos;
     planner_ = new Simulator(nh_, "planner", nActorID_);
+    newPlanner_ = new Planner(nh_);
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos_);
@@ -277,6 +277,7 @@ void Environment::updateLocalisation(bool USE_TRACKER)
     else
     {
       ERR("MOVE BASE PLANNER" << std::endl);
+      newPlanner_->sendGoal();
     }
   }
 

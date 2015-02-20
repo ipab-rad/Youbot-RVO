@@ -21,6 +21,8 @@
 
 #include "Definitions.h"
 
+#include "Planner.h"
+
 namespace hrvo {
   class AMCLWrapper;
   class Tracker;
@@ -173,6 +175,7 @@ namespace hrvo {
       ros::NodeHandle nh_;
 
       Simulator *planner_;
+      Planner *newPlanner_;
       Tracker *tracker_;
       AMCLWrapper *amclwrapper_;
 
