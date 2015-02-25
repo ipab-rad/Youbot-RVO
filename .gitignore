@@ -15,6 +15,10 @@ lib
 msg_gen
 workspace/src/CMakeLists.txt
 
+# Logging related files
+*.csv
+*.avi
+
 # Mergetool files
 *.orig
 
