@@ -212,7 +212,6 @@ void Simulator::doStep()
     Agent* agent = (*iter);
     if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) )
     {
-      DEBUG("Odom Update!" << std::endl);
       agent->odomPosUpdate();
     }
   }

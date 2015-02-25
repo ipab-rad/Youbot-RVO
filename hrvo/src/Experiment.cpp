@@ -11,7 +11,6 @@ using namespace hrvo;
 
 int main(int argc, char *argv[])
 {
-  
   ros::init(argc, argv, "hrvo_planner");
   ParamInitialise();
   if (CLEAR_SCREEN) {CLEAR();}
@@ -95,7 +94,9 @@ int main(int argc, char *argv[])
     ros::spinOnce();
     update_freq.sleep();
   }
-  if (LOG_DATA){dataLog.close();}
+  if (LOG_DATA){
+    DEBUG("LOG CLOSED!!" << std::endl);
+    dataLog.close();}
 
   StopRobots(PlannerMap_);
   if (SAFETY_STOP) { EStopRobots(PlannerMap_);}
@@ -123,8 +124,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     std::size_t id = (*PlannerMap).size()+1;
     (*PlannerMap)[id] = new Environment(YOUBOT_2, START_POS2);
     (*PlannerMap)[id]->setPlannerGoalPlan(SOUNDWAVE_PLAN);
-    (*PlannerMap)[id]->setPlannerInitialGoal(2);
-    (*PlannerMap)[id]->addVirtualAgent("1", Vector2(-5, 1.5), 1);
+    (*PlannerMap)[id]->setPlannerInitialGoal(1);
   }
   if (STARSCREAM_ACTIVE)
   {
@@ -316,8 +316,13 @@ void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)
     {
       Environment* planner = iter->second;
       // Set new goal given goal plan
+      ERR("CURRENT GOAL: " << planner->getPlannerGoal() << std::endl);
       if (planner->getReachedPlannerGoal())
-        {planner->setNextGoal();}
+        { DEBUG("NEXT GOAL1" << std::endl);
+          planner->setNextGoal();}
+      // else if (planner->reachedMoveGoal())
+      //   { DEBUG("NEXT GOAL2" << std::endl);
+      //     planner->setNextGoal();}
 
       INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
       planner->doPlannerStep();
@@ -385,6 +390,7 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
     if (LOG_DATA && Logged)
     {
       if (!ENABLE_PLANNER) {(*PlannerMap)[LOG_PLANNER]->doPlannerStep();}
+      DEBUG("LOGGING!!" << std::endl);
       logData(dataLog, LOG_PLANNER,
        (*PlannerMap)[LOG_PLANNER]->getPlannerGlobalTime() - startTime,
        modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);

@@ -23,6 +23,10 @@
 
 #include "Planner.h"
 
+#include <actionlib/client/simple_action_client.h>
+typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
+typedef actionlib::SimpleClientGoalState GoalState;
+
 namespace hrvo {
   class AMCLWrapper;
   class Tracker;
@@ -153,6 +157,8 @@ namespace hrvo {
 
     Environment* getEnvPointer() {return this;}
 
+    bool reachedMoveGoal() {return reachedGoal;}
+
     private:
       friend class Simulator;
       friend class Agent;
@@ -173,6 +179,9 @@ namespace hrvo {
       std::size_t goalPlan_;
 
       ros::NodeHandle nh_;
+      ros::NodeHandle nh2_;
+      bool newGoal;
+      bool reachedGoal;
 
       Simulator *planner_;
       Planner *newPlanner_;

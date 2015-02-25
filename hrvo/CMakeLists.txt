@@ -13,8 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   move_base_msgs
   actionlib
 )
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+# find_package(Boost move_base_msgs actionlib REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures

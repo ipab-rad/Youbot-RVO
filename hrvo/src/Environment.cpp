@@ -13,7 +13,10 @@ namespace hrvo {
     nActorID_ = actorID;
     startPos_ = startPos;
     planner_ = new Simulator(nh_, "planner", nActorID_);
-    newPlanner_ = new Planner(nh_);
+    if (!HRVO_PLANNER)
+    {newPlanner_ = new Planner(nh_);}
+    newGoal = true;
+    reachedGoal = false;
     this->setPlannerParam();
     sActorID_ = getActorName(nActorID_);
     startGoal_ = planner_->addGoal(startPos_);
@@ -177,6 +180,7 @@ void Environment::updateLocalisation(bool USE_TRACKER)
 
   void Environment::setNextGoal()
   {
+    newGoal = true;
     switch (goalPlan_) {
     case GOAL_STOP:
       this->stopYoubot();
@@ -276,8 +280,26 @@ void Environment::updateLocalisation(bool USE_TRACKER)
     }
     else
     {
-      ERR("MOVE BASE PLANNER" << std::endl);
-      newPlanner_->sendGoal();
+      DEBUG("Calculating..." << std::endl)
+      Vector2 currGoalPos = this->getPlannerGoalPosition(this->getPlannerGoal());
+      // Vector2 currGoalPos = Vector2(-6.3, 1.5);
+      Vector2 currPos = this->getPlannerAgentPosition(THIS_ROBOT);
+      Vector2 relGoal =  currGoalPos - currPos;
+        DEBUG("Pos: " << currPos << " Goal: " << currGoalPos 
+          << " RelGoal: " << relGoal << std::endl);
+      if (newGoal)
+      {
+        // newPlanner_->sendNewGoal(Vector2(1.0f, 1.0f));
+        newPlanner_->sendNewGoal(relGoal);
+        newGoal = false;
+        reachedGoal=false;
+      }
+      DEBUG("Using Move Base Planner" << std::endl);
+      if (newPlanner_->checkGoalState() == GoalState::SUCCEEDED)
+        { ERR("STOPPING!")
+          this->stopYoubot();
+          reachedGoal=true;}
+      planner_->doStep();
     }
   }
 
@@ -341,11 +363,19 @@ void Environment::updateLocalisation(bool USE_TRACKER)
 
   void Environment::stopYoubot()
   {
+    if (!HRVO_PLANNER)
+    {
+      newPlanner_->cancelGoal();
+    }
     planner_->setAgentVelocity(THIS_ROBOT, STOP);
   }
 
   void Environment::emergencyStop()
   {
+    if (!HRVO_PLANNER)
+    {
+      newPlanner_->cancelGoal();
+    }
     for (std::size_t i = 0; i < planner_->getNumAgents(); ++i)
     {
       planner_->setAgentVelocity(i, STOP);
