@@ -39,6 +39,9 @@ namespace hrvo {
     delete amclwrapper_;
     amclwrapper_ = NULL;
 
+    delete bumperwrapper_;
+    bumperwrapper_ = NULL;
+
     for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
     {
       delete iter->second;
@@ -81,6 +84,15 @@ namespace hrvo {
     */
   }
 
+
+  void Environment::initBumper()
+  {
+    /* Initialise wrapper to update AMCL messages */
+    bumperwrapper_ = new BumperWrapper(sActorID_);
+    bumperwrapper_->setEnvPointer(this);
+    bumperwrapper_->setPlannerPointer(planner_);
+  }
+
   void Environment::initAMCL()
   {
     /* Initialise wrapper to update AMCL messages */
@@ -114,6 +126,9 @@ void Environment::updateLocalisation(bool USE_TRACKER)
     }
     if (USE_TRACKER) {
       tracker_->updateTracker();
+    }
+    if (IS_BUMPER_ACTIVE) {
+      planner_->setBumperData(THIS_ROBOT, bumperwrapper_->activated());
     }
   }
 
@@ -285,7 +300,7 @@ void Environment::updateLocalisation(bool USE_TRACKER)
       // Vector2 currGoalPos = Vector2(-6.3, 1.5);
       Vector2 currPos = this->getPlannerAgentPosition(THIS_ROBOT);
       Vector2 relGoal =  currGoalPos - currPos;
-        DEBUG("Pos: " << currPos << " Goal: " << currGoalPos 
+        DEBUG("Pos: " << currPos << " Goal: " << currGoalPos
           << " RelGoal: " << relGoal << std::endl);
       if (newGoal)
       {

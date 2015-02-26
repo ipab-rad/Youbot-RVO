@@ -94,6 +94,7 @@ Agent::Agent(Simulator *simulator) :
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
     reachedGoal_(false)
 {
+  bumper_touched_ = false;
   updated_ = false;
 }
 
@@ -111,6 +112,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = false;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -165,6 +167,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = false;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -222,6 +225,7 @@ simulator_(simulator), newVelocity_(velocity),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = false;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -810,7 +814,12 @@ void Agent::update()
     geometry_msgs::Twist vel;
     vel.linear.x = velocity_.getX();
     vel.linear.y = velocity_.getY();
+    if(bumper_touched_) {
+      vel.linear.x = 0.0;
+      vel.linear.y = 0.0;
+    }
     pub_.publish(vel);
+
   }
 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */

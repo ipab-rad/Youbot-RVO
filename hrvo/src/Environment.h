@@ -22,12 +22,13 @@
 #include "Definitions.h"
 
 #include "Planner.h"
-
+#include "BumperWrapper.h"
 #include <actionlib/client/simple_action_client.h>
 typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
 typedef actionlib::SimpleClientGoalState GoalState;
 
 namespace hrvo {
+  class BumperWrapper;
   class AMCLWrapper;
   class Tracker;
   class Simulator;
@@ -54,6 +55,7 @@ namespace hrvo {
     // TRACKER FUNCTIONS
     void initAMCL();
     void initTracker();
+    void initBumper();
 
     void updateLocalisation(bool USE_TRACKER);
     //    void updateTracker();
@@ -151,6 +153,7 @@ namespace hrvo {
 
     void resetOdomPosition()  {planner_->resetOdomPosition();}
 
+
     void stopYoubot();
 
     void emergencyStop();
@@ -187,6 +190,7 @@ namespace hrvo {
       Planner *newPlanner_;
       Tracker *tracker_;
       AMCLWrapper *amclwrapper_;
+      BumperWrapper *bumperwrapper_;
 
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<int, std::vector<float> > trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position

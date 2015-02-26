@@ -69,7 +69,6 @@
 
 #include "hrvo/AddAgentService.h"
 #include "Vector2.h"
-
 /**
  * \brief  Set to 0 for a holonomic agent; set to 1 for a differential-drive agent.
  */
@@ -80,7 +79,6 @@ class Agent;
 class Goal;
 class KdTree;
 class Environment;
-
 
 /**
  * \class  Simulator
@@ -160,7 +158,7 @@ class Simulator {
    * \return     The present goal number of the agent.
    */
 
-  void displaySimAgents(Agent* agent);   
+  void displaySimAgents(Agent* agent);
 
   std::size_t getAgentGoal(std::size_t agentNo) const;
 
@@ -479,6 +477,9 @@ class Simulator {
   void setAMCLPose(std::size_t agentNo, Vector2 amcl_pose);
 
   void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
+
+  void setBumperData(std::size_t agentNo, bool touched);
+
 
   // bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
 
