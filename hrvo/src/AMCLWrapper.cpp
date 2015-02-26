@@ -84,7 +84,7 @@ void AMCLWrapper::receive_odom(
 
 void AMCLWrapper::updatePose()
 {
-  usleep(8000);
+  // usleep(8000);
   // WARN("AMCLWrapper: update is called!" << std::endl);
   WARN("AMCL:" << is_msg_received << " ODOM:" << is_odom_received << std::endl);
   // DEBUG("p.x: " << full_pose_.position.x << std::endl);
@@ -102,13 +102,13 @@ void AMCLWrapper::updatePose()
     // DEBUG("FULL POSE=" << full_pose_ << std::endl);
     covariance_ = received_pose_.pose.covariance;
   }
-  if (is_odom_received)
+  else if (is_odom_received)
   {
     // assuming odometry has been received
     WARN("AMCLWrapper: using odometry!" << std::endl);
     odom_pose_ = received_odom_.pose.pose;
   }
-  if (!is_msg_received && !is_odom_received)
+  else if (!is_msg_received && !is_odom_received)
   {
     ERR("NO AMCL OR ODOMETRY RECEIVED!" << std::endl);
   }
@@ -159,24 +159,24 @@ void AMCLWrapper::pretty_print_pose()
     WARN("Yaw: " << o << std::endl);
     ERR("--------------------" << std::endl);
   }
-  else if (is_odom_received)
-  {
-    Vector2 p = this->get_odom_position();
-    // double o = this->get_odom_orientation();
-    ERR("--------------------" << std::endl);
-    WARN("Offset from Odom:" << std::endl);
-    WARN("p.x: " << p.getX() << std::endl);
-    WARN("p.y: " << p.getY() << std::endl);
-    WARN("Yaw: NIL" << std::endl);
-    ERR("--------------------" << std::endl);
-  }
+  // else if (is_odom_received)
+  // {
+  //   Vector2 p = this->get_odom_position();
+  //   // double o = this->get_odom_orientation();
+  //   ERR("--------------------" << std::endl);
+  //   WARN("Offset from Odom:" << std::endl);
+  //   WARN("p.x: " << p.getX() << std::endl);
+  //   WARN("p.y: " << p.getY() << std::endl);
+  //   WARN("Yaw: NIL" << std::endl);
+  //   ERR("--------------------" << std::endl);
+  // }
   else
   {
     ERR("--------------------" << std::endl);
-    WARN("NO DATA" << std::endl);
-    WARN("NO DATA" << std::endl);
-    WARN("NO DATA" << std::endl);
-    WARN("NO DATA" << std::endl);
+    WARN("NO AMCL" << std::endl);
+    WARN("NO AMCL" << std::endl);
+    WARN("NO AMCL" << std::endl);
+    WARN("NO AMCL" << std::endl);
     ERR("--------------------" << std::endl);
   }
   is_msg_received = false; 
