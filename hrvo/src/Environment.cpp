@@ -25,6 +25,7 @@ namespace hrvo {
     this->goalSetup();
     simvectPoint_ = &simvect_;
     this->initTracker();
+    this->initBumper();
     DEBUG("HRVO Planner for " << sActorID_ << " Constructed" << std::endl);
   }
 
@@ -127,8 +128,11 @@ void Environment::updateLocalisation(bool USE_TRACKER)
     if (USE_TRACKER) {
       tracker_->updateTracker();
     }
+    bumperwrapper_->pretty_print();
     if (IS_BUMPER_ACTIVE) {
-      planner_->setBumperData(THIS_ROBOT, bumperwrapper_->activated());
+      bumperwrapper_->update_data();
+      bool act = bumperwrapper_->activated();
+      planner_->setBumperData(THIS_ROBOT, act);
     }
   }
 

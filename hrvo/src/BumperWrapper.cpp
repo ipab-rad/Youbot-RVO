@@ -47,7 +47,9 @@ void BumperWrapper::receive_data(
 
 void BumperWrapper::update_data()
 {
-  bumper_data_ = received_data_.data;
+  if (is_msg_received) {
+    bumper_data_ = received_data_.data;
+  }
 }
 
 
@@ -57,7 +59,7 @@ void BumperWrapper::pretty_print()
   WARN("BUMPER KILT STATE:" << std::endl);
   std::string value;
   for(int i = 0; i < 8; i++) {
-    DEBUG(POSITIONS[i] << ": ");
+    DEBUG(POSITIONS[i] << ":\t");
     if (bumper_data_[i] == 1) {
       ERR("ACTIVE");
     }
@@ -77,6 +79,7 @@ bool BumperWrapper::activated()
       return true;
     }
   }
+
   return false;
 }
 }
