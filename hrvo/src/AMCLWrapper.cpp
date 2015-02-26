@@ -60,16 +60,11 @@ AMCLWrapper::~AMCLWrapper()
 void AMCLWrapper::receive_pose(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg)
 {
-  // ERR("AMCL RECEIVED");
-  // DEBUG("p.x: " << pose_msg->pose.pose.position.x << std::endl);
-  // DEBUG("p.y: " << pose_msg->pose.pose.position.y << std::endl);
-  // DEBUG("p.z: " << pose_msg->pose.pose.position.z << std::endl);
   if (!(pose_msg->pose.pose.position.x == 0.0 &&
     pose_msg->pose.pose.position.y == 0.0))
   {
     is_msg_received = true;
     received_pose_ = *pose_msg;
-    // DEBUG("RECEIVED POSE=" << received_pose_.pose.pose << std::endl);
   }
 }
 
@@ -85,26 +80,16 @@ void AMCLWrapper::receive_odom(
 void AMCLWrapper::updatePose()
 {
   usleep(8000);
-  // WARN("AMCLWrapper: update is called!" << std::endl);
   WARN("AMCL:" << is_msg_received << " ODOM:" << is_odom_received << std::endl);
-  // DEBUG("p.x: " << full_pose_.position.x << std::endl);
-  // DEBUG("p.y: " << full_pose_.position.y << std::endl);
-  // DEBUG("p.z: " << full_pose_.position.z << std::endl);
-
-  // if (!(full_pose_.position.x == 0.0 &&
-  //       full_pose_.position.y == 0.0)) 
-  // is_msg_received = false;
   if (is_msg_received)
   {
     WARN("AMCLWrapper: using AMCL!" << std::endl);
     header_ = received_pose_.header;
     full_pose_ = received_pose_.pose.pose;
-    // DEBUG("FULL POSE=" << full_pose_ << std::endl);
     covariance_ = received_pose_.pose.covariance;
   }
   if (is_odom_received)
   {
-    // assuming odometry has been received
     WARN("AMCLWrapper: using odometry!" << std::endl);
     odom_pose_ = received_odom_.pose.pose;
   }
@@ -146,8 +131,6 @@ void AMCLWrapper::pretty_print_msg()
 
 void AMCLWrapper::pretty_print_pose()
 {
-  // if (is_msg_received) {odCount++;} else {odCount = 0;}
-  // DEBUG("Od Count: " << odCount << std::endl);
   if (is_msg_received)
   {
     Vector2 p = this->get_position();
@@ -162,7 +145,6 @@ void AMCLWrapper::pretty_print_pose()
   else if (is_odom_received)
   {
     Vector2 p = this->get_odom_position();
-    // double o = this->get_odom_orientation();
     ERR("--------------------" << std::endl);
     WARN("Offset from Odom:" << std::endl);
     WARN("p.x: " << p.getX() << std::endl);
@@ -179,7 +161,7 @@ void AMCLWrapper::pretty_print_pose()
     WARN("NO DATA" << std::endl);
     ERR("--------------------" << std::endl);
   }
-  is_msg_received = false; 
+  is_msg_received = false;
   is_odom_received = false;
 }
 
@@ -225,10 +207,6 @@ Vector2 AMCLWrapper::get_odom_position()
 
 double AMCLWrapper::get_odom_orientation()
 {
-  // if (is_odom_received)
-  // {
-  //   return tf::getYaw(odom_pose_.orientation);
-  // }
   return 0.0;
 }
 
