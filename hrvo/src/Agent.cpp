@@ -61,8 +61,6 @@
 
 #include "Agent.h"
 
-#include "Definitions.h"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -78,6 +76,7 @@
 #include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
 
+#include "Definitions.h"
 #include "Goal.h"
 #include "KdTree.h"
 
@@ -740,7 +739,7 @@ void Agent::odomPosUpdate()
   prev_offset_ = curr_offset_;
   amcl_update_ = false;
 
-  // DEBUG("Ori: " << orientation_ << ", Sens: " 
+  // DEBUG("Ori: " << orientation_ << ", Sens: "
   // << agent_sensed_orientation_ << std::endl);
 
   //orientation_ = agent_sensed_orientation_; // TO BE IMPLEMENTED
@@ -855,7 +854,7 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
     << ", Curr "
     << current_odometry_offset_ << std::endl);
   */
-  
+
   odomPosition_ = odomPosition_ + (curr_offset_ - prev_offset_);
   DEBUG("MAYBE:" << odomPosition_ << std::endl);
 
