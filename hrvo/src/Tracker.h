@@ -17,6 +17,10 @@
 #include "Simulator.h"
 #include "Parameter.h"
 
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+#include "std_msgs/Float32MultiArray.h"
+
 
 namespace hrvo {
 class Environment;
@@ -44,6 +48,8 @@ class Tracker
 
   void updateActiveAgents(std::size_t numAgents);
 
+  void publishAgentLayer();
+
   void odometryComparison();
 
   // Awaits robot initialisation before tracking more agents
@@ -62,6 +68,7 @@ class Tracker
   ros::NodeHandle nh_;
   ros::Subscriber Targsub;
   PTrackingBridge::TargetEstimations msg_;
+  ros::Publisher Agentpub;
 
   // Class pointers
   Environment *environment_;

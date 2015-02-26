@@ -14,12 +14,20 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         <!-- Start the experiment node -->
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen" clear_params="true">
                 <!-- Robot Setup -->
+                <!-- Plans
+                GOAL_STOP       0
+                GOAL_CYCLE_CW   1
+                GOAL_CYCLE_CCW  2
+                GOAL_1_2        3
+                GOAL_2_3        4
+                GOAL_3_1        5
+                FOLLOW_AGENT 6 -->
                 <!-- One robot agent must always be initialised, even if not planning -->
-                <param name="megatronActive" type="bool" value="false"/>
-                <param name="megatronPlan" type="int" value="3"/>
+                <param name="megatronActive" type="bool" value="true"/>
+                <param name="megatronPlan" type="int" value="1"/>
 
                 <param name="soundwaveActive" type="bool" value="false"/>
-                <param name="soundwavePlan" type="int" value="3"/>
+                <param name="soundwavePlan" type="int" value="1"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
                 <param name="starscreamActive" type="int" value="3"/>
@@ -30,33 +38,43 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="thundercrackerActive" type="bool" value="false"/>
                 <param name="thundercrackerPlan" type="int" value="3"/>
 
-                <param name="primeActive" type="bool" value="true"/>
+                <param name="primeActive" type="bool" value="false"/>
                 <param name="primePlan" type="int" value="2"/>
 
                 <remap from="prime/cmd_vel" to="base_controller/command"/>
+                <remap from="prime/odom" to="base_odometry/odom" />
+                <remap from="prime/amcl_pose" to="amcl_pose" />
+
+                <!-- Temporary settings -->
+                <!-- <remap from="youbot_2/odom" to="odom" /> -->
+                <!-- <remap from="youbot_2/cmd_vel" to="move_base/cmd_vel" /> -->
+                <!-- <remap from="youbot_2/cmd_vel" to="cmd_vel" /> -->
+                <!-- <remap from="youbot_2/amcl_pose" to="amcl_pose" /> -->
+
 
                 <!-- Experiment Setup -->
                 <param name="enablePlanner" type="bool" value="true"/>
+                <param name="hrvoPlanner" type="bool" value="true"/>
                 <param name="performRobotSetup" type="bool" value="true"/>
                 <param name="manualTrackerAssignment" type="bool" value="true"/>
                 <param name="onlyOdometry" type="bool" value="false"/>
-                <param name="isamclactive" type="bool" value="false"/>
+                <param name="isamclactive" type="bool" value="true"/>
 
-                <param name="enableModelling" type="bool" value="false"/>
-                <param name="modelOwnRobot" type="bool" value="false"/>
-                <param name="logData" type="bool" value="false"/>
+                <param name="enableModelling" type="bool" value="true"/>
+                <param name="modelOwnRobot" type="bool" value="true"/>
+                <param name="logData" type="bool" value="true"/>
                 <param name="assignTrackerWhenAlone" type="bool" value="false"/>
                 <param name="trackerOdomComparisons" type="int" value="10"/>
                 <param name="rosFreq" type="int" value="10"/>
                 <param name="clearScreen" type="bool" value="true"/>
                 <param name="displayIntention" type="bool" value="true"/>
-                <param name="displayInferenceValues" type="bool" value="true"/>
+                <param name="displayInferenceValues" type="bool" value="false"/>
                 <param name="displaySimAgents" type="bool" value="false"/>
                 <param name="maxNoTrackedAgents" type="int" value="10"/>
                 <param name="wifiAttempts" type="int" value="5"/>
 
                 <!-- Logger Parameters -->
-                <param name="logName" type="string" value="InSpaceDemo.csv"/>
+                <param name="logName" type="string" value="Test-1.csv"/>
                 <param name="logPlanner" type="int" value="1"/>
 
                 <!-- Constants / DO NOT CHANGE -->
@@ -65,7 +83,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="loadedParam" type="bool" value="true"/>
 
                 <!-- Model Parameters -->
-                <param name="goalSampling" type="bool" value="true"/>
+                <param name="goalSampling" type="bool" value="false"/>
                 <param name="bivariate" type="bool" value="true"/>
                 <param name="goalSumPrior" type="double" value="0.001"/>
                 <param name="goalHistoryDiscount" type="double" value="0.5"/>
@@ -83,7 +101,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <!-- Simulation Parameters -->
                 <param name="neighborDist" type="double" value="5.0"/>
                 <param name="maxNeighbors" type="int" value="10"/>
-                <param name="agentRadius" type="double" value="0.5"/>
+                <param name="agentRadius" type="double" value="0.6"/>
                 <param name="goalRadius" type="double" value="0.3"/>
                 <param name="prefSpeed" type="double" value="0.3"/>
                 <param name="prefPeopleSpeed" type="double" value="0.3"/>

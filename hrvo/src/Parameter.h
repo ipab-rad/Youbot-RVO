@@ -28,6 +28,7 @@ extern int PRIME_PLAN;
 
 // Experiment Setup
 extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
+extern bool HRVO_PLANNER;
 extern bool PERFORM_ROBOT_SETUP;        // Robots move into initial positions
 extern bool MANUAL_TRACKER_ASSIGNMENT;  // False = Automatic setup will assign last TrackerID
 extern bool ONLY_ODOMETRY;              // Use only odometry for robots, no tracker feedback

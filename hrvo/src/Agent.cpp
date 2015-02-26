@@ -708,25 +708,38 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
 
 void Agent::odomPosUpdate()
 {
+  DEBUG("Odom Update!" << std::endl);
+
   Vector2 odom_offset = curr_offset_ - prev_offset_;
-  prev_offset_ = curr_offset_;
 
   if (amcl_update_ &&
     amcl_pose_.getX() != 0.0 &&
     amcl_pose_.getY() != 0.0)
   {
+    DEBUG("USING AMCL!")
     position_ = amcl_pose_;
+    odomPosition_ = amcl_pose_;
   }
   else
   {
-    position_ += odom_offset;
+    DEBUG("USING ODOMETRY!")
+    odomPosition_ += odom_offset;
+    position_ = odomPosition_;
+    // position_ += odom_offset;
+    // odomPosition_ = position_;
   }
-
-  amcl_update_ = false;
+  DEBUG(std::endl);
+  DEBUG("AMCL=" << amcl_pose_ << std::endl);
+  DEBUG("OdomPos=" << odomPosition_ << std::endl);
+  // DEBUG("TruePos=" << position_ << std::endl);
 
   DEBUG("Pos " << position_ << ", Curr "
   << curr_offset_ << ", Prev "
   << prev_offset_ << std::endl);
+
+  prev_offset_ = curr_offset_;
+  amcl_update_ = false;
+
   // DEBUG("Ori: " << orientation_ << ", Sens: " 
   // << agent_sensed_orientation_ << std::endl);
 
@@ -824,8 +837,9 @@ void Agent::update()
 
 void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 {
-  ERR("Curr:" << curr_offset_ << std::endl);
-  ERR("Prev:" << prev_offset_ << std::endl);
+  ERR("Odom Received!")
+  // ERR("Curr:" << curr_offset_ << std::endl);
+  // ERR("Prev:" << prev_offset_ << std::endl);
   curr_offset_.setX(pose_msg->pose.pose.position.x);
   curr_offset_.setY(pose_msg->pose.pose.position.y);
   agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
@@ -841,6 +855,9 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
     << ", Curr "
     << current_odometry_offset_ << std::endl);
   */
+  
+  odomPosition_ = odomPosition_ + (curr_offset_ - prev_offset_);
+  DEBUG("MAYBE:" << odomPosition_ << std::endl);
 
   if(!updated_)
   {

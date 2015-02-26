@@ -10,9 +10,12 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   message_generation
+  move_base_msgs
+  actionlib
 )
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+# find_package(Boost move_base_msgs actionlib REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -128,21 +131,21 @@ add_library(Vector2 src/Vector2.cpp)
 
 ## Declare a cpp executable
 # add_executable(Square
-# 	src/Square.cpp
-# 	src/Agent.cpp
-# 	src/Goal.cpp
-# 	src/KdTree.cpp
-# 	src/Simulator.cpp
-# 	src/Vector2.cpp
+#	src/Square.cpp
+#	src/Agent.cpp
+#	src/Goal.cpp
+#	src/KdTree.cpp
+#	src/Simulator.cpp
+#	src/Vector2.cpp
 # )
 
 # add_executable(Circle
-# 	src/Circle.cpp
-# 	src/Agent.cpp
-# 	src/Goal.cpp
-# 	src/KdTree.cpp
-# 	src/Simulator.cpp
-# 	src/Vector2.cpp
+#	src/Circle.cpp
+#	src/Agent.cpp
+#	src/Goal.cpp
+#	src/KdTree.cpp
+#	src/Simulator.cpp
+#	src/Vector2.cpp
 # )
 
 add_executable(Experiment
@@ -158,6 +161,7 @@ add_executable(Experiment
   src/Parameter.cpp
   src/Tracker.cpp
   src/AMCLWrapper.cpp
+  src/Planner.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library
@@ -175,21 +179,21 @@ add_dependencies(Simulator ${PROJECT_NAME}_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(Square
-#  	${catkin_LIBRARIES}
-# 	Agent
-# 	Goal
-# 	KdTree
-# 	Simulator
-# 	Vector2
+#	${catkin_LIBRARIES}
+#	Agent
+#	Goal
+#	KdTree
+#	Simulator
+#	Vector2
 # )
 
 # target_link_libraries(Circle
-# 	${catkin_LIBRARIES}
-# 	Agent
-# 	Goal
-# 	KdTree
-# 	Simulator
-# 	Vector2
+#	${catkin_LIBRARIES}
+#	Agent
+#	Goal
+#	KdTree
+#	Simulator
+#	Vector2
 # )
 
 target_link_libraries(Experiment

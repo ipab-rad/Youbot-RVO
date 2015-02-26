@@ -1,37 +1,41 @@
 close all
 clear all
 
-file='AtriumExperimentFinal2.csv';
-record = true;
-ExpTitle = 'Dense navigation in Atrium';
-VidName = 'AtriumExperimentFinal2.avi';
+file='InSpace-Exp5.csv';
+record = false;
+ExpTitle = 'Interactive navigation';
+VidName = 'InSpace-Exp5.avi';
 
 X = 1;
 Y = 2;
 
-% % InSpace Environment
-% minX = -8;
-% maxX = -2;
-% minY = 0;
-% maxY = 6;
+% InSpace Environment
+minX = -8;
+maxX = -2;
+minY = 0;
+maxY = 6;
 
-% Atrium Environment 
-minX = -2;
-maxX = 13;
-minY = -2;
-maxY = 11;
+% % Atrium Environment 
+% minX = -2;
+% maxX = 13;
+% minY = -2;
+% maxY = 11;
+
 
 Param = csvread(file, 0, 0, [0 0 0 2]);
 % dt = Param(1,1) * 0.2;
-dt = 0.025;
+dt = 0.025; % Default
+% dt = 0.1;
 nPlannerAgents = Param(1,2);
-ARadius = Param(1,3) * 200;
+ARadius = Param(1,3) * 600;
 vMag = 1;   % Magnitude scalar for representing velocity vectors
 
 M = csvread(file, 1);
 [Ml,Mw] = size(M);
 
-ColorNum = M(Ml,2);
+MaxNAgents=M(Ml,2);
+ColorNum = MaxNAgents;
+% ColorNum = 8;
 cmap = hsv(ColorNum);
 % cmap = lines(ColorNum);
 % cmap = jet(ColorNum);
@@ -55,6 +59,11 @@ if record
 %   set(gca, 'nextplot','replacechildren', 'Visible','off');
 end
 
+
+TrajHist = 40;
+TrajIndex = ones(MaxNAgents);
+Trajectory = zeros(MaxNAgents,TrajHist,2);
+TrajFreq = 5; % 10 Hz / 2 = 5Hz
 % Reading file and extracting values
 for i=1:Ml
   time = M(i,1);
@@ -62,6 +71,7 @@ for i=1:Ml
   nModelled = M(i,3);
   ModelledAgents = M(i,4:4-1+nModelled);
   nGoals = M(i,4+nModelled);
+  TrajID = ModelledAgents;
 
   Goals = zeros(nGoals, 2);
   AgentPos = zeros(nModelled, 2);
@@ -80,6 +90,13 @@ for i=1:Ml
     AgentVel(a,:) = M(i, ((a-1)*2)+(2*nModelled)+4+X+nModelled+(nGoals*2):((a-1)*2)+(2*nModelled)+4+Y+nModelled+(nGoals*2));
     PrefSpeed(a) = M(i, ((a-1)*2)+(4*nModelled)+4+X+nModelled+(nGoals*2));
     MaxSpeed(a) = M(i, ((a-1)*2)+(4*nModelled)+4+Y+nModelled+(nGoals*2));
+    TrajID(a) = ModelledAgents(a) + 1;
+    Trajectory(TrajID(a),TrajIndex(TrajID(a)),:)=AgentPos(a,:);
+    
+    TrajIndex(TrajID(a)) = TrajIndex(TrajID(a)) + 1;
+    if (TrajIndex(TrajID(a)) > TrajHist)
+         TrajIndex(TrajID(a)) = 1;
+    end
     
     for g=1:nGoals
       SimVels(a,g,:) = M(i, ((a-1)*6)+(6*nModelled)+((g-1)*2)+4+X+nModelled+(nGoals*2):((a-1)*6)+(6*nModelled)+((g-1)*2)+4+Y+nModelled+(nGoals*2));
@@ -93,8 +110,9 @@ for i=1:Ml
 %   subplot(2,nModelled,1);
 %   subplot(2,2,3); % Left bottom
 %   subplot(2,nModelled,nModelled+1:nModelled+nModelled); % Center
-  h1 = subplot(2,4,1);
-%   h1 = subplot(2,2,1);
+%   h1 = subplot(2,4,1);    % ATRIUM
+  h1 = subplot(2,2,1);
+%   h1 = subplot(2,3,1);
   plot(NaN);      % Clear subplot
   hold on
   title('Distributed Tracker Data');  
@@ -107,22 +125,27 @@ for i=1:Ml
 %     Plotting Agent Positions and Velocities
   for a=1:nModelled
     s=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
+    for tt=1:TrajHist
+        if (rem(tt,TrajFreq)==0)
+        t=scatter(Trajectory(TrajID(a),tt,X),Trajectory(TrajID(a),tt,Y),25,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'Marker','.');
+        end
+    end
     x=[AgentPos(a,X),AgentPos(a,X)+vMag*(AgentVel(a,X))];
     y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(AgentVel(a,Y))];
     plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
   end
 % 
-  set(gca,'YDir','reverse');
+%   set(gca,'YDir','reverse');  % ATRIUM
   axis([minX maxX minY maxY]);
   axis square;
   
   xl=xlim(h1);
   yl=ylim(h1);
   xPos = xl(1);
-%   ExpyPos = yl(1)-(1);
-%   TyPos = yl(1)-(2);
-  ExpyPos = yl(2)+(3);
-  TyPos = yl(2)+(5);
+  ExpyPos = yl(1)-(1);
+  TyPos = yl(1)-(2);
+%   ExpyPos = yl(2)+(3);    % ATRIUM
+%   TyPos = yl(2)+(5);      % ATRIUM
   t1 = text(xPos, ExpyPos, sprintf('%s', ExpTitle), 'Parent', h1);
   t2 = text(xPos, TyPos, sprintf('Time:%0.1f seconds', time), 'Parent', h1);
   set(h1,'LineWidth',2)
@@ -131,29 +154,35 @@ hold off
 
 % Plot counterfactual simulated velocities for each agent
   for g=1:nGoals
-    h2 = subplot(6,4,(1+((g+2)*4)));
-%     h2 = subplot(2,3+nGoals,(3+nGoals)+g);
+%     h2 = subplot(6,4,(1+((g+2)*4)));  % ATRIUM
+    h2 = subplot(2,3+nGoals,(3+nGoals)+g);
+%     h2 = subplot(2,3,3+g);
     plot(NaN); 
     %     Plotting Goals
     hold on
     j=scatter(Goals(g,X),Goals(g,Y),ARadius/4,'black','+','LineWidth',1);
     for a=1:nModelled
       m=scatter(AgentPos(a,X),AgentPos(a,Y),ARadius/4,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',1.5);
+%       for tt=1:TrajHist
+%           if (rem(tt,TrajFreq)==0)
+%             t=scatter(Trajectory(TrajID(a),tt,X),Trajectory(TrajID(a),tt,Y),25,cmap(rem(ModelledAgents(a),ColorNum)+1,:),'Marker','.');
+%           end
+%       end
       x=[AgentPos(a,X),AgentPos(a,X)+vMag*(SimVels(a,g,X))];
       y=[AgentPos(a,Y),AgentPos(a,Y)+vMag*(SimVels(a,g,Y))];
       plot(x, y, 'color', cmap(rem(ModelledAgents(a),ColorNum)+1,:),'LineWidth',2);
     end
     title(sprintf('\\bfGoal:%d', g));  
-    set(gca,'YDir','reverse');
+%     set(gca,'YDir','reverse');
     axis([minX maxX minY maxY]);
     axis square;
     xl=xlim(h2);
     yl=ylim(h2);
     for a=1:nModelled
       LikxPos = xl(1);
-%       LikyPos = yl(1)-(1+(2.5)*a);
-      LikyPos = yl(1)-(1+(1.5)*a);
-%       t = text(LikxPos, LikyPos, sprintf('{\\itL}(a%d,g%d): %0.3f', a, g, Likelihoods(a, g)), 'Parent', h2);
+%       LikyPos = yl(1)-(1*a);
+      LikyPos = yl(1)-(1+(1.5)*a);    % ATRIUM
+      t = text(LikxPos, LikyPos, sprintf('{\\itL}(a%d,g%d): %0.3f', a, g, Likelihoods(a, g)), 'Parent', h2);
     end
     set(h2,'LineWidth',1.5)
     hold off
@@ -173,12 +202,18 @@ hold off
 
   % Plotting Goal Likelihoods
   col = 1;
+  tempModNum=nModelled;
+  if (nModelled > 2)
+      tempModNum = 2;
+  end
   for a=1:nModelled
+%   for a=1:tempModNum
     hold off
-    id = a+floor(col);
-    subplot(ceil(nModelled/3),4,id);
-    col = col + 0.34;
-%     subplot(nModelled,2,2*a);
+%     id = a+floor(col);
+%     subplot(ceil(nModelled/3),4,id);
+%     col = col + 0.34;
+    subplot(nModelled,2,2*a);
+%     subplot(2,3,a+1);
     %   y = randn(3,4);         % random y values (3 groups of 4 parameters)
     %   errY = zeros(3,4,2);
     %   errY(:,:,1) = 0.1.*y;   % 10% lower error
