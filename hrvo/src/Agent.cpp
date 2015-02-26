@@ -723,8 +723,15 @@ void Agent::odomPosUpdate()
   else
   {
     DEBUG("USING ODOMETRY!")
-    position_ += odom_offset;
+    odomPosition_ += odom_offset;
+    position_ = odomPosition_;
+    // position_ += odom_offset;
+    // odomPosition_ = position_;
   }
+  DEBUG(std::endl);
+  DEBUG("AMCL=" << amcl_pose_ << std::endl);
+  DEBUG("OdomPos=" << odomPosition_ << std::endl);
+  // DEBUG("TruePos=" << position_ << std::endl);
 
   DEBUG("Pos " << position_ << ", Curr "
   << curr_offset_ << ", Prev "

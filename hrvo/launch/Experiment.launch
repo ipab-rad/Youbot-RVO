@@ -14,12 +14,20 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         <!-- Start the experiment node -->
         <node name="youbot_experiment" pkg="hrvo" type="Experiment" output="screen" clear_params="true">
                 <!-- Robot Setup -->
+                <!-- Plans
+                GOAL_STOP       0
+                GOAL_CYCLE_CW   1
+                GOAL_CYCLE_CCW  2
+                GOAL_1_2        3
+                GOAL_2_3        4
+                GOAL_3_1        5
+                FOLLOW_AGENT 6 -->
                 <!-- One robot agent must always be initialised, even if not planning -->
                 <param name="megatronActive" type="bool" value="true"/>
                 <param name="megatronPlan" type="int" value="1"/>
 
                 <param name="soundwaveActive" type="bool" value="false"/>
-                <param name="soundwavePlan" type="int" value="3"/>
+                <param name="soundwavePlan" type="int" value="1"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
                 <param name="starscreamActive" type="int" value="3"/>
@@ -66,7 +74,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="wifiAttempts" type="int" value="5"/>
 
                 <!-- Logger Parameters -->
-                <param name="logName" type="string" value="InSpace-Exp1.csv"/>
+                <param name="logName" type="string" value="Test-1.csv"/>
                 <param name="logPlanner" type="int" value="1"/>
 
                 <!-- Constants / DO NOT CHANGE -->
@@ -86,14 +94,14 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="priorLambda" type="double" value="0.5"/>
 
                 <!-- Workspace limits -->
-                <param name="limitWorkspaceVel" type="bool" value="false"/>
+                <param name="limitWorkspaceVel" type="bool" value="true"/>
 
                 <!-- Experiment Parameters -->
 
                 <!-- Simulation Parameters -->
                 <param name="neighborDist" type="double" value="5.0"/>
                 <param name="maxNeighbors" type="int" value="10"/>
-                <param name="agentRadius" type="double" value="0.5"/>
+                <param name="agentRadius" type="double" value="0.6"/>
                 <param name="goalRadius" type="double" value="0.3"/>
                 <param name="prefSpeed" type="double" value="0.3"/>
                 <param name="prefPeopleSpeed" type="double" value="0.3"/>
