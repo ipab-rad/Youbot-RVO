@@ -18,6 +18,7 @@ Tracker::Tracker()
 
   // ROS_INFO("Setup agent costmap layer publisher");
   trackOtherAgents_ = false;
+  if (!TRACK_ROBOTS)  {robotTrackerID_=-1;}
 }
 
 Tracker::~Tracker()
@@ -38,7 +39,8 @@ void Tracker::updateTracker()
     this->removeInactiveTrackers();
     this->updateActiveAgents(numAgents);
     // Compare tracker with odometry
-    this->odometryComparison();
+    if (TRACK_ROBOTS)
+    {this->odometryComparison();}
 
     DEBUG(std::endl);
   }
@@ -116,7 +118,7 @@ void Tracker::checkExistingTrackers(std::map<int, std::size_t> ids)
       }
     }
 
-    if (TrackID != robotTrackerID_ && AgentID == THIS_ROBOT)
+    if (TrackID != robotTrackerID_ && AgentID == THIS_ROBOT && TRACK_ROBOTS)
     {
       ERR(environment_->getStringActorID() << " already has tracker " << robotTrackerID_ << " instead of " << TrackID << std::endl);
       trackedAgents_.erase(iter);
@@ -179,7 +181,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // If only one robot is being used, assign it the tracker if it's the only one left
-    if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
+    if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1) && TRACK_ROBOTS)
     {
       this->setAgentTracker(TrackerID, THIS_ROBOT);
       planner_->resetOdomPosition();
@@ -189,7 +191,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     // If new Tracker has not been assigned yet, reassign to robot or create new agent
     if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )
     { // TODO: Implement working limit for number of created agents
-      if (TrackerID == robotTrackerID_ && ENABLE_PLANNER)
+      if (TrackerID == robotTrackerID_ && ENABLE_PLANNER && TRACK_ROBOTS)
       {
         this->setAgentTracker(TrackerID, THIS_ROBOT);
         planner_->resetOdomPosition();
@@ -203,7 +205,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // If TrackerID has been assigned already, update agent information
-    if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY)
+    if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY && TRACK_ROBOTS)
     {
       // planner_->setOdomNeeded(false);
       planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
@@ -224,7 +226,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // Calculate robot odometry comparison with Tracker
-    if (ENABLE_PLANNER)
+    if (ENABLE_PLANNER && TRACK_ROBOTS)
     {
       float odomdiff = sqrdiff(planner_->getOdomPosition(), agentPos);
       // if (planner_->getAgentType(trackedAgents_[TrackerID]) != INACTIVE)

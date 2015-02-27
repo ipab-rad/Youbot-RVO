@@ -86,6 +86,7 @@ void AMCLWrapper::updatePose()
 {
   // usleep(8000);
   // WARN("AMCLWrapper: update is called!" << std::endl);
+  WARN(environment_->getStringActorID() << std::endl);
   WARN("AMCL:" << is_msg_received << " ODOM:" << is_odom_received << std::endl);
   // DEBUG("p.x: " << full_pose_.position.x << std::endl);
   // DEBUG("p.y: " << full_pose_.position.y << std::endl);

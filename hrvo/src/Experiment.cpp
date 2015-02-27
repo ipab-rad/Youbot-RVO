@@ -41,7 +41,10 @@ int main(int argc, char *argv[])
   {
     if (ENABLE_PLANNER)
     {
+
       StopRobots(PlannerMap_);
+
+      // if (!TRACK_ROBOTS) {InitRobotPoses(PlannerMap_);}
 
       for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
@@ -202,6 +205,16 @@ void hrvo::EStopRobots(PlannerMapPointer* PlannerMap)
   exit(1);
 }
 
+void hrvo::InitRobotPoses(PlannerMapPointer* PlannerMap)
+{
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  {
+    Environment* planner = iter->second;
+    // planner->doPlannerStep();
+    planner->updateLocalisation(false);
+  }
+}
+
 void hrvo::MoveIntoArea(Environment* planner)
 {
   // Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
@@ -229,25 +242,32 @@ void hrvo::MoveIntoArea(Environment* planner)
 
 void hrvo::SelectTracker(Environment* planner)
 {
-  planner->updateLocalisation(true);
-  std::map<int, std::size_t> ids = planner->getTrackerIDs();
+  if (TRACK_ROBOTS)
+  {
+    planner->updateLocalisation(true);
+    std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
-  if (ids.empty())
-  {
-    WARN("No Trackers were found" << std::endl);
+    if (ids.empty())
+    {
+      WARN("No Trackers were found" << std::endl);
+    }
+    else if (!MANUAL_TRACKER_ASSIGNMENT)
+    {
+      planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
+      INFO("Automatically assigned TrackerID " << ids[0]
+        << " for " << planner->getStringActorID() << std::endl);
+    }
+    else if (MANUAL_TRACKER_ASSIGNMENT)
+    {
+      INFO("Enter TrackerID for " << planner->getStringActorID()
+        << ":" << std::endl);
+      int TrackerID = cinInteger();
+      planner->setAgentTracker(TrackerID, THIS_ROBOT);
+    }
   }
-  else if (!MANUAL_TRACKER_ASSIGNMENT)
+  else
   {
-    planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-    INFO("Automatically assigned TrackerID " << ids[0]
-      << " for " << planner->getStringActorID() << std::endl);
-  }
-  else if (MANUAL_TRACKER_ASSIGNMENT)
-  {
-    INFO("Enter TrackerID for " << planner->getStringActorID()
-      << ":" << std::endl);
-    int TrackerID = cinInteger();
-    planner->setAgentTracker(TrackerID, THIS_ROBOT);
+    WARN("Robots are NOT tracked by cameras, using AMCL/odom" << std::endl);
   }
 
   planner->resetOdomPosition();

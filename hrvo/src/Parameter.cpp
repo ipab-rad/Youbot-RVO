@@ -27,7 +27,9 @@ bool HRVO_PLANNER;
 bool PERFORM_ROBOT_SETUP;         // Robots move into initial positions
 bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last TrackerID
 bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
-bool IS_AMCL_ACTIVE;
+bool IS_AMCL_ACTIVE;              // Whether AMCL is running on the robot, requires laser scanner
+bool TRACK_ROBOTS;                // Whether the tracker is setup to track robots as well as people
+
 bool ENABLE_MODELLING;            // Enable inference model
 bool MODEL_OWN_ROBOT;             // Model the planning robot as well (Start from Agent 0)
 bool LOG_DATA;                    // Log data into a file
@@ -112,6 +114,7 @@ void ParamInitialise()
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
   ros::param::param(nn+"isamclactive", IS_AMCL_ACTIVE, false);
+  ros::param::param(nn+"trackRobots", TRACK_ROBOTS, false);
 
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
   ros::param::param(nn+"modelOwnRobot", MODEL_OWN_ROBOT, false);

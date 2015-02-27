@@ -803,7 +803,7 @@ void Agent::update()
 
   if (agent_type_ == SIMAGENT)
   {
-    position_ += velocity_ * simulator_->timeStep_;
+    position_ += velocity_ * simulator_->timeStep_;;
     // std::cout << id_ << "Position updated" << std::endl;
   }
   else
