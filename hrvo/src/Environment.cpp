@@ -131,7 +131,8 @@ void Environment::updateLocalisation(bool USE_TRACKER)
     bumperwrapper_->pretty_print();
     if (IS_BUMPER_ACTIVE) {
       bumperwrapper_->update_data();
-      bool act = bumperwrapper_->activated();
+      int act = bumperwrapper_->activated();
+      ERR(">>>>>>>>>>>>>>>>>>>>>>>>> " << act << std::endl);
       planner_->setBumperData(THIS_ROBOT, act);
     }
   }

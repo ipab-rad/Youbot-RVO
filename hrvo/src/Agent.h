@@ -276,7 +276,8 @@ class Agent {
    * \brief  set the pose topic.
    */
   void setPoseTopic(std::string pose_topic);
-  bool bumper_touched_;
+
+  int bumper_touched_;
 };
 }
 

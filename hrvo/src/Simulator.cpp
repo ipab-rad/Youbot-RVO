@@ -516,7 +516,7 @@ void Simulator::setAMCLPose(std::size_t agentNo, Vector2 amcl_pose)
   agents_[THIS_ROBOT]->amcl_update_ = true;
 }
 
-void Simulator::setBumperData(std::size_t agentNo, bool touched)
+void Simulator::setBumperData(std::size_t agentNo, int touched)
 {
   agents_[THIS_ROBOT]->bumper_touched_ = touched;
 }

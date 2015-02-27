@@ -94,7 +94,7 @@ Agent::Agent(Simulator *simulator) :
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
     reachedGoal_(false)
 {
-  bumper_touched_ = false;
+  bumper_touched_ = 0;
   updated_ = false;
 }
 
@@ -112,7 +112,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
-  bumper_touched_ = false;
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -167,7 +167,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
-  bumper_touched_ = false;
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -225,7 +225,7 @@ simulator_(simulator), newVelocity_(velocity),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
-  bumper_touched_ = false;
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -814,9 +814,45 @@ void Agent::update()
     geometry_msgs::Twist vel;
     vel.linear.x = velocity_.getX();
     vel.linear.y = velocity_.getY();
-    if(bumper_touched_) {
-      vel.linear.x = 0.0;
-      vel.linear.y = 0.0;
+    switch(bumper_touched_) {
+      case 1:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 2:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 3:
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.1;
+        break;
+      case 4:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 5:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 6:
+        vel.linear.x = 0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 7:
+        vel.linear.x = 0.0;
+        vel.linear.y = -0.1;
+        break;
+      case 8:
+        vel.linear.x = -0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 9:
+        ERR("TOUCHING MORE THAN ONE BUMPER!" << std::endl);
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.0;
+      default:
+        break;
     }
     pub_.publish(vel);
 

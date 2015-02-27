@@ -32,7 +32,7 @@ class BumperWrapper
   void update_data();
   void setEnvPointer(Environment *environment) {environment_ = environment;}
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
-  bool activated();
+  int activated();
   bool is_msg_received;
   int callback_counter;
 

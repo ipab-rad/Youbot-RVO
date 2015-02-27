@@ -4,6 +4,8 @@
 * \brief  Deals with the Bumper bumper_data_
 */
 
+#include <numeric>
+
 #include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
 
@@ -71,15 +73,21 @@ void BumperWrapper::pretty_print()
   ERR("--------------------" << std::endl);
 }
 
-bool BumperWrapper::activated()
+int BumperWrapper::activated()
 {
-  for(std::vector<int>::iterator it = bumper_data_.begin();
-      it != bumper_data_.end(); ++it) {
-    if (*it) {
-      return true;
-    }
+  int sum_of_elems = 0 ;
+  for(int i = 0; i < 8; i++) {
+    sum_of_elems += bumper_data_[i];
+    if (sum_of_elems > 2)
+      return 9;
   }
 
-  return false;
+  for(int i = 0; i < 8; i++) {
+    int value = bumper_data_[i];
+    if (value)
+      return i+1;
+  }
+
+  return 0;
 }
 }

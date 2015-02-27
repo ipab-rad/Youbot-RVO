@@ -478,7 +478,7 @@ class Simulator {
 
   void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
 
-  void setBumperData(std::size_t agentNo, bool touched);
+  void setBumperData(std::size_t agentNo, int touched);
 
 
   // bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
