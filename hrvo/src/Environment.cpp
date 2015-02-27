@@ -27,6 +27,7 @@ namespace hrvo {
     this->goalSetup();
     simvectPoint_ = &simvect_;
     this->initTracker();
+    this->initBumper();
     DEBUG("Environment for " << sActorID_ << " constructed" << std::endl);
   }
 
@@ -40,6 +41,9 @@ namespace hrvo {
 
     delete amclwrapper_;
     amclwrapper_ = NULL;
+
+    delete bumperwrapper_;
+    bumperwrapper_ = NULL;
 
     for (std::map<std::size_t, Simulator *>::iterator iter = simvect_.begin(); iter != simvect_.end(); ++iter)
     {
@@ -81,6 +85,15 @@ namespace hrvo {
     planner_->setPrevOdomOffset(THIS_ROBOT, prev_odom);
     planner_->setOdomUpdated(THIS_ROBOT, true);
     */
+  }
+
+
+  void Environment::initBumper()
+  {
+    /* Initialise wrapper to update AMCL messages */
+    bumperwrapper_ = new BumperWrapper(sActorID_);
+    bumperwrapper_->setEnvPointer(this);
+    bumperwrapper_->setPlannerPointer(planner_);
   }
 
   void Environment::initAMCL()
@@ -312,6 +325,13 @@ namespace hrvo {
     if (USE_TRACKER) {
       tracker_->updateTracker();
     }
+    bumperwrapper_->pretty_print();
+    if (IS_BUMPER_ACTIVE) {
+      bumperwrapper_->update_data();
+      int act = bumperwrapper_->activated();
+      ERR(">>>>>>>>>>>>>>>>>>>>>>>>> " << act << std::endl);
+      planner_->setBumperData(THIS_ROBOT, act);
+	}
     if (!TRACK_ROBOTS)
     {
       //PUBLISH POSE
@@ -507,7 +527,7 @@ namespace hrvo {
       // Vector2 currGoalPos = Vector2(-6.3, 1.5);
       Vector2 currPos = this->getPlannerAgentPosition(THIS_ROBOT);
       Vector2 relGoal =  currGoalPos - currPos;
-        DEBUG("Pos: " << currPos << " Goal: " << currGoalPos 
+        DEBUG("Pos: " << currPos << " Goal: " << currGoalPos
           << " RelGoal: " << relGoal << std::endl);
       if (newGoal)
       {

@@ -61,8 +61,6 @@
 
 #include "Agent.h"
 
-#include "Definitions.h"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -78,6 +76,7 @@
 #include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
 
+#include "Definitions.h"
 #include "Goal.h"
 #include "KdTree.h"
 
@@ -95,6 +94,7 @@ Agent::Agent(Simulator *simulator) :
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
     reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   updated_ = false;
 }
 
@@ -112,6 +112,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -166,6 +167,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -223,6 +225,7 @@ simulator_(simulator), newVelocity_(velocity),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -740,7 +743,7 @@ void Agent::odomPosUpdate()
   prev_offset_ = curr_offset_;
   amcl_update_ = false;
 
-  // DEBUG("Ori: " << orientation_ << ", Sens: " 
+  // DEBUG("Ori: " << orientation_ << ", Sens: "
   // << agent_sensed_orientation_ << std::endl);
 
   //orientation_ = agent_sensed_orientation_; // TO BE IMPLEMENTED
@@ -811,7 +814,48 @@ void Agent::update()
     geometry_msgs::Twist vel;
     vel.linear.x = velocity_.getX();
     vel.linear.y = velocity_.getY();
+    switch(bumper_touched_) {
+      case 1:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 2:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 3:
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.1;
+        break;
+      case 4:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 5:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 6:
+        vel.linear.x = 0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 7:
+        vel.linear.x = 0.0;
+        vel.linear.y = -0.1;
+        break;
+      case 8:
+        vel.linear.x = -0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 9:
+        ERR("TOUCHING MORE THAN ONE BUMPER!" << std::endl);
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.0;
+      default:
+        break;
+    }
     pub_.publish(vel);
+
   }
 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
@@ -855,7 +899,7 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
     << ", Curr "
     << current_odometry_offset_ << std::endl);
   */
-  
+
   odomPosition_ = odomPosition_ + (curr_offset_ - prev_offset_);
   DEBUG("MAYBE:" << odomPosition_ << std::endl);
 

@@ -147,8 +147,6 @@ void AMCLWrapper::pretty_print_msg()
 
 void AMCLWrapper::pretty_print_pose()
 {
-  // if (is_msg_received) {odCount++;} else {odCount = 0;}
-  // DEBUG("Od Count: " << odCount << std::endl);
   if (is_msg_received)
   {
     Vector2 p = this->get_position();
@@ -226,10 +224,6 @@ Vector2 AMCLWrapper::get_odom_position()
 
 double AMCLWrapper::get_odom_orientation()
 {
-  // if (is_odom_received)
-  // {
-  //   return tf::getYaw(odom_pose_.orientation);
-  // }
   return 0.0;
 }
 

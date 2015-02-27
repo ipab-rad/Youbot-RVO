@@ -161,6 +161,7 @@ add_executable(Experiment
   src/Parameter.cpp
   src/Tracker.cpp
   src/AMCLWrapper.cpp
+  src/BumperWrapper.cpp
   src/Planner.cpp
 )
 

@@ -23,12 +23,13 @@
 #include "Definitions.h"
 
 #include "Planner.h"
-
+#include "BumperWrapper.h"
 #include <actionlib/client/simple_action_client.h>
 typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
 typedef actionlib::SimpleClientGoalState GoalState;
 
 namespace hrvo {
+  class BumperWrapper;
   class AMCLWrapper;
   class Tracker;
   class Simulator;
@@ -55,6 +56,7 @@ namespace hrvo {
     // TRACKER FUNCTIONS
     void initAMCL();
     void initTracker();
+    void initBumper();
     void initRobotTrackers();
 
     // void receiveRobotPose(const geometry_msgs::Pose& msg,
@@ -212,6 +214,7 @@ namespace hrvo {
       Planner *newPlanner_;
       Tracker *tracker_;
       AMCLWrapper *amclwrapper_;
+      BumperWrapper *bumperwrapper_;
 
       // Robot Tracking Pub
       ros::Publisher posePub_;
