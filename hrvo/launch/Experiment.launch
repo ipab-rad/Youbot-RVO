@@ -59,7 +59,10 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="manualTrackerAssignment" type="bool" value="true"/>
                 <param name="onlyOdometry" type="bool" value="false"/>
                 <param name="isamclactive" type="bool" value="true"/>
-                <param name="isbumperactive" type="bool" value="true"/>
+                <param name="blackoutBumper" type="bool" value="false"/>
+                <param name="starscreamBumper" type="bool" value="false"/>
+                <param name="soundwaveBumper" type="bool" value="false"/>
+                <param name="megatronBumper" type="bool" value="true"/>
                 <param name="trackRobots" type="bool" value="false"/>
 
                 <param name="enableModelling" type="bool" value="true"/>
@@ -114,4 +117,3 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
         </node>
 
 </launch>
-

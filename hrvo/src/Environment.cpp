@@ -175,63 +175,63 @@ namespace hrvo {
   // I hate myself for this....
   void Environment::receiveRobot1Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x);
     robotPoses[trackedRobots_[YOUBOT_1]].setY(msg.position.y);
   }
   void Environment::receiveRobot2Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_2]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[YOUBOT_2]].setX(msg.position.x);
     robotPoses[trackedRobots_[YOUBOT_2]].setY(msg.position.y);
   }
   void Environment::receiveRobot3Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_3]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[YOUBOT_3]].setX(msg.position.x);
     robotPoses[trackedRobots_[YOUBOT_3]].setY(msg.position.y);
   }
   void Environment::receiveRobot4Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_4]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[YOUBOT_4]].setX(msg.position.x);
     robotPoses[trackedRobots_[YOUBOT_4]].setY(msg.position.y);
   }
   void Environment::receiveRobot5Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_5]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[YOUBOT_5]].setX(msg.position.x);
     robotPoses[trackedRobots_[YOUBOT_5]].setY(msg.position.y);
   }
   void Environment::receiveRobot6Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[PRIME]].setX(msg.position.x); 
+    robotPoses[trackedRobots_[PRIME]].setX(msg.position.x);
     robotPoses[trackedRobots_[PRIME]].setY(msg.position.y);
   }
 
   void Environment::receiveRobot1Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x);
     robotVels[trackedRobots_[YOUBOT_1]].setY(msg.linear.y);
   }
   void Environment::receiveRobot2Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_2]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[YOUBOT_2]].setX(msg.linear.x);
     robotVels[trackedRobots_[YOUBOT_2]].setY(msg.linear.y);
   }
   void Environment::receiveRobot3Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_3]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[YOUBOT_3]].setX(msg.linear.x);
     robotVels[trackedRobots_[YOUBOT_3]].setY(msg.linear.y);
   }
   void Environment::receiveRobot4Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_4]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[YOUBOT_4]].setX(msg.linear.x);
     robotVels[trackedRobots_[YOUBOT_4]].setY(msg.linear.y);
   }
   void Environment::receiveRobot5Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_5]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[YOUBOT_5]].setX(msg.linear.x);
     robotVels[trackedRobots_[YOUBOT_5]].setY(msg.linear.y);
   }
   void Environment::receiveRobot6Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[PRIME]].setX(msg.linear.x); 
+    robotVels[trackedRobots_[PRIME]].setX(msg.linear.x);
     robotVels[trackedRobots_[PRIME]].setY(msg.linear.y);
   }
 
@@ -241,7 +241,7 @@ namespace hrvo {
   //   const std::string& pub_name = event.getPublisherName();
   //   if (pub_name.compare(1,8,"youbot_1"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x); 
+  //     robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x);
   //     robotPoses[trackedRobots_[YOUBOT_1]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_2"))
@@ -277,7 +277,7 @@ namespace hrvo {
   //   const std::string& pub_name = event.getPublisherName();
   //   if (pub_name.compare(1,8,"youbot_1"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x); 
+  //     robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x);
   //     robotVels[trackedRobots_[YOUBOT_1]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_2"))
@@ -326,7 +326,10 @@ namespace hrvo {
       tracker_->updateTracker();
     }
     bumperwrapper_->pretty_print();
-    if (IS_BUMPER_ACTIVE) {
+    if ((MEGATRON_ACTIVE && MEGATRON_BUMPER)
+        || (SOUNDWAVE_ACTIVE && SOUNDWAVE_BUMPER)
+        || (STARSCREAM_ACTIVE && STARSCREAM_BUMPER)
+        || (BLACKOUT_ACTIVE && BLACKOUT_BUMPER)) {
       bumperwrapper_->update_data();
       int act = bumperwrapper_->activated();
       ERR(">>>>>>>>>>>>>>>>>>>>>>>>> " << act << std::endl);

@@ -29,7 +29,11 @@ bool MANUAL_TRACKER_ASSIGNMENT;   // False = Automatic setup will assign last Tr
 bool ONLY_ODOMETRY;               // Use only odometry for robots, no tracker feedback
 bool IS_AMCL_ACTIVE;              // Whether AMCL is running on the robot, requires laser scanner
 bool TRACK_ROBOTS;                // Whether the tracker is setup to track robots as well as people
-bool IS_BUMPER_ACTIVE;
+
+bool MEGATRON_BUMPER;
+bool SOUNDWAVE_BUMPER;
+bool STARSCREAM_BUMPER;
+bool BLACKOUT_BUMPER;
 
 bool ENABLE_MODELLING;            // Enable inference model
 bool MODEL_OWN_ROBOT;             // Model the planning robot as well (Start from Agent 0)
@@ -115,7 +119,10 @@ void ParamInitialise()
   ros::param::param(nn+"manualTrackerAssignment", MANUAL_TRACKER_ASSIGNMENT, true);
   ros::param::param(nn+"onlyOdometry", ONLY_ODOMETRY, false);
   ros::param::param(nn+"isamclactive", IS_AMCL_ACTIVE, false);
-  ros::param::param(nn+"isbumperactive", IS_BUMPER_ACTIVE, false);
+  ros::param::param(nn+"megatronBumper", MEGATRON_BUMPER, false);
+  ros::param::param(nn+"soundwaveBumper",SOUNDWAVE_BUMPER, false);
+  ros::param::param(nn+"blackoutBumper", BLACKOUT_BUMPER, false);
+  ros::param::param(nn+"starscreamBumper", STARSCREAM_BUMPER, false);
   ros::param::param(nn+"trackRobots", TRACK_ROBOTS, false);
 
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);
