@@ -325,16 +325,15 @@ namespace hrvo {
     if (USE_TRACKER) {
       tracker_->updateTracker();
     }
-    bumperwrapper_->pretty_print();
     if ((MEGATRON_ACTIVE && MEGATRON_BUMPER)
         || (SOUNDWAVE_ACTIVE && SOUNDWAVE_BUMPER)
         || (STARSCREAM_ACTIVE && STARSCREAM_BUMPER)
         || (BLACKOUT_ACTIVE && BLACKOUT_BUMPER)) {
       bumperwrapper_->update_data();
+      bumperwrapper_->pretty_print();
       int act = bumperwrapper_->activated();
-      ERR(">>>>>>>>>>>>>>>>>>>>>>>>> " << act << std::endl);
       planner_->setBumperData(THIS_ROBOT, act);
-	}
+  	}
     if (!TRACK_ROBOTS)
     {
       //PUBLISH POSE

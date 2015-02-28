@@ -85,7 +85,7 @@ namespace hrvo {
   {    
     PlannerMapPointer_ = PlannerMap;
     ModelMapPointer_ = ModelMap;
-    std::string folder = "/home/alex/Dropbox/University/PhD/Experiments/InSpace/logs/";
+    std::string folder = "/home/alex/Dropbox/University/PhD/Experiments/InSpace/logs/Improved/";
     std::string fullpath = folder + LOG_NAME;
     if (!logfile.is_open())
     {

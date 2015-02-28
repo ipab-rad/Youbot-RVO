@@ -155,7 +155,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     std::size_t id = (*PlannerMap).size()+1;
     (*PlannerMap)[id] = new Environment(PRIME, START_POS1);
     (*PlannerMap)[id]->setPlannerGoalPlan(PRIME_PLAN);
-    (*PlannerMap)[id]->setPlannerInitialGoal(2);
+    (*PlannerMap)[id]->setPlannerInitialGoal(1);
   }
 }
 
