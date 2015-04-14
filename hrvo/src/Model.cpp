@@ -248,7 +248,8 @@ std::size_t Model::inferGoals(std::size_t agentNo)
     { PlannerPt_->deleteSimulation(simIDs_[j]); }
   if (DISPLAY_INTENTION) {
     INFO(std::endl);
-    INFO("Agent" << agentNo << " is likely going to Goal" << maxLikelihoodGoal << std::endl);
+    // Added 1 for printing since Planner goals are 1,2,3 and Model goals are 0,1,2
+    INFO("Agent" << agentNo << " is likely going to Goal" << (maxLikelihoodGoal + 1) << std::endl);
     INFO(std::endl);
   }
   return maxLikelihoodGoal;

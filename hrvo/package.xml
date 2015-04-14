@@ -4,13 +4,13 @@
   <version>1.1.0</version>
   <description>The Youbot RVO package</description>
 
-  <maintainer email="alex.bordallo@gmail.com">Alejandro Bordallo</maintainer>
+  <maintainer email="alex.bordallo@sms.ed.ac.uk.com">Alejandro Bordallo</maintainer>
 
   <license>BSD</license>
 
   <url type="website">http://github.com/ipab-rad/Youbot-RVO</url>
 
-  <author email="jane.doe@example.com">Alejandro Bordallo</author>
+  <author email="a.bordallo@sms.ed.ac.uk.com">Alejandro Bordallo</author>
   <author email="previtali@dis.uniroma1.it">Fabio Previtali</author>
   <author email="n.nardelli@sms.ed.ac.uk">Nantas Nardelli</author>
 

@@ -14,7 +14,11 @@ Tracker::Tracker()
   Targsub = nh_.subscribe("/agent_1/PTrackingBridge/targetEstimations",
                           1, &Tracker::receiveTrackerData, this);
   ROS_INFO("Suscribing to TargetEstimations");
+  // Agentpub = nh_.advertise<std_msgs::Float32MultiArray>("/tracked_agents", 400);
+
+  // ROS_INFO("Setup agent costmap layer publisher");
   trackOtherAgents_ = false;
+  if (!TRACK_ROBOTS)  {robotTrackerID_=-1;}
 }
 
 Tracker::~Tracker()
@@ -35,7 +39,8 @@ void Tracker::updateTracker()
     this->removeInactiveTrackers();
     this->updateActiveAgents(numAgents);
     // Compare tracker with odometry
-    this->odometryComparison();
+    if (TRACK_ROBOTS)
+    {this->odometryComparison();}
 
     DEBUG(std::endl);
   }
@@ -113,7 +118,7 @@ void Tracker::checkExistingTrackers(std::map<int, std::size_t> ids)
       }
     }
 
-    if (TrackID != robotTrackerID_ && AgentID == THIS_ROBOT)
+    if (TrackID != robotTrackerID_ && AgentID == THIS_ROBOT && TRACK_ROBOTS)
     {
       ERR(environment_->getStringActorID() << " already has tracker " << robotTrackerID_ << " instead of " << TrackID << std::endl);
       trackedAgents_.erase(iter);
@@ -176,7 +181,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // If only one robot is being used, assign it the tracker if it's the only one left
-    if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1))
+    if (ASSIGN_TRACKER_WHEN_ALONE && (trackedAgents_.empty() || numAgents == 1) && TRACK_ROBOTS)
     {
       this->setAgentTracker(TrackerID, THIS_ROBOT);
       planner_->resetOdomPosition();
@@ -186,7 +191,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     // If new Tracker has not been assigned yet, reassign to robot or create new agent
     if (trackOtherAgents_ && trackedAgents_.find(TrackerID)==trackedAgents_.end() && trackedAgents_.size() < MAX_NO_TRACKED_AGENTS )
     { // TODO: Implement working limit for number of created agents
-      if (TrackerID == robotTrackerID_ && ENABLE_PLANNER)
+      if (TrackerID == robotTrackerID_ && ENABLE_PLANNER && TRACK_ROBOTS)
       {
         this->setAgentTracker(TrackerID, THIS_ROBOT);
         planner_->resetOdomPosition();
@@ -200,9 +205,9 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // If TrackerID has been assigned already, update agent information
-    if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY)
+    if ((trackedAgents_[TrackerID] == THIS_ROBOT) && !ONLY_ODOMETRY && TRACK_ROBOTS)
     {
-      planner_->setOdomNeeded(false);
+      // planner_->setOdomNeeded(false);
       planner_->setAgentPosition(THIS_ROBOT, agentPos + trackerOffset);
     }
     else if (trackedAgents_.find(TrackerID)!=trackedAgents_.end())
@@ -221,7 +226,7 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
     }
 
     // Calculate robot odometry comparison with Tracker
-    if (ENABLE_PLANNER)
+    if (ENABLE_PLANNER && TRACK_ROBOTS)
     {
       float odomdiff = sqrdiff(planner_->getOdomPosition(), agentPos);
       // if (planner_->getAgentType(trackedAgents_[TrackerID]) != INACTIVE)
@@ -229,10 +234,33 @@ void Tracker::updateActiveAgents(std::size_t numAgents)
       trackerCompOdom_[TrackerID].insert(trackerCompOdom_[TrackerID].begin(), odomdiff);
       trackerCompOdom_[TrackerID].resize(TRACKER_ODOM_COMPARISONS);
       DEBUG("Tracker" << TrackerID << " Pos " << agentPos << std::endl);
-      // DEBUG("CompOdom " << odomdiff << std::endl);
+      DEBUG("OdomPos:" << planner_->getOdomPosition() << " CompOdom " << odomdiff << std::endl);
       // }
     }
   }
+}
+
+void Tracker::publishAgentLayer()
+{
+  std::vector<float> AgentPositions;
+  for(std::map<int, std::size_t>::iterator iter = (trackedAgents_).begin();
+     iter != (trackedAgents_).end(); ++iter)
+  { 
+    std::size_t AgentID = iter->second;
+    AgentPositions.push_back(planner_->getAgentPosition(AgentID).getX());
+    AgentPositions.push_back(planner_->getAgentPosition(AgentID).getY());
+  }
+
+  std_msgs::Float32MultiArray AgentMessage;
+  AgentMessage.data.clear();
+
+  // linearise matrix
+  std::vector<float>::iterator AgentPos;
+  for (AgentPos = AgentPositions.begin(); AgentPos != AgentPositions.end(); AgentPos++) {
+    AgentMessage.data.push_back(*AgentPos);
+  }
+  ERR("AGENT MESSAGE SENT! SIZE:" << AgentPositions.size() << std::endl)
+  Agentpub.publish(AgentMessage);
 }
 
 void Tracker::odometryComparison()
@@ -255,13 +283,14 @@ void Tracker::odometryComparison()
         {
           odomSums[TrackerID] += (*iter);
         }
+        odomSums[TrackerID] = odomSums[TrackerID] / OdomComparison.size();
       }
     }
     for(std::map<int, float>::iterator iter = odomSums.begin(); iter != odomSums.end(); ++iter)
     {
       int TrackerID = iter->first;
       float odomSum = iter->second;
-      // DEBUG("minComp " << minComp << " odomSum " << odomSum << " TrackerID " << TrackerID);
+      DEBUG("minComp " << minComp << " odomSum " << odomSum << " TrackerID " << TrackerID << std::endl);
       if (odomSum < minComp)
       {
         TargetTrackerID = TrackerID;

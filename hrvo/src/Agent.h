@@ -277,7 +277,7 @@ class Agent {
    */
   void setPoseTopic(std::string pose_topic);
 
-  // #endif
+  int bumper_touched_;
 };
 }
 

@@ -35,6 +35,8 @@ void StopRobots(PlannerMapPointer* PlannerMap);
 
 void EStopRobots(PlannerMapPointer* PlannerMap);
 
+void InitRobotPoses(PlannerMapPointer* PlannerMap);
+
 void MoveIntoArea(Environment* planner);
 
 void SelectTracker(Environment* planner);

@@ -15,13 +15,21 @@
 
 #include "PTrackingBridge/TargetEstimations.h"
 #include "geometry_msgs/Twist.h"
+#include <std_msgs/String.h>
 #include "std_msgs/Header.h"
 
 #include "Parameter.h"
 
 #include "Definitions.h"
 
+#include "Planner.h"
+#include "BumperWrapper.h"
+#include <actionlib/client/simple_action_client.h>
+typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
+typedef actionlib::SimpleClientGoalState GoalState;
+
 namespace hrvo {
+  class BumperWrapper;
   class AMCLWrapper;
   class Tracker;
   class Simulator;
@@ -48,9 +56,34 @@ namespace hrvo {
     // TRACKER FUNCTIONS
     void initAMCL();
     void initTracker();
+    void initBumper();
+    void initRobotTrackers();
+
+    // void receiveRobotPose(const geometry_msgs::Pose& msg,
+    // const ros::MessageEvent<std_msgs::String const>& event);
+
+    // void receiveRobotVel(const geometry_msgs::Twist& msg,
+    // const ros::MessageEvent<std_msgs::String const>& event);
+
+    // ** SHAMEFUR DISPRAY!!! **
+    void receiveRobot1Pose(const geometry_msgs::Pose& msg);
+    void receiveRobot2Pose(const geometry_msgs::Pose& msg);
+    void receiveRobot3Pose(const geometry_msgs::Pose& msg);
+    void receiveRobot4Pose(const geometry_msgs::Pose& msg);
+    void receiveRobot5Pose(const geometry_msgs::Pose& msg);
+    void receiveRobot6Pose(const geometry_msgs::Pose& msg);
+
+    void receiveRobot1Vel(const geometry_msgs::Twist& msg);
+    void receiveRobot2Vel(const geometry_msgs::Twist& msg);
+    void receiveRobot3Vel(const geometry_msgs::Twist& msg);
+    void receiveRobot4Vel(const geometry_msgs::Twist& msg);
+    void receiveRobot5Vel(const geometry_msgs::Twist& msg);
+    void receiveRobot6Vel(const geometry_msgs::Twist& msg);
 
     void updateLocalisation(bool USE_TRACKER);
     //    void updateTracker();
+
+    void updateRobotAgents();
 
     std::map<int, std::size_t> getTrackerIDs();
 
@@ -151,6 +184,8 @@ namespace hrvo {
 
     Environment* getEnvPointer() {return this;}
 
+    bool reachedMoveGoal() {return reachedGoal;}
+
     private:
       friend class Simulator;
       friend class Agent;
@@ -171,10 +206,32 @@ namespace hrvo {
       std::size_t goalPlan_;
 
       ros::NodeHandle nh_;
+      ros::NodeHandle nh2_;
+      bool newGoal;
+      bool reachedGoal;
 
       Simulator *planner_;
+      Planner *newPlanner_;
       Tracker *tracker_;
       AMCLWrapper *amclwrapper_;
+      BumperWrapper *bumperwrapper_;
+
+      // Robot Tracking Pub
+      ros::Publisher posePub_;
+      // ros::Subscriber RobotPoseSub1_;
+      // ros::Subscriber RobotPoseSub2_;
+      // ros::Subscriber RobotPoseSub3_;
+      // ros::Subscriber RobotPoseSub4_;
+      // ros::Subscriber RobotPoseSub5_;
+      // ros::Subscriber RobotPoseSub6_;
+
+      std::map<Actor, std::size_t> trackedRobots_;          // Robot Name, AgentID in planner
+      std::map<std::size_t, ros::Subscriber> robotPoseSubs; // AgentID
+      std::map<std::size_t, ros::Subscriber> robotVelSubs;  // AgentID
+      std::map<std::size_t, Vector2> robotPoses;            // AgentID
+      std::map<std::size_t, Vector2> robotVels;             // AgentID
+
+
 
       std::map<int, std::size_t> trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
       std::map<int, std::vector<float> > trackerCompOdom_;      // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position

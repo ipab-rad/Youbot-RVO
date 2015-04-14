@@ -61,8 +61,6 @@
 
 #include "Agent.h"
 
-#include "Definitions.h"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -78,6 +76,7 @@
 #include <geometry_msgs/Twist.h>
 #include <tf/tf.h>
 
+#include "Definitions.h"
 #include "Goal.h"
 #include "KdTree.h"
 
@@ -95,6 +94,7 @@ Agent::Agent(Simulator *simulator) :
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
     reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   updated_ = false;
 }
 
@@ -112,6 +112,7 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -166,6 +167,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -223,6 +225,7 @@ simulator_(simulator), newVelocity_(velocity),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   reachedGoal_(false)
 {
+  bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
@@ -708,26 +711,39 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
 
 void Agent::odomPosUpdate()
 {
+  DEBUG("Odom Update!" << std::endl);
+
   Vector2 odom_offset = curr_offset_ - prev_offset_;
-  prev_offset_ = curr_offset_;
 
   if (amcl_update_ &&
     amcl_pose_.getX() != 0.0 &&
     amcl_pose_.getY() != 0.0)
   {
+    DEBUG("USING AMCL!")
     position_ = amcl_pose_;
+    odomPosition_ = amcl_pose_;
   }
   else
   {
-    position_ += odom_offset;
+    DEBUG("USING ODOMETRY!")
+    odomPosition_ += odom_offset;
+    position_ = odomPosition_;
+    // position_ += odom_offset;
+    // odomPosition_ = position_;
   }
-
-  amcl_update_ = false;
+  DEBUG(std::endl);
+  DEBUG("AMCL=" << amcl_pose_ << std::endl);
+  DEBUG("OdomPos=" << odomPosition_ << std::endl);
+  // DEBUG("TruePos=" << position_ << std::endl);
 
   DEBUG("Pos " << position_ << ", Curr "
   << curr_offset_ << ", Prev "
   << prev_offset_ << std::endl);
-  // DEBUG("Ori: " << orientation_ << ", Sens: " 
+
+  prev_offset_ = curr_offset_;
+  amcl_update_ = false;
+
+  // DEBUG("Ori: " << orientation_ << ", Sens: "
   // << agent_sensed_orientation_ << std::endl);
 
   //orientation_ = agent_sensed_orientation_; // TO BE IMPLEMENTED
@@ -790,7 +806,7 @@ void Agent::update()
 
   if (agent_type_ == SIMAGENT)
   {
-    position_ += velocity_ * simulator_->timeStep_;
+    position_ += velocity_ * simulator_->timeStep_;;
     // std::cout << id_ << "Position updated" << std::endl;
   }
   else
@@ -798,7 +814,48 @@ void Agent::update()
     geometry_msgs::Twist vel;
     vel.linear.x = velocity_.getX();
     vel.linear.y = velocity_.getY();
+    switch(bumper_touched_) {
+      case 1:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 2:
+        vel.linear.x = -0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 3:
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.1;
+        break;
+      case 4:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.1;
+        break;
+      case 5:
+        vel.linear.x = 0.1;
+        vel.linear.y = 0.0;
+        break;
+      case 6:
+        vel.linear.x = 0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 7:
+        vel.linear.x = 0.0;
+        vel.linear.y = -0.1;
+        break;
+      case 8:
+        vel.linear.x = -0.1;
+        vel.linear.y = -0.1;
+        break;
+      case 9:
+        ERR("TOUCHING MORE THAN ONE BUMPER!" << std::endl);
+        vel.linear.x = 0.0;
+        vel.linear.y = 0.0;
+      default:
+        break;
+    }
     pub_.publish(vel);
+
   }
 
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
@@ -824,8 +881,9 @@ void Agent::update()
 
 void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 {
-  ERR("Curr:" << curr_offset_ << std::endl);
-  ERR("Prev:" << prev_offset_ << std::endl);
+  ERR("Odom Received!")
+  // ERR("Curr:" << curr_offset_ << std::endl);
+  // ERR("Prev:" << prev_offset_ << std::endl);
   curr_offset_.setX(pose_msg->pose.pose.position.x);
   curr_offset_.setY(pose_msg->pose.pose.position.y);
   agent_sensed_orientation_ = tf::getYaw(pose_msg->pose.pose.orientation);
@@ -841,6 +899,9 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
     << ", Curr "
     << current_odometry_offset_ << std::endl);
   */
+
+  odomPosition_ = odomPosition_ + (curr_offset_ - prev_offset_);
+  DEBUG("MAYBE:" << odomPosition_ << std::endl);
 
   if(!updated_)
   {

@@ -82,12 +82,14 @@ namespace hrvo {
   // std::string LOG_NAME;
 
   void logSetup(std::ofstream& logfile, std::map<std::size_t, Environment *> *PlannerMap, std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap)
-  {
-    const char *path = LOG_NAME.c_str();
+  {    
     PlannerMapPointer_ = PlannerMap;
     ModelMapPointer_ = ModelMap;
+    std::string folder = "/home/alex/Dropbox/University/PhD/Experiments/InSpace/logs/Improved/";
+    std::string fullpath = folder + LOG_NAME;
     if (!logfile.is_open())
     {
+      const char *path = (fullpath).c_str();
       logfile.open(path);
       if (logfile.fail())
         {ERR("Writing to log failed!" << std::endl);}

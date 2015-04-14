@@ -28,10 +28,17 @@ extern int PRIME_PLAN;
 
 // Experiment Setup
 extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
+extern bool HRVO_PLANNER;
 extern bool PERFORM_ROBOT_SETUP;        // Robots move into initial positions
 extern bool MANUAL_TRACKER_ASSIGNMENT;  // False = Automatic setup will assign last TrackerID
 extern bool ONLY_ODOMETRY;              // Use only odometry for robots, no tracker feedback
-extern bool IS_AMCL_ACTIVE;
+extern bool IS_AMCL_ACTIVE;             // Whether AMCL is running on the robot, requires laser scanner
+extern bool TRACK_ROBOTS;               // Whether the tracker is setup to track robots as well as people
+
+extern bool MEGATRON_BUMPER;
+extern bool SOUNDWAVE_BUMPER;
+extern bool STARSCREAM_BUMPER;
+extern bool BLACKOUT_BUMPER;
 
 extern bool ENABLE_MODELLING;           // Enable inference model
 extern bool MODEL_OWN_ROBOT;            // Model the planning robot as well (Start from Agent 0)

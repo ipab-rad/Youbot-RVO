@@ -11,7 +11,6 @@ using namespace hrvo;
 
 int main(int argc, char *argv[])
 {
-  
   ros::init(argc, argv, "hrvo_planner");
   ParamInitialise();
   if (CLEAR_SCREEN) {CLEAR();}
@@ -42,7 +41,10 @@ int main(int argc, char *argv[])
   {
     if (ENABLE_PLANNER)
     {
+
       StopRobots(PlannerMap_);
+
+      // if (!TRACK_ROBOTS) {InitRobotPoses(PlannerMap_);}
 
       for(PlannerMapPointer::iterator iter = (*PlannerMap_).begin(); iter != (*PlannerMap_).end(); ++iter)
       {
@@ -95,7 +97,9 @@ int main(int argc, char *argv[])
     ros::spinOnce();
     update_freq.sleep();
   }
-  if (LOG_DATA){dataLog.close();}
+  if (LOG_DATA){
+    DEBUG("LOG CLOSED!!" << std::endl);
+    dataLog.close();}
 
   StopRobots(PlannerMap_);
   if (SAFETY_STOP) { EStopRobots(PlannerMap_);}
@@ -123,8 +127,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     std::size_t id = (*PlannerMap).size()+1;
     (*PlannerMap)[id] = new Environment(YOUBOT_2, START_POS2);
     (*PlannerMap)[id]->setPlannerGoalPlan(SOUNDWAVE_PLAN);
-    (*PlannerMap)[id]->setPlannerInitialGoal(2);
-    (*PlannerMap)[id]->addVirtualAgent("1", Vector2(-5, 1.5), 1);
+    (*PlannerMap)[id]->setPlannerInitialGoal(1);
   }
   if (STARSCREAM_ACTIVE)
   {
@@ -152,7 +155,7 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
     std::size_t id = (*PlannerMap).size()+1;
     (*PlannerMap)[id] = new Environment(PRIME, START_POS1);
     (*PlannerMap)[id]->setPlannerGoalPlan(PRIME_PLAN);
-    (*PlannerMap)[id]->setPlannerInitialGoal(2);
+    (*PlannerMap)[id]->setPlannerInitialGoal(1);
   }
 }
 
@@ -202,6 +205,16 @@ void hrvo::EStopRobots(PlannerMapPointer* PlannerMap)
   exit(1);
 }
 
+void hrvo::InitRobotPoses(PlannerMapPointer* PlannerMap)
+{
+  for(PlannerMapPointer::iterator iter = (*PlannerMap).begin(); iter != (*PlannerMap).end(); ++iter)
+  {
+    Environment* planner = iter->second;
+    // planner->doPlannerStep();
+    planner->updateLocalisation(false);
+  }
+}
+
 void hrvo::MoveIntoArea(Environment* planner)
 {
   // Vector2 ForwVec = planner->getPlannerAgentPosition(THIS_ROBOT) + goForwVec;
@@ -229,25 +242,32 @@ void hrvo::MoveIntoArea(Environment* planner)
 
 void hrvo::SelectTracker(Environment* planner)
 {
-  planner->updateLocalisation(true);
-  std::map<int, std::size_t> ids = planner->getTrackerIDs();
+  if (TRACK_ROBOTS)
+  {
+    planner->updateLocalisation(true);
+    std::map<int, std::size_t> ids = planner->getTrackerIDs();
 
-  if (ids.empty())
-  {
-    WARN("No Trackers were found" << std::endl);
+    if (ids.empty())
+    {
+      WARN("No Trackers were found" << std::endl);
+    }
+    else if (!MANUAL_TRACKER_ASSIGNMENT)
+    {
+      planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
+      INFO("Automatically assigned TrackerID " << ids[0]
+        << " for " << planner->getStringActorID() << std::endl);
+    }
+    else if (MANUAL_TRACKER_ASSIGNMENT)
+    {
+      INFO("Enter TrackerID for " << planner->getStringActorID()
+        << ":" << std::endl);
+      int TrackerID = cinInteger();
+      planner->setAgentTracker(TrackerID, THIS_ROBOT);
+    }
   }
-  else if (!MANUAL_TRACKER_ASSIGNMENT)
+  else
   {
-    planner->setAgentTracker(ids[ids.size()-1], THIS_ROBOT);
-    INFO("Automatically assigned TrackerID " << ids[0]
-      << " for " << planner->getStringActorID() << std::endl);
-  }
-  else if (MANUAL_TRACKER_ASSIGNMENT)
-  {
-    INFO("Enter TrackerID for " << planner->getStringActorID()
-      << ":" << std::endl);
-    int TrackerID = cinInteger();
-    planner->setAgentTracker(TrackerID, THIS_ROBOT);
+    WARN("Robots are NOT tracked by cameras, using AMCL/odom" << std::endl);
   }
 
   planner->resetOdomPosition();
@@ -316,8 +336,13 @@ void hrvo::PlannerStep(PlannerMapPointer *PlannerMap)
     {
       Environment* planner = iter->second;
       // Set new goal given goal plan
+      ERR("CURRENT GOAL: " << planner->getPlannerGoal() << std::endl);
       if (planner->getReachedPlannerGoal())
-        {planner->setNextGoal();}
+        { DEBUG("NEXT GOAL1" << std::endl);
+          planner->setNextGoal();}
+      // else if (planner->reachedMoveGoal())
+      //   { DEBUG("NEXT GOAL2" << std::endl);
+      //     planner->setNextGoal();}
 
       INFO(planner->getStringActorID() << " to Goal " << planner->getPlannerGoal() << std::endl);
       planner->doPlannerStep();
@@ -385,6 +410,7 @@ void hrvo::ModelStep(PlannerMapPointer *PlannerMap, ModelMapPointer *ModelMap)
     if (LOG_DATA && Logged)
     {
       if (!ENABLE_PLANNER) {(*PlannerMap)[LOG_PLANNER]->doPlannerStep();}
+      DEBUG("LOGGING!!" << std::endl);
       logData(dataLog, LOG_PLANNER,
        (*PlannerMap)[LOG_PLANNER]->getPlannerGlobalTime() - startTime,
        modelledAgents[LOG_PLANNER], possGoals[LOG_PLANNER]);

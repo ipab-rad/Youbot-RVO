@@ -72,7 +72,6 @@
 #include "Parameter.h"
 
 
-
 namespace hrvo {
 
 Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
@@ -212,7 +211,6 @@ void Simulator::doStep()
     Agent* agent = (*iter);
     if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) )
     {
-      DEBUG("Odom Update!" << std::endl);
       agent->odomPosUpdate();
     }
   }
@@ -246,10 +244,10 @@ void Simulator::doStep()
 
 void Simulator::displaySimAgents(Agent* agent)
 {
-  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS)) 
+  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS))
   {
-    INFO(agent->id_ << " Pos " << agent->position_ 
-    << " Vel " << agent->velocity_ << " Goal " 
+    INFO(agent->id_ << " Pos " << agent->position_
+    << " Vel " << agent->velocity_ << " Goal "
     << this->getGoalPosition(agent->goalNo_) << std::endl);
   }
 }
@@ -516,6 +514,11 @@ void Simulator::setAMCLPose(std::size_t agentNo, Vector2 amcl_pose)
 {
   agents_[THIS_ROBOT]->amcl_pose_ = amcl_pose;
   agents_[THIS_ROBOT]->amcl_update_ = true;
+}
+
+void Simulator::setBumperData(std::size_t agentNo, int touched)
+{
+  agents_[THIS_ROBOT]->bumper_touched_ = touched;
 }
 
 }
