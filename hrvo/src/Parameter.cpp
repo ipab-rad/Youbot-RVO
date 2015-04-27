@@ -10,16 +10,22 @@
 // Robot Setup
 bool MEGATRON_ACTIVE;
 int MEGATRON_PLAN;
+int MEGATRON_GOAL;
 bool SOUNDWAVE_ACTIVE;
 int SOUNDWAVE_PLAN;
+int SOUNDWAVE_GOAL;
 bool STARSCREAM_ACTIVE;
 int STARSCREAM_PLAN;
+int STARSCREAM_GOAL;
 bool BLACKOUT_ACTIVE;
 int BLACKOUT_PLAN;
+int BLACKOUT_GOAL;
 bool THUNDERCRACKER_ACTIVE;
 int THUNDERCRACKER_PLAN;
+int THUNDERCRACKER_GOAL;
 bool PRIME_ACTIVE;
 int PRIME_PLAN;
+int PRIME_GOAL;
 
 // Experiment Setup
 bool ENABLE_PLANNER;              // Enables robot planner, disable when only inferring / tracking
@@ -34,6 +40,7 @@ bool MEGATRON_BUMPER;
 bool SOUNDWAVE_BUMPER;
 bool STARSCREAM_BUMPER;
 bool BLACKOUT_BUMPER;
+bool THUNDERCRACKER_BUMPER;
 
 bool ENABLE_MODELLING;            // Enable inference model
 bool MODEL_OWN_ROBOT;             // Model the planning robot as well (Start from Agent 0)
@@ -102,26 +109,32 @@ void ParamInitialise()
   ros::param::param(nn+"megatronActive", MEGATRON_ACTIVE, false);
   if (MEGATRON_ACTIVE){
     ros::param::param(nn+"megatronPlan", MEGATRON_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", MEGATRON_GOAL, 1);
   }
   ros::param::param(nn+"soundwaveActive", SOUNDWAVE_ACTIVE, false);
   if (SOUNDWAVE_ACTIVE){
     ros::param::param(nn+"soundwavePlan", SOUNDWAVE_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", SOUNDWAVE_GOAL, 1);
   }
   ros::param::param(nn+"starscreamActive", STARSCREAM_ACTIVE, false);
   if (STARSCREAM_ACTIVE){
     ros::param::param(nn+"starscreamPlan", STARSCREAM_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", STARSCREAM_GOAL, 1);
   }
   ros::param::param(nn+"blackoutActive", BLACKOUT_ACTIVE, false);
   if (BLACKOUT_ACTIVE){
     ros::param::param(nn+"blackoutPlan", BLACKOUT_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", BLACKOUT_GOAL, 1);
   }
   ros::param::param(nn+"thundercrackerActive", THUNDERCRACKER_ACTIVE, false);
   if (THUNDERCRACKER_ACTIVE){
     ros::param::param(nn+"thundercrackerPlan", THUNDERCRACKER_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", THUNDERCRACKER_GOAL, 1);
   }
   ros::param::param(nn+"primeActive", PRIME_ACTIVE, false);
   if (PRIME_ACTIVE){
     ros::param::param(nn+"primePlan", PRIME_PLAN, 0);
+    ros::param::param(nn+"megatronPlan", PRIME_GOAL, 1);
   }
 
   // EXPERIMENT SETUP
@@ -133,8 +146,9 @@ void ParamInitialise()
   ros::param::param(nn+"isamclactive", IS_AMCL_ACTIVE, false);
   ros::param::param(nn+"megatronBumper", MEGATRON_BUMPER, false);
   ros::param::param(nn+"soundwaveBumper",SOUNDWAVE_BUMPER, false);
-  ros::param::param(nn+"blackoutBumper", BLACKOUT_BUMPER, false);
   ros::param::param(nn+"starscreamBumper", STARSCREAM_BUMPER, false);
+  ros::param::param(nn+"blackoutBumper", BLACKOUT_BUMPER, false);
+  ros::param::param(nn+"starscreamBumper", THUNDERCRACKER_BUMPER, false);
   ros::param::param(nn+"trackRobots", TRACK_ROBOTS, false);
 
   ros::param::param(nn+"enableModelling", ENABLE_MODELLING, true);

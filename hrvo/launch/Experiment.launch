@@ -26,24 +26,31 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="megatronActive" type="bool" value="true"/>
                 <param name="megatronPlan" type="int" value="1"/>
                 <param name="megatronBumper" type="bool" value="true"/>
+                <param name="megatronGoal" type="int" value="2"/>
 
                 <param name="soundwaveActive" type="bool" value="false"/>
                 <param name="soundwavePlan" type="int" value="1"/>
                 <param name="soundwaveBumper" type="bool" value="false"/>
+                <param name="soundwaveGoal" type="int" value="1"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
                 <param name="starscreamPlan" type="int" value="3"/>
                 <param name="starscreamBumper" type="bool" value="false"/>
+                <param name="starscreamGoal" type="int" value="2"/>
 
                 <param name="blackoutActive" type="bool" value="false"/>
                 <param name="blackoutPlan" type="int" value="3"/>
                 <param name="blackoutBumper" type="bool" value="false"/>
+                <param name="blackoutGoal" type="int" value="2"/>
 
                 <param name="thundercrackerActive" type="bool" value="false"/>
                 <param name="thundercrackerPlan" type="int" value="3"/>
+                <param name="thundercrackerBumper" type="bool" value="false"/>
+                <param name="thundercrackerGoal" type="int" value="2"/>
 
                 <param name="primeActive" type="bool" value="false"/>
                 <param name="primePlan" type="int" value="1"/>
+                <param name="primeGoal" type="int" value="1"/>
 
                 <remap from="prime/cmd_vel" to="base_controller/command"/>
                 <remap from="prime/odom" to="base_odometry/odom" />

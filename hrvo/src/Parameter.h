@@ -15,16 +15,22 @@
 // Robot Setup
 extern bool MEGATRON_ACTIVE;
 extern int MEGATRON_PLAN;
+extern int MEGATRON_GOAL;
 extern bool SOUNDWAVE_ACTIVE;
 extern int SOUNDWAVE_PLAN;
+extern int SOUNDWAVE_GOAL;
 extern bool STARSCREAM_ACTIVE;
 extern int STARSCREAM_PLAN;
+extern int STARSCREAM_GOAL;
 extern bool BLACKOUT_ACTIVE;
 extern int BLACKOUT_PLAN;
+extern int BLACKOUT_GOAL;
 extern bool THUNDERCRACKER_ACTIVE;
 extern int THUNDERCRACKER_PLAN;
+extern int THUNDERCRACKER_GOAL;
 extern bool PRIME_ACTIVE;
 extern int PRIME_PLAN;
+extern int PRIME_GOAL;
 
 // Experiment Setup
 extern bool ENABLE_PLANNER;             // Enables robot planner, disable when only inferring / tracking
@@ -39,6 +45,7 @@ extern bool MEGATRON_BUMPER;
 extern bool SOUNDWAVE_BUMPER;
 extern bool STARSCREAM_BUMPER;
 extern bool BLACKOUT_BUMPER;
+extern bool THUNDERCRACKER_BUMPER;
 
 extern bool ENABLE_MODELLING;           // Enable inference model
 extern bool MODEL_OWN_ROBOT;            // Model the planning robot as well (Start from Agent 0)
