@@ -1,0 +1,40 @@
+# One robot agent must always be initialised, even if not planning
+
+# Plans
+# -----------------
+# GOAL_STOP       0
+# GOAL_CYCLE_CW   1
+# GOAL_CYCLE_CCW  2
+# GOAL_1_2        3
+# GOAL_2_3        4
+# GOAL_3_1        5
+# FOLLOW_AGENT    6 
+# -----------------
+megatronActive: true
+megatronPlan: 1
+megatronBumper: true
+megatronGoal: 2
+
+soundwaveActive: false
+soundwavePlan: 1
+soundwaveBumper: false
+soundwaveGoal: 1
+
+starscreamActive: false
+starscreamPlan: 3
+starscreamBumper: false
+starscreamGoal: 2
+
+blackoutActive: false
+blackoutPlan: 3
+blackoutBumper: false
+blackoutGoal: 2
+
+thundercrackerActive: false
+thundercrackerPlan: 3
+thundercrackerBumper: false
+thundercrackerGoal: 2
+
+primeActive: false
+primePlan: 1
+primeGoal: 1

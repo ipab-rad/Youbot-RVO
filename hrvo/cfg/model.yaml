@@ -1,0 +1,10 @@
+useProbModel: true
+bivariate: true
+useTrackerVelocities: true
+goalSampling: false
+
+goalSumPrior: 0.001
+goalHistoryDiscount: 0.5
+goalInferenceHistory: 10
+velocityAverageWindow: 10
+priorLambda: 0.5
