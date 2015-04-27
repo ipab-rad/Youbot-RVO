@@ -32,7 +32,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
                 <param name="soundwaveBumper" type="bool" value="false"/>
 
                 <param name="starscreamActive" type="bool" value="false"/>
-                <param name="starscreamActive" type="int" value="3"/>
+                <param name="starscreamPlan" type="int" value="3"/>
                 <param name="starscreamBumper" type="bool" value="false"/>
 
                 <param name="blackoutActive" type="bool" value="false"/>
