@@ -100,17 +100,29 @@ void ParamInitialise()
 
   // ROBOT SETUP
   ros::param::param(nn+"megatronActive", MEGATRON_ACTIVE, false);
-  ros::param::param(nn+"megatronPlan", MEGATRON_PLAN, 0);
+  if (MEGATRON_ACTIVE){
+    ros::param::param(nn+"megatronPlan", MEGATRON_PLAN, 0);
+  }
   ros::param::param(nn+"soundwaveActive", SOUNDWAVE_ACTIVE, false);
-  ros::param::param(nn+"soundwavePlan", SOUNDWAVE_PLAN, 0);
+  if (SOUNDWAVE_ACTIVE){
+    ros::param::param(nn+"soundwavePlan", SOUNDWAVE_PLAN, 0);
+  }
   ros::param::param(nn+"starscreamActive", STARSCREAM_ACTIVE, false);
-  ros::param::param(nn+"starscreamPlan", STARSCREAM_PLAN, 0);
+  if (STARSCREAM_ACTIVE){
+    ros::param::param(nn+"starscreamPlan", STARSCREAM_PLAN, 0);
+  }
   ros::param::param(nn+"blackoutActive", BLACKOUT_ACTIVE, false);
-  ros::param::param(nn+"blackoutPlan", BLACKOUT_PLAN, 0);
+  if (BLACKOUT_ACTIVE){
+    ros::param::param(nn+"blackoutPlan", BLACKOUT_PLAN, 0);
+  }
   ros::param::param(nn+"thundercrackerActive", THUNDERCRACKER_ACTIVE, false);
-  ros::param::param(nn+"thundercrackerPlan", THUNDERCRACKER_PLAN, 0);
+  if (THUNDERCRACKER_ACTIVE){
+    ros::param::param(nn+"thundercrackerPlan", THUNDERCRACKER_PLAN, 0);
+  }
   ros::param::param(nn+"primeActive", PRIME_ACTIVE, false);
-  ros::param::param(nn+"primePlan", PRIME_PLAN, 0);
+  if (PRIME_ACTIVE){
+    ros::param::param(nn+"primePlan", PRIME_PLAN, 0);
+  }
 
   // EXPERIMENT SETUP
   ros::param::param(nn+"enablePlanner", ENABLE_PLANNER, false);
