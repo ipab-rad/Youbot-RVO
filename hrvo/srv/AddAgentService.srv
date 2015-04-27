@@ -1,6 +1,0 @@
-int32 id
-string topic_id
-geometry_msgs/Point32 position
-geometry_msgs/Point32 velocity
----
-bool succeeded
