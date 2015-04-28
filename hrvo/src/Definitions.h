@@ -133,11 +133,11 @@ namespace hrvo {
 
   // Actor name for the environment created
   enum Actor{
-    YOUBOT_1 = 0,
-    YOUBOT_2 ,
-    YOUBOT_3 ,
-    YOUBOT_4 ,
-    YOUBOT_5 ,
+    MEGATRON = 0,
+    SOUNDWAVE ,
+    STARSCREAM ,
+    BLACKOUT ,
+    THUNDERCRACKER ,
     PRIME
   };
 
