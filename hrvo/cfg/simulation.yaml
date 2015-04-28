@@ -1,0 +1,10 @@
+neighborDist: 5.0
+maxNeighbors: 10
+agentRadius: 0.4
+goalRadius: 0.3
+prefSpeed: 0.3
+prefPeopleSpeed: 0.6
+maxSpeed: 0.6
+maxPeopleSpeed: 2.0
+maxAcceleration: 1.2
+maxPeopleAcceleration: 5.0

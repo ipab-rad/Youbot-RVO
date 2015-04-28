@@ -1,0 +1,17 @@
+enablePlanner: true
+hrvoPlanner: true
+performRobotSetup: true
+manualTrackerAssignment: true
+onlyOdometry: false
+isamclactive: true
+trackRobots: false
+
+enableModelling: true
+modelOwnRobot: true
+logData: true
+assignTrackerWhenAlone: false
+trackerOdomComparisons: 10
+rosFreq: 10
+
+maxNoTrackedAgents: 10
+wifiAttempts: 5

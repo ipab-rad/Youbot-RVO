@@ -118,35 +118,35 @@ void hrvo::InitialiseRobots(PlannerMapPointer* PlannerMap)
   if (MEGATRON_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
-    (*PlannerMap)[id] = new Environment(YOUBOT_1, START_POS1);
+    (*PlannerMap)[id] = new Environment(MEGATRON, START_POS1);
     (*PlannerMap)[id]->setPlannerGoalPlan(MEGATRON_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(MEGATRON_GOAL);
   }
   if (SOUNDWAVE_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
-    (*PlannerMap)[id] = new Environment(YOUBOT_2, START_POS2);
+    (*PlannerMap)[id] = new Environment(SOUNDWAVE, START_POS2);
     (*PlannerMap)[id]->setPlannerGoalPlan(SOUNDWAVE_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(SOUNDWAVE_PLAN);
   }
   if (STARSCREAM_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
-    (*PlannerMap)[id] = new Environment(YOUBOT_3, START_POS3);
+    (*PlannerMap)[id] = new Environment(STARSCREAM, START_POS3);
     (*PlannerMap)[id]->setPlannerGoalPlan(STARSCREAM_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(STARSCREAM_GOAL);
   }
   if (BLACKOUT_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
-    (*PlannerMap)[id] = new Environment(YOUBOT_4, START_POS4);
+    (*PlannerMap)[id] = new Environment(BLACKOUT, START_POS4);
     (*PlannerMap)[id]->setPlannerGoalPlan(BLACKOUT_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(BLACKOUT_GOAL);
   }
   if (THUNDERCRACKER_ACTIVE)
   {
     std::size_t id = (*PlannerMap).size()+1;
-    (*PlannerMap)[id] = new Environment(YOUBOT_5, START_POS1);
+    (*PlannerMap)[id] = new Environment(THUNDERCRACKER, START_POS1);
     (*PlannerMap)[id]->setPlannerGoalPlan(THUNDERCRACKER_PLAN);
     (*PlannerMap)[id]->setPlannerInitialGoal(THUNDERCRACKER_GOAL);
   }

@@ -120,45 +120,45 @@ namespace hrvo {
     // ADD ALL ROBOTS TO THE PLANNER
     // SET UP ODOM/AMCL SUBSCRIBERS.
     DEBUG(sActorID_ << " subscribed to: ")
-    if ((nActorID_ != YOUBOT_1) && MEGATRON_ACTIVE)
+    if ((nActorID_ != MEGATRON) && MEGATRON_ACTIVE)
     {
-      std::size_t agentid = planner_->addAgent(getActorName(YOUBOT_1), SIMAGENT, EXIT, startGoal_);
-      trackedRobots_[YOUBOT_1] = agentid;
+      std::size_t agentid = planner_->addAgent(getActorName(MEGATRON), SIMAGENT, EXIT, startGoal_);
+      trackedRobots_[MEGATRON] = agentid;
       robotPoseSubs[agentid] = nh_.subscribe("/youbot_1/true_pose", 1, &Environment::receiveRobot1Pose, this);
       robotVelSubs[agentid] = nh_.subscribe("/youbot_1/cmd_vel", 1, &Environment::receiveRobot1Vel, this);
-      DEBUG(getActorName(YOUBOT_1) << " id " << agentid << ", ");
+      DEBUG(getActorName(MEGATRON) << " id " << agentid << ", ");
     }
-    if ((nActorID_ != YOUBOT_2) && SOUNDWAVE_ACTIVE)
+    if ((nActorID_ != SOUNDWAVE) && SOUNDWAVE_ACTIVE)
     {
-      std::size_t agentid = planner_->addAgent(getActorName(YOUBOT_2), SIMAGENT, EXIT, startGoal_);
-      trackedRobots_[YOUBOT_2] = agentid;
+      std::size_t agentid = planner_->addAgent(getActorName(SOUNDWAVE), SIMAGENT, EXIT, startGoal_);
+      trackedRobots_[SOUNDWAVE] = agentid;
       robotPoseSubs[agentid] = nh_.subscribe("/youbot_2/true_pose", 1, &Environment::receiveRobot2Pose, this);
       robotVelSubs[agentid] = nh_.subscribe("/youbot_2/cmd_vel", 1, &Environment::receiveRobot2Vel, this);
-      DEBUG(getActorName(YOUBOT_2) << " id " << agentid << ", ");
+      DEBUG(getActorName(SOUNDWAVE) << " id " << agentid << ", ");
     }
-    if ((nActorID_ != YOUBOT_3) && STARSCREAM_ACTIVE)
+    if ((nActorID_ != STARSCREAM) && STARSCREAM_ACTIVE)
     {
-      std::size_t agentid = planner_->addAgent(getActorName(YOUBOT_3), SIMAGENT, EXIT, startGoal_);
-      trackedRobots_[YOUBOT_3] = agentid;
+      std::size_t agentid = planner_->addAgent(getActorName(STARSCREAM), SIMAGENT, EXIT, startGoal_);
+      trackedRobots_[STARSCREAM] = agentid;
       robotPoseSubs[agentid] = nh_.subscribe("/youbot_3/true_pose", 1, &Environment::receiveRobot3Pose, this);
       robotVelSubs[agentid] = nh_.subscribe("/youbot_3/cmd_vel", 1, &Environment::receiveRobot3Vel, this);
-      DEBUG(getActorName(YOUBOT_3) << " id " << agentid << ", ");
+      DEBUG(getActorName(STARSCREAM) << " id " << agentid << ", ");
     }
-    if ((nActorID_ != YOUBOT_4) && BLACKOUT_ACTIVE)
+    if ((nActorID_ != BLACKOUT) && BLACKOUT_ACTIVE)
     {
-      std::size_t agentid = planner_->addAgent(getActorName(YOUBOT_4), SIMAGENT, EXIT, startGoal_);
-      trackedRobots_[YOUBOT_4] = agentid;
+      std::size_t agentid = planner_->addAgent(getActorName(BLACKOUT), SIMAGENT, EXIT, startGoal_);
+      trackedRobots_[BLACKOUT] = agentid;
       robotPoseSubs[agentid] = nh_.subscribe("/youbot_4/true_pose", 1, &Environment::receiveRobot4Pose, this);
       robotVelSubs[agentid] = nh_.subscribe("/youbot_4/cmd_vel", 1, &Environment::receiveRobot4Vel, this);
-      DEBUG(getActorName(YOUBOT_4) << " id " << agentid << ", ");
+      DEBUG(getActorName(BLACKOUT) << " id " << agentid << ", ");
     }
-    if ((nActorID_ != YOUBOT_5) && THUNDERCRACKER_ACTIVE)
+    if ((nActorID_ != THUNDERCRACKER) && THUNDERCRACKER_ACTIVE)
     {
-      std::size_t agentid = planner_->addAgent(getActorName(YOUBOT_5), SIMAGENT, EXIT, startGoal_);
-      trackedRobots_[YOUBOT_5] = agentid;
+      std::size_t agentid = planner_->addAgent(getActorName(THUNDERCRACKER), SIMAGENT, EXIT, startGoal_);
+      trackedRobots_[THUNDERCRACKER] = agentid;
       robotPoseSubs[agentid] = nh_.subscribe("/youbot_5/true_pose", 1, &Environment::receiveRobot5Pose, this);
       robotVelSubs[agentid] = nh_.subscribe("/youbot_5/cmd_vel", 1, &Environment::receiveRobot5Vel, this);
-      DEBUG(getActorName(YOUBOT_5) << " id " << agentid << ", ");
+      DEBUG(getActorName(THUNDERCRACKER) << " id " << agentid << ", ");
     }
     if ((nActorID_ != PRIME) && PRIME_ACTIVE)
     {
@@ -175,28 +175,28 @@ namespace hrvo {
   // I hate myself for this....
   void Environment::receiveRobot1Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x);
-    robotPoses[trackedRobots_[YOUBOT_1]].setY(msg.position.y);
+    robotPoses[trackedRobots_[MEGATRON]].setX(msg.position.x);
+    robotPoses[trackedRobots_[MEGATRON]].setY(msg.position.y);
   }
   void Environment::receiveRobot2Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_2]].setX(msg.position.x);
-    robotPoses[trackedRobots_[YOUBOT_2]].setY(msg.position.y);
+    robotPoses[trackedRobots_[SOUNDWAVE]].setX(msg.position.x);
+    robotPoses[trackedRobots_[SOUNDWAVE]].setY(msg.position.y);
   }
   void Environment::receiveRobot3Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_3]].setX(msg.position.x);
-    robotPoses[trackedRobots_[YOUBOT_3]].setY(msg.position.y);
+    robotPoses[trackedRobots_[STARSCREAM]].setX(msg.position.x);
+    robotPoses[trackedRobots_[STARSCREAM]].setY(msg.position.y);
   }
   void Environment::receiveRobot4Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_4]].setX(msg.position.x);
-    robotPoses[trackedRobots_[YOUBOT_4]].setY(msg.position.y);
+    robotPoses[trackedRobots_[BLACKOUT]].setX(msg.position.x);
+    robotPoses[trackedRobots_[BLACKOUT]].setY(msg.position.y);
   }
   void Environment::receiveRobot5Pose(const geometry_msgs::Pose& msg)
   {
-    robotPoses[trackedRobots_[YOUBOT_5]].setX(msg.position.x);
-    robotPoses[trackedRobots_[YOUBOT_5]].setY(msg.position.y);
+    robotPoses[trackedRobots_[THUNDERCRACKER]].setX(msg.position.x);
+    robotPoses[trackedRobots_[THUNDERCRACKER]].setY(msg.position.y);
   }
   void Environment::receiveRobot6Pose(const geometry_msgs::Pose& msg)
   {
@@ -206,28 +206,28 @@ namespace hrvo {
 
   void Environment::receiveRobot1Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x);
-    robotVels[trackedRobots_[YOUBOT_1]].setY(msg.linear.y);
+    robotVels[trackedRobots_[MEGATRON]].setX(msg.linear.x);
+    robotVels[trackedRobots_[MEGATRON]].setY(msg.linear.y);
   }
   void Environment::receiveRobot2Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_2]].setX(msg.linear.x);
-    robotVels[trackedRobots_[YOUBOT_2]].setY(msg.linear.y);
+    robotVels[trackedRobots_[SOUNDWAVE]].setX(msg.linear.x);
+    robotVels[trackedRobots_[SOUNDWAVE]].setY(msg.linear.y);
   }
   void Environment::receiveRobot3Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_3]].setX(msg.linear.x);
-    robotVels[trackedRobots_[YOUBOT_3]].setY(msg.linear.y);
+    robotVels[trackedRobots_[STARSCREAM]].setX(msg.linear.x);
+    robotVels[trackedRobots_[STARSCREAM]].setY(msg.linear.y);
   }
   void Environment::receiveRobot4Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_4]].setX(msg.linear.x);
-    robotVels[trackedRobots_[YOUBOT_4]].setY(msg.linear.y);
+    robotVels[trackedRobots_[BLACKOUT]].setX(msg.linear.x);
+    robotVels[trackedRobots_[BLACKOUT]].setY(msg.linear.y);
   }
   void Environment::receiveRobot5Vel(const geometry_msgs::Twist& msg)
   {
-    robotVels[trackedRobots_[YOUBOT_5]].setX(msg.linear.x);
-    robotVels[trackedRobots_[YOUBOT_5]].setY(msg.linear.y);
+    robotVels[trackedRobots_[THUNDERCRACKER]].setX(msg.linear.x);
+    robotVels[trackedRobots_[THUNDERCRACKER]].setY(msg.linear.y);
   }
   void Environment::receiveRobot6Vel(const geometry_msgs::Twist& msg)
   {
@@ -241,28 +241,28 @@ namespace hrvo {
   //   const std::string& pub_name = event.getPublisherName();
   //   if (pub_name.compare(1,8,"youbot_1"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_1]].setX(msg.position.x);
-  //     robotPoses[trackedRobots_[YOUBOT_1]].setY(msg.position.y);
+  //     robotPoses[trackedRobots_[MEGATRON]].setX(msg.position.x);
+  //     robotPoses[trackedRobots_[MEGATRON]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_2"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_2]].setX(msg.position.x);
-  //     robotPoses[trackedRobots_[YOUBOT_2]].setY(msg.position.y);
+  //     robotPoses[trackedRobots_[SOUNDWAVE]].setX(msg.position.x);
+  //     robotPoses[trackedRobots_[SOUNDWAVE]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_3"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_3]].setX(msg.position.x);
-  //     robotPoses[trackedRobots_[YOUBOT_3]].setY(msg.position.y);
+  //     robotPoses[trackedRobots_[STARSCREAM]].setX(msg.position.x);
+  //     robotPoses[trackedRobots_[STARSCREAM]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_4"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_4]].setX(msg.position.x);
-  //     robotPoses[trackedRobots_[YOUBOT_4]].setY(msg.position.y);
+  //     robotPoses[trackedRobots_[BLACKOUT]].setX(msg.position.x);
+  //     robotPoses[trackedRobots_[BLACKOUT]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_5"))
   //   {
-  //     robotPoses[trackedRobots_[YOUBOT_5]].setX(msg.position.x);
-  //     robotPoses[trackedRobots_[YOUBOT_5]].setY(msg.position.y);
+  //     robotPoses[trackedRobots_[THUNDERCRACKER]].setX(msg.position.x);
+  //     robotPoses[trackedRobots_[THUNDERCRACKER]].setY(msg.position.y);
   //   }
   //   else if (pub_name.compare(1,5,"prime"))
   //   {
@@ -277,28 +277,28 @@ namespace hrvo {
   //   const std::string& pub_name = event.getPublisherName();
   //   if (pub_name.compare(1,8,"youbot_1"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_1]].setX(msg.linear.x);
-  //     robotVels[trackedRobots_[YOUBOT_1]].setY(msg.linear.y);
+  //     robotVels[trackedRobots_[MEGATRON]].setX(msg.linear.x);
+  //     robotVels[trackedRobots_[MEGATRON]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_2"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_2]].setX(msg.linear.x);
-  //     robotVels[trackedRobots_[YOUBOT_2]].setY(msg.linear.y);
+  //     robotVels[trackedRobots_[SOUNDWAVE]].setX(msg.linear.x);
+  //     robotVels[trackedRobots_[SOUNDWAVE]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_3"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_3]].setX(msg.linear.x);
-  //     robotVels[trackedRobots_[YOUBOT_3]].setY(msg.linear.y);
+  //     robotVels[trackedRobots_[STARSCREAM]].setX(msg.linear.x);
+  //     robotVels[trackedRobots_[STARSCREAM]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_4"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_4]].setX(msg.linear.x);
-  //     robotVels[trackedRobots_[YOUBOT_4]].setY(msg.linear.y);
+  //     robotVels[trackedRobots_[BLACKOUT]].setX(msg.linear.x);
+  //     robotVels[trackedRobots_[BLACKOUT]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,8,"youbot_5"))
   //   {
-  //     robotVels[trackedRobots_[YOUBOT_5]].setX(msg.linear.x);
-  //     robotVels[trackedRobots_[YOUBOT_5]].setY(msg.linear.y);
+  //     robotVels[trackedRobots_[THUNDERCRACKER]].setX(msg.linear.x);
+  //     robotVels[trackedRobots_[THUNDERCRACKER]].setY(msg.linear.y);
   //   }
   //   else if (pub_name.compare(1,5,"prime"))
   //   {

@@ -1,0 +1,4 @@
+clearScreen: true
+displayIntention: true
+displayInferenceValues: false
+displaySimAgents: false

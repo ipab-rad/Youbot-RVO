@@ -1,0 +1,3 @@
+limitWorkspaceVel: false
+xLimits: [-9.0, -2.0]
+yLimits: [0.0, 3.5]
