@@ -74,26 +74,28 @@
 
 namespace hrvo {
 
-Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
-{
-  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent", &Simulator::addAgentCallback, this);
+Simulator::Simulator() : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f),
+  timeStep_(0.0f), reachedGoals_(false) {
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }
 
-Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
-{
+Simulator::Simulator(ros::NodeHandle nh, std::string simtype,
+                     std::size_t nactorID)
+  : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f),
+    reachedGoals_(false) {
   nh_ = nh;
   std::ostringstream ostr;
   ostr << nactorID;
   std::string sactorID = ostr.str();
-  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }
 
-Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID, std::size_t nsimID) : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f), timeStep_(0.0f), reachedGoals_(false)
-{
+Simulator::Simulator(ros::NodeHandle nh, std::string simtype,
+                     std::size_t nactorID, std::size_t nsimID)
+  : defaults_(NULL), kdTree_(NULL), globalTime_(0.0f),
+    timeStep_(0.0f), reachedGoals_(false) {
   nh_ = nh;
   std::ostringstream ostr1;
   std::ostringstream ostr2;
@@ -101,20 +103,19 @@ Simulator::Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactor
   ostr2 << nsimID;
   std::string sactorID = ostr1.str();
   std::string ssimID = ostr2.str();
-  // add_agent_srv_ = nh_.advertiseService("hrvo_add_agent_" + simtype + "_" + sactorID + "_" + ssimID, &Simulator::addAgentCallback, this);
   kdTree_ = new KdTree(this);
   odomNeeded_ = true;
 }
 
-Simulator::~Simulator()
-{
+Simulator::~Simulator() {
   delete defaults_;
   defaults_ = NULL;
 
   delete kdTree_;
   kdTree_ = NULL;
 
-  for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+  for (std::vector<Agent *>::iterator iter = agents_.begin();
+       iter != agents_.end(); ++iter) {
     delete *iter;
     *iter = NULL;
   }
@@ -127,8 +128,7 @@ Simulator::~Simulator()
 
 std::size_t Simulator::addAgent(std::string id, int agent_type,
                                 const Vector2 &position,
-                                std::size_t goalNo)
-{
+                                std::size_t goalNo) {
   if (defaults_ == NULL) {
     throw std::runtime_error("Agent defaults not set when adding agent.");
   }
@@ -162,8 +162,7 @@ std::size_t Simulator::addAgent(std::string id, int agent_type,
                                 float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
                                 float uncertaintyOffset, float maxAccel,
-                                const Vector2 &velocity, float orientation)
-{
+                                const Vector2 &velocity, float orientation) {
   Agent *const agent = new Agent(this, position, goalNo,
                                  neighborDist, maxNeighbors,
                                  radius, velocity,
@@ -179,23 +178,21 @@ std::size_t Simulator::addAgent(std::string id, int agent_type,
   return agents_.size() - 1;
 }
 
-std::size_t Simulator::addGoal(const Vector2 &position)
-{
+std::size_t Simulator::addGoal(const Vector2 &position) {
   Goal *const goal = new Goal(position);
   goals_.push_back(goal);
 
   return goals_.size() - 1;
 }
 
-void Simulator::editGoal(std::size_t goalNo, Vector2 position)
-{
+void Simulator::editGoal(std::size_t goalNo, Vector2 position) {
   goals_[goalNo]->editPos(position);
 }
 
-void Simulator::doStep()
-{
+void Simulator::doStep() {
   if (kdTree_ == NULL) {
-    throw std::runtime_error("Simulation not initialized when attempting to do step.");
+    throw std::runtime_error(
+      "Simulation not initialized when attempting to do step.");
   }
 
   if (timeStep_ == 0.0f) {
@@ -207,19 +204,19 @@ void Simulator::doStep()
   kdTree_->build();
 
   // Update Robot Odometry
-  for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+  for (std::vector<Agent *>::iterator iter = agents_.begin();
+       iter != agents_.end(); ++iter) {
     Agent* agent = (*iter);
-    if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) )
-    {
+    if ( (agent->agent_type_ == ROBOT) && (odomNeeded_) ) {
       agent->odomPosUpdate();
     }
   }
 
   // Calculate next velocities
-  for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+  for (std::vector<Agent *>::iterator iter = agents_.begin();
+       iter != agents_.end(); ++iter) {
     Agent* agent = (*iter);
-    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
-    {
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE) {
       agent->computePreferredVelocity();
       agent->computeNeighbors();
       agent->computeNewVelocity();
@@ -231,10 +228,10 @@ void Simulator::doStep()
   }
 
   // Update simulated agent positions given velocities
-  for (std::vector<Agent *>::iterator iter = agents_.begin(); iter != agents_.end(); ++iter) {
+  for (std::vector<Agent *>::iterator iter = agents_.begin();
+       iter != agents_.end(); ++iter) {
     Agent* agent = (*iter);
-    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE)
-    {
+    if (agent->agent_type_ != PERSON && agent->agent_type_ != INACTIVE) {
       agent->update();
     }
   }
@@ -242,123 +239,105 @@ void Simulator::doStep()
   globalTime_ += timeStep_;
 }
 
-void Simulator::displaySimAgents(Agent* agent)
-{
-  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS))
-  {
+void Simulator::displaySimAgents(Agent* agent) {
+  if ((agent->agent_type_ == SIMAGENT) && (DISPLAY_SIM_AGENTS)) {
     INFO(agent->id_ << " Pos " << agent->position_
-    << " Vel " << agent->velocity_ << " Goal "
-    << this->getGoalPosition(agent->goalNo_) << std::endl);
+         << " Vel " << agent->velocity_ << " Goal "
+         << this->getGoalPosition(agent->goalNo_) << std::endl);
   }
 }
 
-std::size_t Simulator::getAgentGoal(std::size_t agentNo) const
-{
+std::size_t Simulator::getAgentGoal(std::size_t agentNo) const {
   return agents_[agentNo]->goalNo_;
 }
 
-float Simulator::getAgentGoalRadius(std::size_t agentNo) const
-{
+float Simulator::getAgentGoalRadius(std::size_t agentNo) const {
   return agents_[agentNo]->goalRadius_;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-float Simulator::getAgentLeftWheelSpeed(std::size_t agentNo) const
-{
+float Simulator::getAgentLeftWheelSpeed(std::size_t agentNo) const {
   return agents_[agentNo]->leftWheelSpeed_;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-float Simulator::getAgentMaxAccel(std::size_t agentNo) const
-{
+float Simulator::getAgentMaxAccel(std::size_t agentNo) const {
   return agents_[agentNo]->maxAccel_;
 }
 
-std::size_t Simulator::getAgentMaxNeighbors(std::size_t agentNo) const
-{
+std::size_t Simulator::getAgentMaxNeighbors(std::size_t agentNo) const {
   return agents_[agentNo]->maxNeighbors_;
 }
 
-float Simulator::getAgentMaxSpeed(std::size_t agentNo) const
-{
+float Simulator::getAgentMaxSpeed(std::size_t agentNo) const {
   return agents_[agentNo]->maxSpeed_;
 }
 
-float Simulator::getAgentNeighborDist(std::size_t agentNo) const
-{
+float Simulator::getAgentNeighborDist(std::size_t agentNo) const {
   return agents_[agentNo]->neighborDist_;
 }
 
-float Simulator::getAgentOrientation(std::size_t agentNo) const
-{
+float Simulator::getAgentOrientation(std::size_t agentNo) const {
   return agents_[agentNo]->orientation_;
 }
 
-Vector2 Simulator::getAgentPosition(std::size_t agentNo) const
-{
+Vector2 Simulator::getAgentPosition(std::size_t agentNo) const {
   return agents_[agentNo]->position_;
 }
 
-float Simulator::getAgentPrefSpeed(std::size_t agentNo) const
-{
+float Simulator::getAgentPrefSpeed(std::size_t agentNo) const {
   return agents_[agentNo]->prefSpeed_;
 }
 
-float Simulator::getAgentRadius(std::size_t agentNo) const
-{
+float Simulator::getAgentRadius(std::size_t agentNo) const {
   return agents_[agentNo]->radius_;
 }
 
-bool Simulator::getAgentReachedGoal(std::size_t agentNo) const
-{
+bool Simulator::getAgentReachedGoal(std::size_t agentNo) const {
   return agents_[agentNo]->reachedGoal_;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-float Simulator::getAgentRightWheelSpeed(std::size_t agentNo) const
-{
+float Simulator::getAgentRightWheelSpeed(std::size_t agentNo) const {
   return agents_[agentNo]->rightWheelSpeed_;
 }
 
-float Simulator::getAgentTimeToOrientation(std::size_t agentNo) const
-{
+float Simulator::getAgentTimeToOrientation(std::size_t agentNo) const {
   return agents_[agentNo]->timeToOrientation_;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-float Simulator::getAgentUncertaintyOffset(std::size_t agentNo) const
-{
+float Simulator::getAgentUncertaintyOffset(std::size_t agentNo) const {
   return agents_[agentNo]->uncertaintyOffset_;
 }
 
-Vector2 Simulator::getAgentVelocity(std::size_t agentNo) const
-{
+Vector2 Simulator::getAgentVelocity(std::size_t agentNo) const {
   return agents_[agentNo]->velocity_;
 }
 
-std::size_t Simulator::getAgentType(std::size_t agentNo) const
-{
+std::size_t Simulator::getAgentType(std::size_t agentNo) const {
   return agents_[agentNo]->agent_type_;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-float Simulator::getAgentWheelTrack(std::size_t agentNo) const
-{
+float Simulator::getAgentWheelTrack(std::size_t agentNo) const {
   return agents_[agentNo]->wheelTrack_;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-Vector2 Simulator::getGoalPosition(std::size_t goalNo) const
-{
+Vector2 Simulator::getGoalPosition(std::size_t goalNo) const {
   return goals_[goalNo]->position_;
 }
 
-void Simulator::setAgentDefaults(float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+void Simulator::setAgentDefaults(float neighborDist, std::size_t maxNeighbors,
+                                 float radius, float goalRadius,
+                                 float prefSpeed, float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
                                  float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                                 float uncertaintyOffset, float maxAccel, const Vector2 &velocity, float orientation)
-{
+                                 float uncertaintyOffset, float maxAccel,
+                                 const Vector2 &velocity,
+                                 float orientation) {
   if (defaults_ == NULL) {
     defaults_ = new Agent(this);
   }
@@ -383,74 +362,63 @@ void Simulator::setAgentDefaults(float neighborDist, std::size_t maxNeighbors, f
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 }
 
-void Simulator::setAgentGoal(std::size_t agentNo, std::size_t goalNo)
-{
+void Simulator::setAgentGoal(std::size_t agentNo, std::size_t goalNo) {
   agents_[agentNo]->goalNo_ = goalNo;
 }
 
-void Simulator::setAgentGoalRadius(std::size_t agentNo, float goalRadius)
-{
+void Simulator::setAgentGoalRadius(std::size_t agentNo, float goalRadius) {
   agents_[agentNo]->goalRadius_ = goalRadius;
 }
 
-void Simulator::setAgentMaxAccel(std::size_t agentNo, float maxAccel)
-{
+void Simulator::setAgentMaxAccel(std::size_t agentNo, float maxAccel) {
   agents_[agentNo]->maxAccel_ = maxAccel;
 }
 
-void Simulator::setAgentMaxNeighbors(std::size_t agentNo, std::size_t maxNeighbors)
-{
+void Simulator::setAgentMaxNeighbors(std::size_t agentNo,
+                                     std::size_t maxNeighbors) {
   agents_[agentNo]->maxNeighbors_ = maxNeighbors;
 }
 
-void Simulator::setAgentMaxSpeed(std::size_t agentNo, float maxSpeed)
-{
+void Simulator::setAgentMaxSpeed(std::size_t agentNo, float maxSpeed) {
   agents_[agentNo]->maxSpeed_ = maxSpeed;
 }
 
-void Simulator::setAgentNeighborDist(std::size_t agentNo, float neighborDist)
-{
+void Simulator::setAgentNeighborDist(std::size_t agentNo, float neighborDist) {
   agents_[agentNo]->neighborDist_ = neighborDist;
 }
 
-void Simulator::setAgentOrientation(std::size_t agentNo, float orientation)
-{
+void Simulator::setAgentOrientation(std::size_t agentNo, float orientation) {
   agents_[agentNo]->orientation_ = orientation;
 }
 
-void Simulator::setAgentPosition(std::size_t agentNo, const Vector2 &position)
-{
+void Simulator::setAgentPosition(std::size_t agentNo, const Vector2 &position) {
   agents_[agentNo]->position_ = position;
 }
 
-void Simulator::setAgentPrefSpeed(std::size_t agentNo, float prefSpeed)
-{
+void Simulator::setAgentPrefSpeed(std::size_t agentNo, float prefSpeed) {
   agents_[agentNo]->prefSpeed_ = prefSpeed;
 }
 
-void Simulator::setAgentRadius(std::size_t agentNo, float radius)
-{
+void Simulator::setAgentRadius(std::size_t agentNo, float radius) {
   agents_[agentNo]->radius_ = radius;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-void Simulator::setAgentTimeToOrientation(std::size_t agentNo, float timeToOrientation)
-{
+void Simulator::setAgentTimeToOrientation(std::size_t agentNo,
+    float timeToOrientation) {
   agents_[agentNo]->timeToOrientation_ = timeToOrientation;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-void Simulator::setAgentUncertaintyOffset(std::size_t agentNo, float uncertaintyOffset)
-{
+void Simulator::setAgentUncertaintyOffset(std::size_t agentNo,
+    float uncertaintyOffset) {
   agents_[agentNo]->uncertaintyOffset_ = uncertaintyOffset;
 }
 
-void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
-{
+void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity) {
   agents_[agentNo]->velocity_ = velocity;
   // Publish Velocity if Robot
-  if (agents_[agentNo]->agent_type_ == ROBOT)
-  {
+  if (agents_[agentNo]->agent_type_ == ROBOT) {
     geometry_msgs::Twist vel;
     vel.linear.x = velocity.getX();
     vel.linear.y = velocity.getY();
@@ -458,67 +426,63 @@ void Simulator::setAgentVelocity(std::size_t agentNo, const Vector2 &velocity)
   }
 }
 
-void Simulator::setAgentType(std::size_t agentNo, int agent_type)
-{
+void Simulator::setAgentType(std::size_t agentNo, int agent_type) {
   agents_[agentNo]->agent_type_ = agent_type;
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-void Simulator::setAgentWheelTrack(std::size_t agentNo, float wheelTrack)
-{
+void Simulator::setAgentWheelTrack(std::size_t agentNo, float wheelTrack) {
   agents_[agentNo]->wheelTrack_ = wheelTrack;
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-void Simulator::setOdomUpdated(std::size_t agentNo, bool odomUpdated)
-{
+void Simulator::setOdomUpdated(std::size_t agentNo, bool odomUpdated) {
   agents_[agentNo]->updated_ = odomUpdated;
 }
 
-Vector2 Simulator::getCurrOdomOffset(std::size_t agentNo)
-{
+Vector2 Simulator::getCurrOdomOffset(std::size_t agentNo) {
   return agents_[agentNo]->curr_offset_;
 }
 
-void Simulator::setCurrOdomOffset(std::size_t agentNo, Vector2 current_odometry_offset)
-{
+void Simulator::setCurrOdomOffset(std::size_t agentNo,
+                                  Vector2 current_odometry_offset) {
   // agents_[agentNo]->current_odometry_offset_ = current_odometry_offset;
   agents_[agentNo]->curr_offset_ = current_odometry_offset;
 }
 
-Vector2 Simulator::getPrevOdomOffset(std::size_t agentNo)
-{
+Vector2 Simulator::getPrevOdomOffset(std::size_t agentNo) {
   return agents_[agentNo]->prev_offset_;
 }
 
-void Simulator::setSensedOrientation(std::size_t agentNo, double sensed_orientation)
-{
+void Simulator::setSensedOrientation(std::size_t agentNo,
+                                     double sensed_orientation) {
   agents_[agentNo]->agent_sensed_orientation_ = sensed_orientation;
 }
 
-double Simulator::getSensedOrientation(std::size_t agentNo)
-{
+double Simulator::getSensedOrientation(std::size_t agentNo) {
   return agents_[agentNo]->agent_sensed_orientation_;
 }
 
-void Simulator::setPrevOdomOffset(std::size_t agentNo, Vector2 previous_odometry_offset)
-{
+void Simulator::setPrevOdomOffset(std::size_t agentNo,
+                                  Vector2 previous_odometry_offset) {
   agents_[agentNo]->prev_offset_ = previous_odometry_offset;
 }
 
-void Simulator::resetOdomPosition() { agents_[THIS_ROBOT]->odomPosition_ = agents_[THIS_ROBOT]->position_;}
+void Simulator::resetOdomPosition() {
+  agents_[THIS_ROBOT]->odomPosition_ = agents_[THIS_ROBOT]->position_;
+}
 
-Vector2 Simulator::getOdomPosition()  {return agents_[THIS_ROBOT]->odomPosition_;}
+Vector2 Simulator::getOdomPosition()  {
+  return agents_[THIS_ROBOT]->odomPosition_;
+}
 
-void Simulator::setAMCLPose(std::size_t agentNo, Vector2 amcl_pose)
-{
+void Simulator::setAMCLPose(std::size_t agentNo, Vector2 amcl_pose) {
   agents_[THIS_ROBOT]->amcl_pose_ = amcl_pose;
   agents_[THIS_ROBOT]->amcl_update_ = true;
 }
 
-void Simulator::setBumperData(std::size_t agentNo, int touched)
-{
+void Simulator::setBumperData(std::size_t agentNo, int touched) {
   agents_[THIS_ROBOT]->bumper_touched_ = touched;
 }
 
-}
+}  // namespace hrvo

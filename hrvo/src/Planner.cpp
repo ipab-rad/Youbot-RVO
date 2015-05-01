@@ -1,7 +1,9 @@
-/**
-* Created by Alejandro Bordallo
-* \file   Planner.cpp
-* \brief  Defines the Planner class.
+/*
+* @Author: GreatAlexander
+* @Date:   2015-05-01
+* @Last Modified by:   Alejandro Bordallo
+* @Last Modified time: 2015-05-01
+* @Defines the Planner class.
 */
 
 #include "Planner.h"
@@ -9,26 +11,22 @@
 
 namespace hrvo {
 
-  Planner::Planner(ros::NodeHandle nh)
-  {
-    goal_sent=false;
-    nh_ = nh;
+Planner::Planner(ros::NodeHandle nh) {
+  goal_sent = false;
+  nh_ = nh;
 
-    //tell the action client that we want to spin a thread by default
-    acPointer_ = new MoveBaseClient("move_base", true);
-  }
+  // Tell the action client that we want to spin a thread by default
+  acPointer_ = new MoveBaseClient("move_base", true);
+}
 
-  Planner::~Planner()
-  {
-    ;
-  }
+Planner::~Planner() {
+}
 
-  void Planner::sendNewGoal(Vector2 vGoal)
-  {
+void Planner::sendNewGoal(Vector2 vGoal) {
   // //wait for the action server to come up
-  while(!acPointer_->waitForServer(ros::Duration(2.0))){
-      ROS_INFO("Waiting for the move_base action server to come up");
-    }
+  while (!acPointer_->waitForServer(ros::Duration(2.0))) {
+    ROS_INFO("Waiting for the move_base action server to come up");
+  }
 
   move_base_msgs::MoveBaseGoal mgoal;
 
@@ -46,58 +44,58 @@ namespace hrvo {
   // {INFO("Sending goal");
   // ac.sendGoal(mgoal);}
 
-  if (!goal_sent)
-  {INFO("Sending goal");
-  acPointer_->sendGoal(mgoal);}
+  if (!goal_sent) {
+    INFO("Sending goal");
+    acPointer_->sendGoal(mgoal);
+  }
   // acPointer_->sendGoal(mgoal);
 
   // ac.waitForResult();
 
-  if(acPointer_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-  {ROS_INFO("Robot already at goal");
-    acPointer_->cancelGoal();}
-  }
-
-  void Planner::cancelGoal()
-  {
+  if (acPointer_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+    ROS_INFO("Robot already at goal");
     acPointer_->cancelGoal();
   }
-
-  GoalStateEnum Planner::checkGoalState()
-  {
-    // INFO("GOAL " << acPointer_->getState().state_);
-    INFO("GOAL ");
-    GoalStateEnum goalstate = acPointer_->getState().state_;
-    switch (goalstate) {
-    case GoalState::PENDING:
-      WARN("PENDING")
-      break;
-    case GoalState::ACTIVE:
-      INFO("ACTIVE")
-      break;
-    case GoalState::RECALLED:
-      WARN("RECALLED")
-      break;
-    case GoalState::REJECTED:
-      ERR("REJECTED")
-      break;
-    case GoalState::PREEMPTED:
-      WARN("PREEMPTED")
-      break;
-    case GoalState::ABORTED:
-      ERR("ABORTED")
-      break;
-    case GoalState::SUCCEEDED:
-      INFO("SUCCEEDED")
-      break;
-    case GoalState::LOST:
-      ERR("LOST")
-      break;
-    default:
-      ERR("INVALID!");
-      break;
-    }
-    INFO(std::endl);
-    return goalstate;
-  }
 }
+
+void Planner::cancelGoal() {
+  acPointer_->cancelGoal();
+}
+
+GoalStateEnum Planner::checkGoalState() {
+  // INFO("GOAL " << acPointer_->getState().state_);
+  INFO("GOAL ");
+  GoalStateEnum goalstate = acPointer_->getState().state_;
+  switch (goalstate) {
+  case GoalState::PENDING:
+    WARN("PENDING")
+    break;
+  case GoalState::ACTIVE:
+    INFO("ACTIVE")
+    break;
+  case GoalState::RECALLED:
+    WARN("RECALLED")
+    break;
+  case GoalState::REJECTED:
+    ERR("REJECTED")
+    break;
+  case GoalState::PREEMPTED:
+    WARN("PREEMPTED")
+    break;
+  case GoalState::ABORTED:
+    ERR("ABORTED")
+    break;
+  case GoalState::SUCCEEDED:
+    INFO("SUCCEEDED")
+    break;
+  case GoalState::LOST:
+    ERR("LOST")
+    break;
+  default:
+    ERR("INVALID!");
+    break;
+  }
+  INFO(std::endl);
+  return goalstate;
+}
+}  // namespace hrvo

@@ -9,7 +9,6 @@
 
 #include "Environment.h"
 #include "Simulator.h"
-#include <string>
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <geometry_msgs/Pose.h>
@@ -17,15 +16,16 @@
 #include <std_msgs/Int32MultiArray.h>
 #include "Vector2.h"
 
+#include <string>
+
 namespace hrvo {
 class Environment;
 class Simulator;
 
-class BumperWrapper
-{
+class BumperWrapper {
  public:
   BumperWrapper();
-  BumperWrapper(std::string sub_name);
+  explicit BumperWrapper(std::string sub_name);
   ~BumperWrapper();
   void receive_data(const std_msgs::Int32MultiArray::ConstPtr& msg);
   void pretty_print();
@@ -46,6 +46,6 @@ class BumperWrapper
   std::vector<std::string> POSITIONS;
 };
 
-}
+}  // namespace hrvo
 
 #endif /* BumperWRAPPER_H_ */

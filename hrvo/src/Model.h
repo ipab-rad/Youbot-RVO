@@ -1,4 +1,5 @@
 /**
+* Copyright[2015]<Alejandro Bordallo>
 * Created by Alejandro Bordallo
 * \file   Model.h
 * \brief  Declares the Model class.
@@ -20,13 +21,13 @@ class Agent;
 class Goal;
 class Environment;
 
-class Model
-{
-public:
-  Model(Environment* PlannerPt);
+class Model {
+ public:
+  explicit Model(Environment* PlannerPt);
   ~Model();
 
-  void setupModel(std::size_t agentNo, std::map<std::size_t, Vector2> possGoals);
+  void setupModel(std::size_t agentNo,
+                  std::map<std::size_t, Vector2> possGoals);
 
   std::size_t inferGoals(std::size_t agentNo);
 
@@ -36,7 +37,7 @@ public:
 
   std::vector<float> getGoalRatios() {return goalRatios_;}
 
-private:
+ private:
   friend class Simulator;
   friend class Agent;
   friend class Goal;
@@ -57,14 +58,15 @@ private:
   std::vector<Vector2> pastSimVels_;
 
   std::map<std::size_t, std::size_t> simIDs_;
-  // std::map<std::size_t, std::map<std::size_t, float> > inferredAgentGoalsSum_;
-  // std::map<std::size_t, std::map<std::size_t, float> > inferredGoalHistory_;  // Goal, Count
+  // std::map<std::size_t, std::map<std::size_t, float> >
+  // inferredAgentGoalsSum_;
+  // std::map<std::size_t, std::map<std::size_t, float> > inferredGoalHistory_;
+  // // Goal, Count
   std::map<std::size_t, std::vector<float> > inferredGoalsHistory_;
   std::map<std::size_t, float> goalLikelihood_;
   std::map<std::size_t, float> prevPrior_;
-
 };
 
-}
+}  // namespace hrvo
 
 #endif /* HRVO_MODEL_H_ */

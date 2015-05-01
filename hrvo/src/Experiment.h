@@ -1,3 +1,7 @@
+/*
+* Copyright[2015]<Alejandro Bordallo>
+*/
+
 #ifndef HRVO_EXPERIMENT_H_
 #define HRVO_EXPERIMENT_H_
 
@@ -13,6 +17,9 @@
 #include <csignal>
 #include <fstream>
 
+#include <map>
+#include <vector>
+
 #include "AMCLWrapper.h"
 
 namespace hrvo {
@@ -21,11 +28,13 @@ float startTime(-1.0);
 
 std::ofstream dataLog;
 
-void WaitReturn() {while( std::cin.get() != '\n') {;}}
+void WaitReturn() {while ( std::cin.get() != '\n') {;}}
 
-typedef std::map<std::size_t, Environment *> PlannerMapPointer; // EnvID, EnvObject
+// EnvID, EnvObject
+typedef std::map<std::size_t, Environment *> PlannerMapPointer;
 
-typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer; // EnvID, ModelID, ModelObject
+// EnvID, ModelID, ModelObject
+typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer;
 
 void InitialiseRobots(PlannerMapPointer* PlannerMap);
 
@@ -51,6 +60,6 @@ void PlannerStep(PlannerMapPointer* PlannerMap);
 
 void ModelStep(PlannerMapPointer* PlannerMap, ModelMapPointer* ModelMap);
 
-}
+}  // namespace hrvo
 
 #endif /* HRVO_EXPERIMENT_H_ */
