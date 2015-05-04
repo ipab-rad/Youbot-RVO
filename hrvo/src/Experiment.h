@@ -31,20 +31,20 @@ std::ofstream dataLog;
 void WaitReturn() {while ( std::cin.get() != '\n') {;}}
 
 // EnvID, EnvObject
-typedef std::map<std::size_t, Environment *> PlannerMapPointer;
+typedef std::map<std::size_t, Environment *> RobotMapPointer;
 
 // EnvID, ModelID, ModelObject
 typedef std::map<std::size_t, std::map<std::size_t, Model*> > ModelMapPointer;
 
-void InitialiseRobots(PlannerMapPointer* PlannerMap);
+void InitialiseRobots(RobotMapPointer* RobotMap);
 
-void SetupLogging(PlannerMapPointer* PlannerMap, ModelMapPointer* ModelMap);
+void SetupLogging(RobotMapPointer* RobotMap, ModelMapPointer* ModelMap);
 
-void StopRobots(PlannerMapPointer* PlannerMap);
+void StopRobots(RobotMapPointer* RobotMap);
 
-void EStopRobots(PlannerMapPointer* PlannerMap);
+void EStopRobots(RobotMapPointer* RobotMap);
 
-void InitRobotPoses(PlannerMapPointer* PlannerMap);
+void InitRobotPoses(RobotMapPointer* RobotMap);
 
 void MoveIntoArea(Environment* planner);
 
@@ -52,13 +52,13 @@ void SelectTracker(Environment* planner);
 
 void MoveToInitialGoal(Environment* planner);
 
-void SensingUpdate(PlannerMapPointer* PlannerMap);
+void SensingUpdate(RobotMapPointer* RobotMap);
 
-void PrintAgentState(PlannerMapPointer* PlannerMap);
+void PrintAgentState(RobotMapPointer* RobotMap);
 
-void PlannerStep(PlannerMapPointer* PlannerMap);
+void PlannerStep(RobotMapPointer* RobotMap);
 
-void ModelStep(PlannerMapPointer* PlannerMap, ModelMapPointer* ModelMap);
+void ModelStep(RobotMapPointer* RobotMap, ModelMapPointer* ModelMap);
 
 }  // namespace hrvo
 

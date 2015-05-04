@@ -162,12 +162,12 @@ std::string intToString(int i);
 
 int cinInteger();
 
-// extern std::map<std::size_t, Environment *> *PlannerMapPointer_;
+// extern std::map<std::size_t, Environment *> *RobotMapPointer_;
 // extern std::map<std::size_t, std::map<std::size_t,
 //  Model *> > *ModelMapPointer_;
 
 void logSetup(std::ofstream& logfile,
-              std::map<std::size_t, Environment *> *PlannerMap,
+              std::map<std::size_t, Environment *> *RobotMap,
               std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap);
 void logData(std::ofstream& logfile, int LOG_PLANNER, float currTime,
              std::vector<size_t> modelledAgents,

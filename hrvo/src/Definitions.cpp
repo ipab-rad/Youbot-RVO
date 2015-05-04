@@ -79,14 +79,14 @@ int cinInteger() {
 //   INFO("LOADED" << ENABLE_PLANNER <<std::endl);
 // }
 
-std::map<std::size_t, Environment *> *PlannerMapPointer_;
+std::map<std::size_t, Environment *> *RobotMapPointer_;
 std::map<std::size_t, std::map<std::size_t, Model *> > *ModelMapPointer_;
 // std::string LOG_NAME;
 
 void logSetup(std::ofstream& logfile,
-              std::map<std::size_t, Environment *> *PlannerMap,
+              std::map<std::size_t, Environment *> *RobotMap,
               std::map<std::size_t, std::map<std::size_t, Model*> > *ModelMap) {
-  PlannerMapPointer_ = PlannerMap;
+  RobotMapPointer_ = RobotMap;
   ModelMapPointer_ = ModelMap;
   std::string folder =
     "/home/alex/Dropbox/University/PhD/Experiments/InSpace/logs/Improved/";
@@ -99,7 +99,7 @@ void logSetup(std::ofstream& logfile,
     else
     {DEBUG("Saving log on " << path << std::endl);}
     // LOG HEADER
-    logfile << SIM_TIME_STEP << "," << PlannerMapPointer_->size()
+    logfile << SIM_TIME_STEP << "," << RobotMapPointer_->size()
             << "," << AGENT_RADIUS << std::endl;
   }
 }
@@ -107,7 +107,7 @@ void logSetup(std::ofstream& logfile,
 void logData(std::ofstream& logfile, int LOG_PLANNER, float currTime,
              std::vector<size_t> modelledAgents,
              std::map<std::size_t, Vector2> possGoals) {
-  Environment* planner = (*PlannerMapPointer_).at(LOG_PLANNER);
+  Environment* planner = (*RobotMapPointer_).at(LOG_PLANNER);
   std::map<std::size_t, Model *> ModelMap = (*ModelMapPointer_).at(LOG_PLANNER);
 
   size_t nAgents = planner->getNumPlannerAgents();
