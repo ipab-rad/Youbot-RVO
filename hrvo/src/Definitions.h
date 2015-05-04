@@ -62,9 +62,7 @@
 #ifndef HRVO_DEFINITIONS_H_
 #define HRVO_DEFINITIONS_H_
 
-#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
 
 #include <iostream>
 #include <fstream>

@@ -6,18 +6,9 @@
 * @Last Modified time: 2015-05-01
 */
 
-#ifndef HRVO_DEFINITIONS_H_
 #include "Definitions.h"
-#endif
-
-#ifndef HRVO_ENVIRONMENT_H_
 #include "Environment.h"
-#endif
-
-#ifndef HRVO_MODEL_H_
 #include "Model.h"
-#endif
-
 
 namespace hrvo {
 

@@ -8,7 +8,6 @@
 
 #include "Planner.h"
 
-
 namespace hrvo {
 
 Planner::Planner(ros::NodeHandle nh) {

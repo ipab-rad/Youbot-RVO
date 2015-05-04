@@ -65,9 +65,7 @@
 #include <cstddef>
 #include <vector>
 
-#ifndef HRVO_VECTOR2_H_
 #include "Vector2.h"
-#endif
 
 namespace hrvo {
 class Agent;
