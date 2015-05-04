@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Agent.h
- * \brief  Declares the Agent class.
- */
-
 #ifndef HRVO_AGENT_H_
 #define HRVO_AGENT_H_
 

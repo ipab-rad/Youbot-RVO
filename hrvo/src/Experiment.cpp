@@ -1,7 +1,8 @@
 /*
-* Experiment.cpp
-* Copyright[2015]<Alejandro Bordallo>
-* Experiment setup code by Alejandro Bordallo, based on HRVO for performing interactive dynamic planning
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Main experiment code for multi-robot/human interactive navigation
 */
 
 #include "Experiment.h"

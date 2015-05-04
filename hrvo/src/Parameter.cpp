@@ -1,8 +1,9 @@
-/**
-* Created by Alejandro Bordallo
-* \file   Parameter.cpp
-* \brief  Contains all global parameters shared between the classes.
-*         These are read once at the beginning of execution from the ROS launch file.
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Contains all global parameters shared between the classes.
+* These are read once at the beginning of execution from the ROS launch file.
 */
 
 #include "Parameter.h"

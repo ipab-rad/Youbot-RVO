@@ -1,9 +1,8 @@
-/**
-* Copyright[2015]<Alejandro Bordallo>
-* @Author: GreatAlexander
-* @Date:   2015-05-01 18:45:56
-* @Last Modified by:   GreatAlexander
-* @Last Modified time: 2015-05-01
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Useful function definitions used by the rest of the code
 */
 
 #include "Definitions.h"

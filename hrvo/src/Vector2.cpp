@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Vector2.cpp
- * \brief  Defines the Vector2 class.
- */
-
 #include "Vector2.h"
 
 #include <ostream>

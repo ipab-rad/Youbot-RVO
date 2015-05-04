@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Simulator.cpp
- * \brief  Defines the Simulator class.
- */
-
 #include "Simulator.h"
 
 #include <stdexcept>

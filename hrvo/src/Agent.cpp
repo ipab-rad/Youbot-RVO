@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Agent.cpp
- * \brief  Defines the Agent class.
- */
-
 #include "Agent.h"
 
 #include <algorithm>
@@ -80,8 +75,7 @@
 #include "Goal.h"
 #include "KdTree.h"
 
-namespace hrvo
-{
+namespace hrvo {
 
 Agent::Agent(Simulator *simulator) :
   simulator_(simulator), goalNo_(0), maxNeighbors_(0),
@@ -92,8 +86,7 @@ Agent::Agent(Simulator *simulator) :
   leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
   timeToOrientation_(0.0f), wheelTrack_(0.0f),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
-{
+  reachedGoal_(false) {
   bumper_touched_ = 0;
   updated_ = false;
 }
@@ -110,30 +103,24 @@ Agent::Agent(Simulator *simulator, ros::NodeHandle& nh,
   timeToOrientation_(simulator_->defaults_->timeToOrientation_),
   wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
-{
+  reachedGoal_(false) {
   bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
   id_ = id;
 
-  if ( agent_type_ == ROBOT )
-  {
+  if ( agent_type_ == ROBOT ) {
     pub_ = nh.advertise<geometry_msgs::Twist>("/"
            + id_
            + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
-    if (!IS_AMCL_ACTIVE)
-    {
-      if ( id_.compare("prime") != 0)
-      {
+    if (!IS_AMCL_ACTIVE) {
+      if ( id_.compare("prime") != 0) {
         odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                  &Agent::updatePose, this);
-      }
-      else
-      {
+      } else {
         odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
                                  &Agent::updatePose, this);
       }
@@ -165,30 +152,24 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
   timeToOrientation_(simulator_->defaults_->timeToOrientation_),
   wheelTrack_(simulator_->defaults_->wheelTrack_),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
-{
+  reachedGoal_(false) {
   bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
   odomPosition_ = position_;
   id_ = id;
 
-  if ( agent_type_ == ROBOT )
-  {
+  if ( agent_type_ == ROBOT ) {
     pub_ = nh.advertise<geometry_msgs::Twist>("/"
            + id_
            + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
-    if (!IS_AMCL_ACTIVE)
-    {
-      if ( id_.compare("prime") != 0)
-      {
+    if (!IS_AMCL_ACTIVE) {
+      if ( id_.compare("prime") != 0) {
         odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                  &Agent::updatePose, this);
-      }
-      else
-      {
+      } else {
         odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
                                  &Agent::updatePose, this);
       }
@@ -223,8 +204,7 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
   leftWheelSpeed_(0.0f), rightWheelSpeed_(0.0f),
   timeToOrientation_(timeToOrientation), wheelTrack_(wheelTrack),
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-  reachedGoal_(false)
-{
+  reachedGoal_(false) {
   bumper_touched_ = 0;
   agent_type_ = agent_type;
   updated_ = false;
@@ -234,22 +214,17 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
   id_ = id;
 
-  if ( agent_type_ == ROBOT )
-  {
+  if ( agent_type_ == ROBOT ) {
     pub_ = nh.advertise<geometry_msgs::Twist>("/"
            + id_
            + "/cmd_vel", 1);
     std::string robot_prefix("");
     // ROS_INFO("Subscribing %s to odometry topic", id_.c_str());
-    if (!IS_AMCL_ACTIVE)
-    {
-      if ( id_.compare("prime") != 0)
-      {
+    if (!IS_AMCL_ACTIVE) {
+      if ( id_.compare("prime") != 0) {
         odom_sub_ = nh.subscribe("/" + id_ + "/odom", 1,
                                  &Agent::updatePose, this);
-      }
-      else
-      {
+      } else {
         odom_sub_ = nh.subscribe("/base_odometry/odom", 1,
                                  &Agent::updatePose, this);
       }
@@ -259,14 +234,12 @@ Agent::Agent(Simulator *simulator, const Vector2 &position,
   }
 }
 
-void Agent::computeNeighbors()
-{
+void Agent::computeNeighbors() {
   neighbors_.clear();
   simulator_->kdTree_->query(this, neighborDist_ * neighborDist_);
 }
 
-void Agent::computeNewVelocity()
-{
+void Agent::computeNewVelocity() {
   velocityObstacles_.clear();
   velocityObstacles_.reserve(neighbors_.size());
 
@@ -305,8 +278,7 @@ void Agent::computeNewVelocity()
                                     / (other->radius_ + radius_))
                                  * normalize(other->position_
                                              - position_);
-      }
-      else {
+      } else {
         const float s = 0.5f * det(velocity_
                                    - other->velocity_,
                                    velocityObstacle.side1_)
@@ -324,8 +296,7 @@ void Agent::computeNewVelocity()
       }
 
       velocityObstacles_.push_back(velocityObstacle);
-    }
-    else {
+    } else {
       velocityObstacle.apex_ = 0.5f * (other->velocity_ + velocity_)
                                - (uncertaintyOffset_ + 0.5f
                                   * (other->radius_ + radius_
@@ -350,8 +321,7 @@ void Agent::computeNewVelocity()
 
   if (absSq(prefVelocity_) < maxSpeed_ * maxSpeed_) {
     candidate.position_ = prefVelocity_;
-  }
-  else {
+  } else {
     candidate.position_ = maxSpeed_ * normalize(prefVelocity_);
   }
 
@@ -598,15 +568,13 @@ void Agent::computeNewVelocity()
   }
 }
 
-void Agent::computePreferredVelocity()
-{
+void Agent::computePreferredVelocity() {
   const Vector2 goalPosition = simulator_->goals_[goalNo_]->position_;
   const float distSqToGoal = absSq(goalPosition - position_);
 
   if (sqr(prefSpeed_ * simulator_->timeStep_) > distSqToGoal) {
     prefVelocity_ = (goalPosition - position_) / simulator_->timeStep_;
-  }
-  else {
+  } else {
     prefVelocity_ = prefSpeed_
                     * (goalPosition - position_)
                     / std::sqrt(distSqToGoal);
@@ -614,14 +582,12 @@ void Agent::computePreferredVelocity()
 }
 
 #if HRVO_DIFFERENTIAL_DRIVE
-void Agent::computeWheelSpeeds()
-{
+void Agent::computeWheelSpeeds() {
   float targetOrientation;
 
   if (reachedGoal_) {
     targetOrientation = orientation_;
-  }
-  else {
+  } else {
     targetOrientation = atan(newVelocity_);
   }
 
@@ -641,8 +607,7 @@ void Agent::computeWheelSpeeds()
 
   if (speedDiff > 2.0f * maxSpeed_) {
     speedDiff = 2.0f * maxSpeed_;
-  }
-  else if (speedDiff < -2.0f * maxSpeed_) {
+  } else if (speedDiff < -2.0f * maxSpeed_) {
     speedDiff = -2.0f * maxSpeed_;
   }
 
@@ -652,31 +617,26 @@ void Agent::computeWheelSpeeds()
     if (speedDiff >= 0.0f) {
       rightWheelSpeed_ = maxSpeed_;
       leftWheelSpeed_ = maxSpeed_ - speedDiff;
-    }
-    else {
+    } else {
       leftWheelSpeed_ = maxSpeed_;
       rightWheelSpeed_ = maxSpeed_ + speedDiff;
     }
-  }
-  else if (targetSpeed - 0.5f * std::fabs(speedDiff) < -maxSpeed_) {
+  } else if (targetSpeed - 0.5f * std::fabs(speedDiff) < -maxSpeed_) {
     if (speedDiff >= 0.0f) {
       leftWheelSpeed_ = -maxSpeed_;
       rightWheelSpeed_ = speedDiff - maxSpeed_;
-    }
-    else {
+    } else {
       rightWheelSpeed_ = -maxSpeed_;
       leftWheelSpeed_ = -maxSpeed_ - speedDiff;
     }
-  }
-  else {
+  } else {
     rightWheelSpeed_ = targetSpeed + 0.5f * speedDiff;
     leftWheelSpeed_ = targetSpeed - 0.5f * speedDiff;
   }
 }
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
 
-void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
-{
+void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq) {
   const Agent *const other = simulator_->agents_[agentNo];
 
   if (this != other) {
@@ -694,8 +654,7 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
       if (neighbors_.size() == maxNeighbors_) {
         rangeSq = (--neighbors_.end())->first;
       }
-    }
-    else if (distSq < rangeSq) {
+    } else if (distSq < rangeSq) {
       if (neighbors_.size() == maxNeighbors_) {
         neighbors_.erase(--neighbors_.end());
       }
@@ -709,22 +668,18 @@ void Agent::insertNeighbor(std::size_t agentNo, float &rangeSq)
   }
 }
 
-void Agent::odomPosUpdate()
-{
+void Agent::odomPosUpdate() {
   DEBUG("Odom Update!" << std::endl);
 
   Vector2 odom_offset = curr_offset_ - prev_offset_;
 
   if (amcl_update_ &&
       amcl_pose_.getX() != 0.0 &&
-      amcl_pose_.getY() != 0.0)
-  {
+      amcl_pose_.getY() != 0.0) {
     DEBUG("USING AMCL!")
     position_ = amcl_pose_;
     odomPosition_ = amcl_pose_;
-  }
-  else
-  {
+  } else {
     DEBUG("USING ODOMETRY!")
     odomPosition_ += odom_offset;
     position_ = odomPosition_;
@@ -749,8 +704,7 @@ void Agent::odomPosUpdate()
   //orientation_ = agent_sensed_orientation_; // TO BE IMPLEMENTED
 }
 
-void Agent::update()
-{
+void Agent::update() {
 #if HRVO_DIFFERENTIAL_DRIVE
 
   const float averageWheelSpeed = 0.5f
@@ -775,42 +729,34 @@ void Agent::update()
 
   if (dv < maxAccel_ * simulator_->timeStep_) {
     velocity_ = newVelocity_;
-  }
-  else {
+  } else {
     velocity_ = (1.0f - (maxAccel_ * simulator_->timeStep_ / dv))
                 * velocity_ + (maxAccel_ * simulator_->timeStep_ / dv)
                 * newVelocity_;
   }
 
   // Limit velocity if robot attempts to leave the workspace
-  if (agent_type_ == ROBOT && LIMIT_WORKSPACE_VEL)
-  {
-    if ((velocity_.getY() + position_.getY()) > Y_LIMITS[1])
-    {
+  if (agent_type_ == ROBOT && LIMIT_WORKSPACE_VEL) {
+    if ((velocity_.getY() + position_.getY()) > Y_LIMITS[1]) {
       velocity_.setY(Y_LIMITS[1] - position_.getY());
     }
-    if ((velocity_.getY() + position_.getY()) < Y_LIMITS[0])
-    {
+    if ((velocity_.getY() + position_.getY()) < Y_LIMITS[0]) {
       velocity_.setY(Y_LIMITS[0] - position_.getY());
     }
 
-    if ((velocity_.getX() + position_.getX()) > X_LIMITS[1])
-    {
+    if ((velocity_.getX() + position_.getX()) > X_LIMITS[1]) {
       velocity_.setX(X_LIMITS[1] - position_.getX());
     }
-    if ((velocity_.getX() + position_.getX()) < X_LIMITS[0])
-    {
+    if ((velocity_.getX() + position_.getX()) < X_LIMITS[0]) {
       velocity_.setX(X_LIMITS[0] - position_.getX());
     }
   }
 
-  if (agent_type_ == SIMAGENT)
-  {
+  if (agent_type_ == SIMAGENT) {
     position_ += velocity_ * simulator_->timeStep_;;
     // std::cout << id_ << "Position updated" << std::endl;
-  }
-  else
-  { // NEW VELOCITY PUBLISHED
+  } else {
+    // NEW VELOCITY PUBLISHED
     geometry_msgs::Twist vel;
     vel.linear.x = velocity_.getX();
     vel.linear.y = velocity_.getY();
@@ -863,8 +809,7 @@ void Agent::update()
   if (absSq(simulator_->goals_[goalNo_]->position_ - position_)
       < goalRadius_ * goalRadius_) {
     reachedGoal_ = true;
-  }
-  else {
+  } else {
     reachedGoal_ = false;
     simulator_->reachedGoals_ = false;
   }
@@ -879,8 +824,7 @@ void Agent::update()
 }
 
 
-void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
-{
+void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg) {
   ERR("Odom Received!")
   // ERR("Curr:" << curr_offset_ << std::endl);
   // ERR("Prev:" << prev_offset_ << std::endl);
@@ -903,8 +847,7 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
   odomPosition_ = odomPosition_ + (curr_offset_ - prev_offset_);
   DEBUG("MAYBE:" << odomPosition_ << std::endl);
 
-  if (!updated_)
-  {
+  if (!updated_) {
     prev_offset_ = curr_offset_;
     updated_ = true;
     ROS_INFO("Odometry Initialised");
@@ -912,13 +855,11 @@ void Agent::updatePose(const nav_msgs::Odometry::ConstPtr& pose_msg)
 
 }
 
-std::string Agent::getPoseTopic()
-{
+std::string Agent::getPoseTopic() {
   return pose_topic_;
 }
 
-void Agent::setPoseTopic(std::string pose_topic)
-{
+void Agent::setPoseTopic(std::string pose_topic) {
   pose_topic_ = pose_topic;
 }
 

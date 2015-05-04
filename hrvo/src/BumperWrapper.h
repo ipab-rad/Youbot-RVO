@@ -1,8 +1,9 @@
-/**
- * Created by Nantas Nardelli <n.nardelli@sms.ed.ac.uk>
- * \file   BumperWrapper.h
- * \brief  Declares the BumperWrapper class.
- */
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declares the BumperWrapper class (By Nantas Nardelli)
+*/
 
 #ifndef BUMPER_WRAPPER_H_
 #define BUMPER_WRAPPER_H_

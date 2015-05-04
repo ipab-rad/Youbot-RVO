@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Goal.cpp
- * \brief  Defines the Goal class.
- */
-
 #ifndef HRVO_GOAL_H_
 #include "Goal.h"
 #endif

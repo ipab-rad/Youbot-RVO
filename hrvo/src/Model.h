@@ -1,8 +1,8 @@
-/**
-* Copyright[2015]<Alejandro Bordallo>
-* Created by Alejandro Bordallo
-* \file   Model.h
-* \brief  Declares the Model class.
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declaration of the Model class
 */
 
 #ifndef HRVO_MODEL_H_

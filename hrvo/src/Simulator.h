@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Simulator.h
- * \brief  Declares the Simulator class.
- */
-
 #ifndef HRVO_SIMULATOR_H_
 #define HRVO_SIMULATOR_H_
 

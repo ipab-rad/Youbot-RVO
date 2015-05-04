@@ -1,8 +1,9 @@
-/**
- * Created by Alejandro Bordallo
- * \file   Tracker.h
- * \brief  Declares the Tracker class.
- */
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declares the Tracker class
+*/
 
 #ifndef HRVO_TRACKER_H_
 #define HRVO_TRACKER_H_

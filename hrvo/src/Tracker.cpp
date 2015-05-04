@@ -1,9 +1,8 @@
 /*
-* @Copyright: "Copyright[2015]<Alejandro Bordallo>"
-* @Date:   2015-05-01
-* @Last Modified by:   GreatAlexander
-* @Email: "alex.bordallo@ed.ac.uk",
-* @Desc: Deals with the Agent Tracker information
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Deals with the Agent Tracker information
 */
 
 #include "Tracker.h"

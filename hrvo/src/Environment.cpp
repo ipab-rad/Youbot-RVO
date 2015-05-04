@@ -1,8 +1,8 @@
-/**
-* Copyright[2015]<Alejandro Bordallo>
-* Created by Alejandro Bordallo
-* \file   Environment.cpp
-* \brief  Defines the Environment class.
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Defines the Environment class
 */
 
 #include "Environment.h"

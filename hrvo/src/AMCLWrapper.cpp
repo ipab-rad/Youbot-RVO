@@ -1,8 +1,8 @@
-/**
-* Copyright[2015]<Alejandro Bordallo>
-* Created by Nantas Nardelli
-* \file   AMCLWrapper.cpp
-* \brief  Deals with the AMCL data
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Deals with the AMCL data (By Nantas Nardelli)
 */
 
 #include <geometry_msgs/Twist.h>

@@ -1,8 +1,8 @@
-/**
-* Copyright[2015]<Alejandro Bordallo>
-* Created by Nantas Nardelli
-* \file   BumperWrapper.cpp
-* \brief  Deals with the Bumper bumper_data_
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Deals with the Bumper bumper_data_ (By Nantas Nardelli)
 */
 
 #include <geometry_msgs/Twist.h>

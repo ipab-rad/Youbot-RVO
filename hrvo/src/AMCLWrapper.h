@@ -1,9 +1,9 @@
-/**
- * Copyright[2015]<Alejandro Bordallo>
- * Created by Nantas Nardelli <n.nardelli@sms.ed.ac.uk>
- * \file   AMCLWrapper.h
- * \brief  Declares the AMCLWrapper class.
- */
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declares the AMCLWrapper class (By Nantas Nardelli)
+*/
 
 #ifndef AMCL_WRAPPER_H_
 #define AMCL_WRAPPER_H_

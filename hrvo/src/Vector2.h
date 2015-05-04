@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   Vector2.h
- * \brief  Declares and defines the Vector2 class.
- */
-
 #ifndef HRVO_VECTOR2_H_
 #define HRVO_VECTOR2_H_
 

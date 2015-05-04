@@ -1,5 +1,8 @@
 /*
-* Copyright[2015]<Alejandro Bordallo>
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declaration of all functions used for the Experiment
 */
 
 #ifndef HRVO_EXPERIMENT_H_

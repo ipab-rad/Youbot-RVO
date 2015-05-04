@@ -1,8 +1,8 @@
 /*
 * @Copyright: Copyright[2015]<Alejandro Bordallo>
-*      @Date: 2015-05-01
-*     @Email: alex.bordallo@ed.ac.uk
-*      @Desc: Declares the Environment class.
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Declares the Planner class.
 */
 
 #ifndef HRVO_PLANNER_H_

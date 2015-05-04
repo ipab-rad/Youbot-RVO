@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   KdTree.h
- * \brief  Declares the KdTree class.
- */
-
 #ifndef HRVO_KD_TREE_H_
 #define HRVO_KD_TREE_H_
 

@@ -1,9 +1,8 @@
 /*
-* @Author: GreatAlexander
-* @Date:   2015-05-01
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-05-01
-* @Defines the Planner class.
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Defines the Planner class.
 */
 
 #include "Planner.h"

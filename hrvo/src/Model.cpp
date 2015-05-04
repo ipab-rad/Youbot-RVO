@@ -1,8 +1,8 @@
 /*
-* @Author: GreatAlexander
-* @Date:   2015-05-01 16:11:59
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-05-01
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-04
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Definition of the Model class functions
 */
 
 #include "Model.h"

@@ -54,11 +54,6 @@
  * <http://gamma.cs.unc.edu/HRVO/>
  */
 
-/**
- * \file   KdTree.cpp
- * \brief  Defines the KdTree class.
- */
-
 #include "KdTree.h"
 
 #include <algorithm>

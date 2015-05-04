@@ -4,6 +4,7 @@
 * \file   Environment.h
 * \brief  Declares the Environment class.
 */
+
 #ifndef HRVO_ENVIRONMENT_H_
 #define HRVO_ENVIRONMENT_H_
 
