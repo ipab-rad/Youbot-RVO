@@ -75,8 +75,6 @@ class Simulator;
  * \brief  An agent in the simulation.
  */
 class Agent {
-
-
  private:
   /**
    * \class  Candidate
@@ -279,6 +277,6 @@ class Agent {
 
   int bumper_touched_;
 };
-}
+}  // namespace hrvo
 
 #endif /* HRVO_AGENT_H_ */

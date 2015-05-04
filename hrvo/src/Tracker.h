@@ -26,8 +26,7 @@ namespace hrvo {
 class Environment;
 class Simulator;
 
-class Tracker
-{
+class Tracker {
  public:
   Tracker();
   ~Tracker();
@@ -36,11 +35,13 @@ class Tracker
 
   std::map<int, std::size_t> getTrackerIDs();
 
-  void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr& msg);
+  void receiveTrackerData(const PTrackingBridge::TargetEstimations::ConstPtr&
+                          msg);
 
   void setAgentTracker(int TrackerID, std::size_t AgentID);
 
-  std::pair<float, Vector2> calculateAvgMaxSpeeds(int AgentID, Vector2 AgentVel);
+  std::pair<float, Vector2> calculateAvgMaxSpeeds(
+    int AgentID, Vector2 AgentVel);
 
   void checkExistingTrackers(std::map<int, std::size_t> ids);
 
@@ -53,7 +54,9 @@ class Tracker
   void odometryComparison();
 
   // Awaits robot initialisation before tracking more agents
-  void setTrackOtherAgents(bool trackOtherAgents) {trackOtherAgents_ = trackOtherAgents;}
+  void setTrackOtherAgents(bool trackOtherAgents) {
+    trackOtherAgents_ = trackOtherAgents;
+  }
 
   int getRobotTrackerID()  {return robotTrackerID_;}
 
@@ -63,7 +66,6 @@ class Tracker
 
 
  private:
-
   // ROS members
   ros::NodeHandle nh_;
   ros::Subscriber Targsub;
@@ -75,16 +77,19 @@ class Tracker
   Simulator *planner_;
 
   // Private Members
-  std::map<std::size_t, std::vector<Vector2> > agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
+  std::map<std::size_t, std::vector<Vector2> >
+  agentVelHistory_;  // SimAgentID : VelCount : Velocity Magnitude
   std::map<std::size_t, float> maxSpeed_;
   bool trackOtherAgents_;
 
   int robotTrackerID_;
-  std::map<int, std::size_t> trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
-  std::map<int, std::vector<float> > trackerCompOdom_;  // First : Tracker ID, Second : Cumulative Diff between Odometry and Tracker Position
-
+  std::map<int, std::size_t>
+  trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
+  std::map<int, std::vector<float> >
+  trackerCompOdom_;  // First : Tracker ID,
+  // Second : Cumulative Diff between Odometry and Tracker Position
 };
 
-}
+}  // namespace hrvo
 
 #endif /* HRVO_TRACKER_H_ */

@@ -1,8 +1,10 @@
-/**
-* Created by Alejandro Bordallo
-* \file   Environment.h
-* \brief  Declares the Environment class.
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+*      @Date: 2015-05-01
+*     @Email: alex.bordallo@ed.ac.uk
+*      @Desc: Declares the Environment class.
 */
+
 #ifndef HRVO_PLANNER_H_
 #define HRVO_PLANNER_H_
 
@@ -14,39 +16,38 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 
-typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
+typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>
+MoveBaseClient;
 
 typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
 typedef actionlib::SimpleClientGoalState GoalState;
 
 namespace hrvo {
 
-  class Planner
-  {
-    public:
+class Planner {
+ public:
+  explicit Planner(ros::NodeHandle nh);
 
-      Planner(ros::NodeHandle nh);
+  ~Planner();
 
-      ~Planner();
+  void sendNewGoal(Vector2 vgoal);
 
-      void sendNewGoal(Vector2 vgoal);
+  void cancelGoal();
 
-      void cancelGoal();
+  GoalStateEnum checkGoalState();
 
-      GoalStateEnum checkGoalState();
+ private:
+  bool goal_sent;
 
-    private:
-      bool goal_sent;
+  // int goalState;
 
-      // int goalState;
+  MoveBaseClient* acPointer_;
 
-      MoveBaseClient* acPointer_;
-
-      ros::NodeHandle nh_;
-  };
+  ros::NodeHandle nh_;
+};
 
 
-}
+}  // namespace hrvo
 
 
 

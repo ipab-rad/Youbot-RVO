@@ -66,31 +66,28 @@
 #include <ostream>
 
 namespace hrvo {
-	std::ostream &operator<<(std::ostream &stream, const Vector2 &vector)
-	{
-		stream << vector.getX() << " " << vector.getY();
+std::ostream &operator<<(std::ostream &stream, const Vector2 &vector) {
+  stream << vector.getX() << " " << vector.getY();
 
-		return stream;
-	}
-
-  float normaldiff(const Vector2 &vector1, const Vector2 &vector2)
-  {
-    Vector2 vdiff = vector1 - vector2;
-    // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
-    // return roundf(val * 100) / 100;
-    // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
-    // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
-    return abs(vdiff);
-  }
-
-  float sqrdiff(const Vector2 &vector1, const Vector2 &vector2)
-  {
-    Vector2 vdiff = vector1 - vector2;
-    // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
-    // return roundf(val * 100) / 100;
-    // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
-    // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
-    return absSq(vdiff);
-  }
-
+  return stream;
 }
+
+float normaldiff(const Vector2 &vector1, const Vector2 &vector2) {
+  Vector2 vdiff = vector1 - vector2;
+  // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+  // return roundf(val * 100) / 100;
+  // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+  // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
+  return abs(vdiff);
+}
+
+float sqrdiff(const Vector2 &vector1, const Vector2 &vector2) {
+  Vector2 vdiff = vector1 - vector2;
+  // float val = fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+  // return roundf(val * 100) / 100;
+  // return fabsf(vdiff.getX()) + fabsf(vdiff.getY());
+  // return pow(fabsf(vdiff.getX()) + fabsf(vdiff.getY()), 2.0);
+  return absSq(vdiff);
+}
+
+}  // namespace hrvo

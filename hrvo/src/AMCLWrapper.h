@@ -1,4 +1,5 @@
 /**
+ * Copyright[2015]<Alejandro Bordallo>
  * Created by Nantas Nardelli <n.nardelli@sms.ed.ac.uk>
  * \file   AMCLWrapper.h
  * \brief  Declares the AMCLWrapper class.
@@ -9,7 +10,6 @@
 
 #include "Environment.h"
 #include "Simulator.h"
-#include <string>
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -18,17 +18,19 @@
 #include <nav_msgs/Odometry.h>
 #include "Vector2.h"
 
+#include <string>
+
 namespace hrvo {
 class Environment;
 class Simulator;
 
-class AMCLWrapper
-{
+class AMCLWrapper {
  public:
   AMCLWrapper();
-  AMCLWrapper(std::string sub_name);
+  explicit AMCLWrapper(std::string sub_name);
   ~AMCLWrapper();
-  void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& pose_msg);
+  void receive_pose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr&
+                    pose_msg);
   void receive_odom(const nav_msgs::Odometry::ConstPtr& odom_msg);
   void pretty_print_msg();
   void pretty_print_pose();
@@ -64,6 +66,6 @@ class AMCLWrapper
   Simulator* planner_;
 };
 
-}
+}  // namespace hrvo
 
 #endif /* AMCLWRAPPER_H_ */

@@ -62,13 +62,13 @@
 #ifndef HRVO_SIMULATOR_H_
 #define HRVO_SIMULATOR_H_
 
-#include <limits>
 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 
-#include "hrvo/AddAgentService.h"
+// #include "hrvo/AddAgentService.h"
 #include "Vector2.h"
+#include <limits>
 /**
  * \brief  Set to 0 for a holonomic agent; set to 1 for a differential-drive agent.
  */
@@ -93,7 +93,8 @@ class Simulator {
 
   Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nsimID);
 
-  Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID, std::size_t nsimID);
+  Simulator(ros::NodeHandle nh, std::string simtype, std::size_t nactorID,
+            std::size_t nsimID);
 
   /**
    * \brief  Destructor.
@@ -335,11 +336,16 @@ class Simulator {
    * \param[in]  velocity           The default initial velocity of a new agent.
    * \param[in]  orientation        The default initial orientation (in radians) of a new agent.
    */
-  void setAgentDefaults(float neighborDist, std::size_t maxNeighbors, float radius, float goalRadius, float prefSpeed, float maxSpeed,
+  void setAgentDefaults(float neighborDist, std::size_t maxNeighbors,
+                        float radius, float goalRadius,
+                        float prefSpeed, float maxSpeed,
 #if HRVO_DIFFERENTIAL_DRIVE
                         float timeToOrientation, float wheelTrack,
 #endif /* HRVO_DIFFERENTIAL_DRIVE */
-                        float uncertaintyOffset = 0.0f, float maxAccel = std::numeric_limits<float>::infinity(), const Vector2 &velocity = Vector2(), float orientation = 0.0f);
+                        float uncertaintyOffset = 0.0f,
+                        float maxAccel = std::numeric_limits<float>::infinity(),
+                        const Vector2 &velocity = Vector2(),
+                        float orientation = 0.0f);
 
   /**
    * \brief      Sets the goal number of a specified agent.
@@ -476,12 +482,14 @@ class Simulator {
 
   void setAMCLPose(std::size_t agentNo, Vector2 amcl_pose);
 
-  void deleteAgent(std::size_t agentNo) {;}   // TODO: Figure out if this can ever be done without maps
+  void deleteAgent(std::size_t agentNo) {;}
+  // TODO(Alex): Figure out if this can ever be done without maps
 
   void setBumperData(std::size_t agentNo, int touched);
 
 
-  // bool addAgentCallback(AddAgentService::Request &req, AddAgentService::Response &res);
+  // bool addAgentCallback(AddAgentService::Request &req,
+  //  AddAgentService::Response &res);
 
  private:
   Simulator(const Simulator &other);
@@ -503,6 +511,6 @@ class Simulator {
   ros::NodeHandle nh_;
   ros::ServiceServer add_agent_srv_;
 };
-}
+}  // namespace hrvo
 
 #endif /* HRVO_SIMULATOR_H_ */
