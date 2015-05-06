@@ -8,7 +8,7 @@
 # GOAL_1_2        3
 # GOAL_2_3        4
 # GOAL_3_1        5
-# FOLLOW_AGENT    6 
+# FOLLOW_AGENT    6
 # -----------------
 megatronActive: true
 megatronPlan: 1
