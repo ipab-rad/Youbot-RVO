@@ -173,6 +173,7 @@ add_executable(Experiment
   src/AMCLWrapper.cpp
   src/BumperWrapper.cpp
   src/Planner.cpp
+  src/RobotComms.cpp
 )
 
 #	# Add cmake target dependencies of the executable/library

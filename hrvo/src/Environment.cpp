@@ -22,9 +22,10 @@ Environment::Environment(enum Actor actorID, const Vector2 startPos) {
   startGoal_ = planner_->addGoal(startPos_);
   if (IS_AMCL_ACTIVE) {this->initAMCL();}
   planner_->addAgent(getActorName(nActorID_), ROBOT, startPos_, startGoal_);
-  posePub_ = nh_.advertise<geometry_msgs::Pose>("/" + sActorID_ + "/true_pose",
-             1);
+  // posePub_ = nh_.advertise<geometry_msgs::Pose>(
+  //              "/" + sActorID_ + "/true_pose", 1);
   if (!TRACK_ROBOTS) {this->initRobotTrackers();}
+
   this->goalSetup();
   simvectPoint_ = &simvect_;
   this->initTracker();
@@ -87,14 +88,6 @@ void Environment::setupPlanner() {
   */
 }
 
-
-void Environment::initBumper() {
-  /* Initialise wrapper to update AMCL messages */
-  bumperwrapper_ = new BumperWrapper(sActorID_);
-  bumperwrapper_->setEnvPointer(this);
-  bumperwrapper_->setPlannerPointer(planner_);
-}
-
 void Environment::initAMCL() {
   /* Initialise wrapper to update AMCL messages */
   amclwrapper_ = new AMCLWrapper(sActorID_);
@@ -104,218 +97,27 @@ void Environment::initAMCL() {
 }
 
 void Environment::initTracker() {
+  /* Instantiate tracker class for agent tracking */
   tracker_ = new Tracker();
   tracker_->setEnvPointer(this);
   tracker_->setPlannerPointer(planner_);
   DEBUG("Tracker setup for " << sActorID_ << " initialised" << std::endl);
 }
 
+void Environment::initBumper() {
+  /* Initialise wrapper to receive bumper messages */
+  bumperwrapper_ = new BumperWrapper(sActorID_);
+  bumperwrapper_->setEnvPointer(this);
+  bumperwrapper_->setPlannerPointer(planner_);
+}
+
 void Environment::initRobotTrackers() {
-  // DO THIS ONCE ALL ROBOTS HAVE STARTED
-  // CHECK ALL EXISITING ROBOTS IN THE EXPERIMENT
-  // ADD ALL ROBOTS TO THE PLANNER
-  // SET UP ODOM/AMCL SUBSCRIBERS.
-  DEBUG(sActorID_ << " subscribed to: ")
-  if ((nActorID_ != MEGATRON) && MEGATRON_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(MEGATRON),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[MEGATRON] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/youbot_1/true_pose", 1,
-                                           &Environment::receiveRobot1Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/youbot_1/cmd_vel", 1,
-                                          &Environment::receiveRobot1Vel,
-                                          this);
-    DEBUG(getActorName(MEGATRON) << " id " << agentid << ", ");
-  }
-  if ((nActorID_ != SOUNDWAVE) && SOUNDWAVE_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(SOUNDWAVE),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[SOUNDWAVE] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/youbot_2/true_pose", 1,
-                                           &Environment::receiveRobot2Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/youbot_2/cmd_vel", 1,
-                                          &Environment::receiveRobot2Vel,
-                                          this);
-    DEBUG(getActorName(SOUNDWAVE) << " id " << agentid << ", ");
-  }
-  if ((nActorID_ != STARSCREAM) && STARSCREAM_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(STARSCREAM),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[STARSCREAM] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/youbot_3/true_pose", 1,
-                                           &Environment::receiveRobot3Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/youbot_3/cmd_vel", 1,
-                                          &Environment::receiveRobot3Vel,
-                                          this);
-    DEBUG(getActorName(STARSCREAM) << " id " << agentid << ", ");
-  }
-  if ((nActorID_ != BLACKOUT) && BLACKOUT_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(BLACKOUT),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[BLACKOUT] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/youbot_4/true_pose", 1,
-                                           &Environment::receiveRobot4Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/youbot_4/cmd_vel", 1,
-                                          &Environment::receiveRobot4Vel,
-                                          this);
-    DEBUG(getActorName(BLACKOUT) << " id " << agentid << ", ");
-  }
-  if ((nActorID_ != THUNDERCRACKER) && THUNDERCRACKER_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(THUNDERCRACKER),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[THUNDERCRACKER] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/youbot_5/true_pose", 1,
-                                           &Environment::receiveRobot5Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/youbot_5/cmd_vel", 1,
-                                          &Environment::receiveRobot5Vel,
-                                          this);
-    DEBUG(getActorName(THUNDERCRACKER) << " id " << agentid << ", ");
-  }
-  if ((nActorID_ != PRIME) && PRIME_ACTIVE) {
-    std::size_t agentid = planner_->addAgent(getActorName(PRIME),
-                          SIMAGENT, EXIT, startGoal_);
-    trackedRobots_[PRIME] = agentid;
-    robotPoseSubs[agentid] = nh_.subscribe("/prime/true_pose", 1,
-                                           &Environment::receiveRobot6Pose,
-                                           this);
-    robotVelSubs[agentid] = nh_.subscribe("/prime/cmd_vel", 1,
-                                          &Environment::receiveRobot6Vel,
-                                          this);
-    DEBUG(getActorName(PRIME)  << " id " << agentid);
-  }
-  DEBUG(std::endl);
-  DEBUG("Multi-robot pose/vels subscriptions for " <<
-        sActorID_ << " complete" << std::endl);
+  /* Instantiate RobotComms class to publish/receive robot pose/velocities */
+  robotComms_ = new RobotComms(&nActorID_, &sActorID_);
+  robotComms_->setEnvPointer(this);
+  robotComms_->setPlannerPointer(planner_);
+  robotComms_->initRobotTrackers();
 }
-
-// I hate myself for this....
-void Environment::receiveRobot1Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[MEGATRON]].setX(msg.position.x);
-  robotPoses[trackedRobots_[MEGATRON]].setY(msg.position.y);
-}
-void Environment::receiveRobot2Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[SOUNDWAVE]].setX(msg.position.x);
-  robotPoses[trackedRobots_[SOUNDWAVE]].setY(msg.position.y);
-}
-void Environment::receiveRobot3Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[STARSCREAM]].setX(msg.position.x);
-  robotPoses[trackedRobots_[STARSCREAM]].setY(msg.position.y);
-}
-void Environment::receiveRobot4Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[BLACKOUT]].setX(msg.position.x);
-  robotPoses[trackedRobots_[BLACKOUT]].setY(msg.position.y);
-}
-void Environment::receiveRobot5Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[THUNDERCRACKER]].setX(msg.position.x);
-  robotPoses[trackedRobots_[THUNDERCRACKER]].setY(msg.position.y);
-}
-void Environment::receiveRobot6Pose(const geometry_msgs::Pose& msg) {
-  robotPoses[trackedRobots_[PRIME]].setX(msg.position.x);
-  robotPoses[trackedRobots_[PRIME]].setY(msg.position.y);
-}
-
-void Environment::receiveRobot1Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[MEGATRON]].setX(msg.linear.x);
-  robotVels[trackedRobots_[MEGATRON]].setY(msg.linear.y);
-}
-void Environment::receiveRobot2Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[SOUNDWAVE]].setX(msg.linear.x);
-  robotVels[trackedRobots_[SOUNDWAVE]].setY(msg.linear.y);
-}
-void Environment::receiveRobot3Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[STARSCREAM]].setX(msg.linear.x);
-  robotVels[trackedRobots_[STARSCREAM]].setY(msg.linear.y);
-}
-void Environment::receiveRobot4Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[BLACKOUT]].setX(msg.linear.x);
-  robotVels[trackedRobots_[BLACKOUT]].setY(msg.linear.y);
-}
-void Environment::receiveRobot5Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[THUNDERCRACKER]].setX(msg.linear.x);
-  robotVels[trackedRobots_[THUNDERCRACKER]].setY(msg.linear.y);
-}
-void Environment::receiveRobot6Vel(const geometry_msgs::Twist& msg) {
-  robotVels[trackedRobots_[PRIME]].setX(msg.linear.x);
-  robotVels[trackedRobots_[PRIME]].setY(msg.linear.y);
-}
-
-// void Environment::receiveRobotPose(const geometry_msgs::Pose& msg,
-//   const ros::MessageEvent<std_msgs::String const>& event)
-// {
-//   const std::string& pub_name = event.getPublisherName();
-//   if (pub_name.compare(1,8,"youbot_1"))
-//   {
-//     robotPoses[trackedRobots_[MEGATRON]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[MEGATRON]].setY(msg.position.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_2"))
-//   {
-//     robotPoses[trackedRobots_[SOUNDWAVE]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[SOUNDWAVE]].setY(msg.position.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_3"))
-//   {
-//     robotPoses[trackedRobots_[STARSCREAM]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[STARSCREAM]].setY(msg.position.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_4"))
-//   {
-//     robotPoses[trackedRobots_[BLACKOUT]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[BLACKOUT]].setY(msg.position.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_5"))
-//   {
-//     robotPoses[trackedRobots_[THUNDERCRACKER]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[THUNDERCRACKER]].setY(msg.position.y);
-//   }
-//   else if (pub_name.compare(1,5,"prime"))
-//   {
-//     robotPoses[trackedRobots_[PRIME]].setX(msg.position.x);
-//     robotPoses[trackedRobots_[PRIME]].setY(msg.position.y);
-//   }
-// }
-
-// void Environment::receiveRobotVel(const geometry_msgs::Twist& msg,
-//   const ros::MessageEvent<std_msgs::String const>& event)
-// {
-//   const std::string& pub_name = event.getPublisherName();
-//   if (pub_name.compare(1,8,"youbot_1"))
-//   {
-//     robotVels[trackedRobots_[MEGATRON]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[MEGATRON]].setY(msg.linear.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_2"))
-//   {
-//     robotVels[trackedRobots_[SOUNDWAVE]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[SOUNDWAVE]].setY(msg.linear.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_3"))
-//   {
-//     robotVels[trackedRobots_[STARSCREAM]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[STARSCREAM]].setY(msg.linear.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_4"))
-//   {
-//     robotVels[trackedRobots_[BLACKOUT]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[BLACKOUT]].setY(msg.linear.y);
-//   }
-//   else if (pub_name.compare(1,8,"youbot_5"))
-//   {
-//     robotVels[trackedRobots_[THUNDERCRACKER]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[THUNDERCRACKER]].setY(msg.linear.y);
-//   }
-//   else if (pub_name.compare(1,5,"prime"))
-//   {
-//     robotVels[trackedRobots_[PRIME]].setX(msg.linear.x);
-//     robotVels[trackedRobots_[PRIME]].setY(msg.linear.y);
-//   }
-// }
-
 
 void Environment::updateLocalisation(bool USE_TRACKER) {
   if (IS_AMCL_ACTIVE) {
@@ -344,12 +146,7 @@ void Environment::updateLocalisation(bool USE_TRACKER) {
   }
   if (!TRACK_ROBOTS) {
     // PUBLISH POSE
-    geometry_msgs::Pose pose;
-    pose.position.x = planner_->getAgentPosition(THIS_ROBOT).getX();
-    pose.position.y = planner_->getAgentPosition(THIS_ROBOT).getY();
-    posePub_.publish(pose);
-    DEBUG("Publishing true pose for " << sActorID_ <<
-          std::endl << pose.position << std::endl);
+    robotComms_->publishPose();
   }
 }
 

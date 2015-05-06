@@ -28,11 +28,15 @@
 
 #include "Planner.h"
 #include "BumperWrapper.h"
+#include "RobotComms.h"
+
+#include <memory>
 
 typedef actionlib::SimpleClientGoalState::StateEnum GoalStateEnum;
 typedef actionlib::SimpleClientGoalState GoalState;
 
 namespace hrvo {
+class RobotComms;
 class BumperWrapper;
 class AMCLWrapper;
 class Tracker;
@@ -63,26 +67,8 @@ class Environment {
   void initBumper();
   void initRobotTrackers();
 
-  // void receiveRobotPose(const geometry_msgs::Pose& msg,
-  // const ros::MessageEvent<std_msgs::String const>& event);
-
-  // void receiveRobotVel(const geometry_msgs::Twist& msg,
-  // const ros::MessageEvent<std_msgs::String const>& event);
-
-  // ** SHAMEFUR DISPRAY!!! **
-  void receiveRobot1Pose(const geometry_msgs::Pose& msg);
-  void receiveRobot2Pose(const geometry_msgs::Pose& msg);
-  void receiveRobot3Pose(const geometry_msgs::Pose& msg);
-  void receiveRobot4Pose(const geometry_msgs::Pose& msg);
-  void receiveRobot5Pose(const geometry_msgs::Pose& msg);
-  void receiveRobot6Pose(const geometry_msgs::Pose& msg);
-
-  void receiveRobot1Vel(const geometry_msgs::Twist& msg);
-  void receiveRobot2Vel(const geometry_msgs::Twist& msg);
-  void receiveRobot3Vel(const geometry_msgs::Twist& msg);
-  void receiveRobot4Vel(const geometry_msgs::Twist& msg);
-  void receiveRobot5Vel(const geometry_msgs::Twist& msg);
-  void receiveRobot6Vel(const geometry_msgs::Twist& msg);
+  std::map<std::size_t, Vector2>* getRobotPosesPtr() {return &robotPoses;}
+  std::map<std::size_t, Vector2>* getRobotVelsPtr() {return &robotVels;}
 
   void updateLocalisation(bool USE_TRACKER);
   //    void updateTracker();
@@ -248,35 +234,23 @@ class Environment {
 
   Simulator *planner_;
   Planner *newPlanner_;
-  Tracker *tracker_;
   AMCLWrapper *amclwrapper_;
+  Tracker *tracker_;
   BumperWrapper *bumperwrapper_;
+  RobotComms *robotComms_;
 
-  // Robot Tracking Pub
-  ros::Publisher posePub_;
-  // ros::Subscriber RobotPoseSub1_;
-  // ros::Subscriber RobotPoseSub2_;
-  // ros::Subscriber RobotPoseSub3_;
-  // ros::Subscriber RobotPoseSub4_;
-  // ros::Subscriber RobotPoseSub5_;
-  // ros::Subscriber RobotPoseSub6_;
-
-  std::map<Actor, std::size_t>
-  trackedRobots_;          // Robot Name, AgentID in planner
-  std::map<std::size_t, ros::Subscriber> robotPoseSubs;   // AgentID
-  std::map<std::size_t, ros::Subscriber> robotVelSubs;    // AgentID
+  // // Other robot Pose/Velocity Subscribers
+  std::map<Actor, std::size_t> trackedRobots_; // Robot Name, AgentID in planner
   std::map<std::size_t, Vector2> robotPoses;              // AgentID
   std::map<std::size_t, Vector2> robotVels;               // AgentID
 
+  // First : Tracker ID, Second : SimAgent ID
+  std::map<int, std::size_t> trackedAgents_;
 
+  // First : Tracker ID,
+  // Second : Cumulative Diff between Odometry and Tracker Position
+  std::map<int, std::vector<float> > trackerCompOdom_;
 
-  std::map<int, std::size_t>
-  trackedAgents_;  // First : Tracker ID, Second : SimAgent ID
-  std::map<int, std::vector<float> >
-
-  // First : Tracker ID, Second : Cumulative Diff
-  // between Odometry and Tracker Position
-  trackerCompOdom_;
   std::map<std::size_t, Vector2> possGoals_;
   std::map<std::size_t, std::size_t> simIDs_;
   std::map<std::size_t, Simulator *> simvect_;

@@ -65,7 +65,6 @@ class Tracker {
 
   void setPlannerPointer(Simulator *planner) {planner_ = planner;}
 
-
  private:
   // ROS members
   ros::NodeHandle nh_;
@@ -84,11 +83,11 @@ class Tracker {
   bool trackOtherAgents_;
 
   int robotTrackerID_;
-  std::map<int, std::size_t>
-  trackedAgents_;            // First : Tracker ID, Second : SimAgent ID
-  std::map<int, std::vector<float> >
-  trackerCompOdom_;  // First : Tracker ID,
+  // First : Tracker ID, Second : SimAgent ID
+  std::map<int, std::size_t> trackedAgents_;
+  // First : Tracker ID,
   // Second : Cumulative Diff between Odometry and Tracker Position
+  std::map<int, std::vector<float> > trackerCompOdom_;
 };
 
 }  // namespace hrvo
