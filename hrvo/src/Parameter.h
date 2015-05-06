@@ -102,8 +102,6 @@ extern int LOG_PLANNER;
 
 // Simulation Constants (DO NOT CHANGE)
 
-// Always 0, representing first agent (own robot) of the list
-extern int THIS_ROBOT;
 
 // Simulation time step, affects many parts of the code
 extern float SIM_TIME_STEP;

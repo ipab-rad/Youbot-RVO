@@ -94,8 +94,7 @@ int WIFI_ATTEMPTS;
 std::string LOG_NAME;
 int LOG_PLANNER;
 
-// Simulation Constants (DO NOT CHANGE)
-int THIS_ROBOT = 0;
+// Simulation Constant (DO NOT CHANGE)
 float SIM_TIME_STEP;
 
 // Model Parameters

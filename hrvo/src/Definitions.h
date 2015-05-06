@@ -38,6 +38,9 @@ const float HRVO_PI = 3.141592653589793f;
 #define ROBOT 2
 #define INACTIVE 3
 
+// Robot is always first agent in it's own simulation
+#define THIS_ROBOT 0
+
 // Goal pattern for planning agents
 #define GOAL_STOP 0
 #define GOAL_CYCLE_CW 1
