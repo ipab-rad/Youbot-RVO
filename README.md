@@ -35,6 +35,7 @@ The main sections of this repository include:
 On PC:
 * `ros hydro`
 * `hrvo`
+* `move-base`
 
 On Youbot
 * `ros hydro`
