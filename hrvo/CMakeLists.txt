@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   move_base_msgs
   actionlib
+  PTrackingBridge
 )
 
 ## System dependencies are found with CMake's conventions

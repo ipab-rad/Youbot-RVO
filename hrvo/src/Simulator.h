@@ -61,7 +61,6 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 
-// #include "hrvo/AddAgentService.h"
 #include "Vector2.h"
 #include <limits>
 /**
@@ -481,10 +480,6 @@ class Simulator {
   // TODO(Alex): Figure out if this can ever be done without maps
 
   void setBumperData(std::size_t agentNo, int touched);
-
-
-  // bool addAgentCallback(AddAgentService::Request &req,
-  //  AddAgentService::Response &res);
 
  private:
   Simulator(const Simulator &other);

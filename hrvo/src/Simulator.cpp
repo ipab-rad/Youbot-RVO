@@ -59,7 +59,6 @@
 #include <stdexcept>
 #include <exception>
 
-#include "hrvo/AddAgentService.h"
 #include "Agent.h"
 #include "Goal.h"
 #include "KdTree.h"
